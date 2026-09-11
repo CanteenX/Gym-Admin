@@ -53,6 +53,19 @@ export const addMemberPayment = async (id, data) => {
     return api.post(ENDPOINTS.MEMBERS.PAYMENTS(id), data);
 };
 
+/**
+ * Enable member-portal access by setting their first password.
+ * The member is prompted to change it on first login.
+ */
+export const setMemberPassword = async (id, password, loginId) => {
+    return api.put(ENDPOINTS.MEMBERS.SET_PASSWORD(id), { password, loginId });
+};
+
+/** Remove portal access without deleting the member. */
+export const revokeMemberPortalAccess = async (id) => {
+    return api.delete(ENDPOINTS.MEMBERS.REVOKE_PORTAL(id));
+};
+
 export default {
     createMember,
     updateMember,
@@ -63,4 +76,6 @@ export default {
     listMemberPlans,
     renewMembership,
     addMemberPayment,
+    setMemberPassword,
+    revokeMemberPortalAccess,
 };

@@ -191,6 +191,8 @@ export const ENDPOINTS = {
         PLANS: `${V1}/member-plans`,
         RENEW: (id) => `${V1}/members/${id}/renew`,
         PAYMENTS: (id) => `${V1}/members/${id}/payments`,
+        SET_PASSWORD: (id) => `${V1}/members/${id}/set-password`,
+        REVOKE_PORTAL: (id) => `${V1}/members/${id}/portal-access`,
     },
 
     // Gym membership plan master endpoints

@@ -39,6 +39,8 @@ import {
   listMemberPlans,
   renewMembership,
   addMemberPayment,
+  setMemberPassword,
+  revokeMemberPortalAccess,
 } from "../../api/members.api";
 import { listAllTrainers } from "../../api/trainers.api";
 
@@ -154,6 +156,14 @@ const Members = () => {
   const [existingPhoto, setExistingPhoto] = useState("");
   const [existingIdProof, setExistingIdProof] = useState("");
   const [fileErrors, setFileErrors] = useState({});
+
+  // Portal access: credentials are set through their own endpoints, never as
+  // part of the member payload, so a password can't be changed by accident
+  // while editing membership details.
+  const [portalPassword, setPortalPassword] = useState("");
+  const [portalLoginId, setPortalLoginId] = useState("");
+  const [portalBusy, setPortalBusy] = useState(false);
+  const [hasPortalAccess, setHasPortalAccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [showForm, setShowForm] = useState(false);
@@ -348,6 +358,56 @@ const Members = () => {
     setExistingPhoto(row.photo || "");
     setExistingIdProof(row.idProof || "");
     setFileErrors({});
+    setPortalPassword("");
+    setPortalLoginId(row.loginId || "");
+    setHasPortalAccess(Boolean(row.hasPortalAccess));
+  };
+
+  /** Grant or reset portal access for the member currently being edited. */
+  const handleSetPortalPassword = async () => {
+    if (!portalPassword || portalPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setPortalBusy(true);
+    try {
+      const res = await setMemberPassword(
+        selectedId,
+        portalPassword,
+        portalLoginId.trim(),
+      );
+      if (res.data.isOk) {
+        toast.success(res.data.message);
+        setPortalPassword("");
+        setHasPortalAccess(true);
+        fetchMembers();
+      } else {
+        toast.error(res.data.message || "Could not set password");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not set password");
+    } finally {
+      setPortalBusy(false);
+    }
+  };
+
+  const handleRevokePortal = async () => {
+    if (!window.confirm("Remove portal access for this member?")) return;
+    setPortalBusy(true);
+    try {
+      const res = await revokeMemberPortalAccess(selectedId);
+      if (res.data.isOk) {
+        toast.success(res.data.message);
+        setHasPortalAccess(false);
+        fetchMembers();
+      } else {
+        toast.error(res.data.message || "Could not remove access");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not remove access");
+    } finally {
+      setPortalBusy(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -677,13 +737,17 @@ const Members = () => {
                 <i className="ri-money-rupee-circle-line"></i> Pay
               </button>
             )}
-            {permissions.edit && (
+            {/* Renew is only offered once the term has actually ended —
+                showing it on every active member made the row noisy and
+                invited accidental early renewals. */}
+            {permissions.edit && daysUntil(row.endDate) < 0 && (
               <button
-                className="btn btn-sm btn-warning d-flex align-items-center gap-1"
+                className="btn btn-sm btn-warning rounded-circle d-flex align-items-center justify-content-center p-0"
+                style={{ width: 28, height: 28 }}
                 onClick={() => openRenewModal(row)}
-                title="Renew membership"
+                title={`Renew membership — expired ${Math.abs(daysUntil(row.endDate))} day(s) ago`}
               >
-                <i className="ri-refresh-line"></i> Renew
+                <i className="ri-refresh-line"></i>
               </button>
             )}
             {permissions.edit && (
@@ -1120,6 +1184,97 @@ const Members = () => {
             </FormGroup>
           </Col>
         </Row>
+
+        {/* Portal access — edit mode only: a member must exist before
+            credentials can be attached to them. */}
+        {updateForm && (
+          <>
+            <hr className="my-4" />
+            <h6
+              className="text-uppercase text-muted fw-bold mb-3"
+              style={{ letterSpacing: "0.5px" }}
+            >
+              Member Portal Access
+            </h6>
+            <Row className="bg-light rounded p-2 mx-0 mb-3">
+              <Col md={12} className="mb-2">
+                <span className="small">
+                  Portal status:
+                  {hasPortalAccess ? (
+                    <Badge color="success" className="ms-2">
+                      Access enabled
+                    </Badge>
+                  ) : (
+                    <Badge color="light" className="ms-2">
+                      No access yet
+                    </Badge>
+                  )}
+                </span>
+              </Col>
+              <Col md={4}>
+                <FormGroup className="mb-2">
+                  <Label className="form-label small">Login ID</Label>
+                  <Input
+                    type="text"
+                    value={portalLoginId}
+                    placeholder={values.mobileNumber || "mobile number"}
+                    onChange={(e) => setPortalLoginId(e.target.value)}
+                  />
+                  <small className="text-muted">
+                    Email or any ID. Leave blank to use the contact number.
+                  </small>
+                </FormGroup>
+              </Col>
+              <Col md={4}>
+                <FormGroup className="mb-2">
+                  <Label className="form-label small">
+                    {hasPortalAccess ? "Reset password" : "Set password"}
+                  </Label>
+                  <Input
+                    type="text"
+                    value={portalPassword}
+                    placeholder="minimum 6 characters"
+                    onChange={(e) => setPortalPassword(e.target.value)}
+                  />
+                </FormGroup>
+              </Col>
+              <Col md={7} className="d-flex align-items-end gap-2 mb-2">
+                <Button
+                  type="button"
+                  color="primary"
+                  size="sm"
+                  disabled={portalBusy}
+                  onClick={handleSetPortalPassword}
+                >
+                  {portalBusy
+                    ? "Saving..."
+                    : hasPortalAccess
+                      ? "Reset Password"
+                      : "Enable Portal Access"}
+                </Button>
+                {hasPortalAccess && (
+                  <Button
+                    type="button"
+                    color="danger"
+                    size="sm"
+                    outline
+                    disabled={portalBusy}
+                    onClick={handleRevokePortal}
+                  >
+                    Remove Access
+                  </Button>
+                )}
+              </Col>
+              <Col md={12}>
+                <small className="text-muted">
+                  The member is asked to change this password on first login.
+                  Portal access requires an active membership with no pending
+                  dues.
+                </small>
+              </Col>
+            </Row>
+          </>
+        )}
 
         <Row>
           <Col md={9}>
