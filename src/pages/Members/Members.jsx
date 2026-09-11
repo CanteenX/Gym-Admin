@@ -43,6 +43,7 @@ import {
   revokeMemberPortalAccess,
 } from "../../api/members.api";
 import { listAllTrainers } from "../../api/trainers.api";
+import { listWorkoutPlans } from "../../api/workoutPlans.api";
 
 const toInputDate = (value) => {
   if (!value) return "";
@@ -92,6 +93,8 @@ const initialState = {
   address: "",
   branch: "Vasna",
   trainerId: "",
+  // "" means the member follows the gym default exercise plan.
+  workoutPlanId: "",
   planCode: "MONTHLY",
   startDate: toInputDate(new Date()),
   endDate: "",
@@ -148,6 +151,8 @@ const Members = () => {
 
   const [plans, setPlans] = useState([]);
   const [trainers, setTrainers] = useState([]);
+  // Active exercise plans for the workout-plan picker.
+  const [workoutPlans, setWorkoutPlans] = useState([]);
   const [members, setMembers] = useState([]);
 
   // Selected File objects (not part of `values`, which is JSON-serialisable).
@@ -211,6 +216,14 @@ const Members = () => {
         if (res.data.isOk) setTrainers(res.data.data || []);
       })
       .catch((err) => console.error("Error loading trainers:", err));
+
+    listWorkoutPlans()
+      .then((res) => {
+        if (res.data.isOk) {
+          setWorkoutPlans((res.data.data || []).filter((p) => p.isActive));
+        }
+      })
+      .catch((err) => console.error("Error loading workout plans:", err));
   }, []);
 
   // The trainer picker only appears for plans that need a dedicated coach —
@@ -346,6 +359,7 @@ const Members = () => {
       address: row.address || "",
       branch: row.branch || "Vasna",
       trainerId: row.trainerId?._id || row.trainerId || "",
+      workoutPlanId: row.workoutPlanId?._id || row.workoutPlanId || "",
       planCode: row.planCode || "MONTHLY",
       startDate: toInputDate(row.startDate),
       endDate: toInputDate(row.endDate),
@@ -472,6 +486,8 @@ const Members = () => {
     const payload = { ...values };
     // Send an explicit null so switching away from PT clears the trainer.
     payload.trainerId = payload.trainerId || null;
+    // null resets the member to the gym default exercise plan.
+    payload.workoutPlanId = payload.workoutPlanId || null;
     if (!payload.endDate) delete payload.endDate;
     if (payload.totalFee === "") delete payload.totalFee;
     if (!payload.initialPayment?.amount) delete payload.initialPayment;
@@ -1048,6 +1064,36 @@ const Members = () => {
             </Col>
           </Row>
         )}
+
+        {/* Exercise plan — blank means the member follows the gym default. */}
+        <Row className="mb-3">
+          <Col md={6}>
+            <FormGroup className="mb-0">
+              <Label className="form-label fw-bold">
+                <i className="ri-run-line align-bottom me-1"></i>
+                Exercise Plan
+              </Label>
+              <Input
+                type="select"
+                name="workoutPlanId"
+                value={values.workoutPlanId}
+                onChange={handleChange}
+              >
+                <option value="">Gym default plan</option>
+                {workoutPlans.map((p) => (
+                  <option key={p._id} value={p._id}>
+                    {p.name}
+                    {p.isDefault ? " (current default)" : ""}
+                  </option>
+                ))}
+              </Input>
+              <small className="text-muted">
+                Leave on the default unless this member needs a different
+                routine.
+              </small>
+            </FormGroup>
+          </Col>
+        </Row>
 
         {!updateForm && (
           <Row className="bg-light rounded p-2 mx-0 mb-3">

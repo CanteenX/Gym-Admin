@@ -70,8 +70,23 @@ const Employee = () => {
     cityId: "",
     address: "",
     password: "",
+    // "" means all branches (super admin). Only a super admin may pick it.
+    branch: "",
+    isSuperAdmin: false,
     isActive: true,
   };
+
+  // Whether the CURRENT user may hand out cross-branch access. The server
+  // enforces this too (employee.controller.js) — this only keeps the UI honest.
+  const canGrantAllBranches = adminData?.isSuperAdmin === true;
+
+  const branchOptions = [
+    { value: "Vasna", label: "Vasna" },
+    { value: "Gotri", label: "Gotri" },
+    ...(canGrantAllBranches
+      ? [{ value: "", label: "All Branches (Super Admin)" }]
+      : []),
+  ];
 
   const [remove_id, setRemove_id] = useState("");
   const [query, setQuery] = useState("");
@@ -264,6 +279,11 @@ const Employee = () => {
     if (values.officeMobileNumber && values.officeMobileNumber.length !== 10)
       errors.officeMobileNumber = "Phone number should be 10 digits";
     if (!selectedRole) errors.role = "Role is required";
+    // "" (all branches) is only a valid choice for a super admin creating
+    // another super admin; everyone else must pick a real branch.
+    if (!values.branch && !(canGrantAllBranches && values.isSuperAdmin)) {
+      errors.branch = "Branch is required";
+    }
     return errors;
   };
 
@@ -287,6 +307,9 @@ const Employee = () => {
         mobileNumber: values.mobileNumber,
         address: values.address,
         password: values.password,
+        // "" = all branches; the server stores it as null.
+        branch: values.branch,
+        isSuperAdmin: values.isSuperAdmin,
         isActive: values.isActive,
       };
 
@@ -330,6 +353,8 @@ const Employee = () => {
         emailOffice: values.emailOffice,
         mobileNumber: values.mobileNumber,
         address: values.address,
+        branch: values.branch,
+        isSuperAdmin: values.isSuperAdmin,
         isActive: values.isActive,
       };
 
@@ -452,6 +477,9 @@ const Employee = () => {
             emailOffice: employeeData.emailOffice,
             mobileNumber: employeeData.mobileNumber,
             address: employeeData.address,
+            // null (all branches) comes back as "" for the select.
+            branch: employeeData.branch || "",
+            isSuperAdmin: employeeData.isSuperAdmin === true,
             isActive: employeeData.isActive,
           });
 
@@ -993,6 +1021,68 @@ const Employee = () => {
                       </div>
                     </Col>
                   </Row>
+                  <Row>
+                    <Col lg={3}>
+                      <div className="form-floating mb-3">
+                        <Select
+                          inputId="branch"
+                          className="basic-single"
+                          classNamePrefix="select"
+                          placeholder=""
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              minHeight: "58px",
+                              height: "58px",
+                              backgroundColor: "transparent",
+                            }),
+                            placeholder: (base) => ({ ...base, marginTop: "8px" }),
+                            valueContainer: (base) => ({ ...base, marginTop: "8px" }),
+                          }}
+                          options={branchOptions}
+                          value={
+                            branchOptions.find((b) => b.value === values.branch) || null
+                          }
+                          onChange={(opt) =>
+                            setValues({ ...values, branch: opt?.value ?? "" })
+                          }
+                        />
+                        <label
+                          htmlFor="branch"
+                          className="form-label"
+                          style={{
+                            opacity: 0.7,
+                            transform: "scale(0.85) translateY(-0.5rem) translateX(0.15rem)",
+                          }}
+                        >
+                          Branch <span className="text-danger">*</span>
+                        </label>
+                        {isSubmit && formErrors.branch && (
+                          <p className="text-danger">{formErrors.branch}</p>
+                        )}
+                      </div>
+                    </Col>
+                    {/* Only a super admin may create another super admin. The
+                        server refuses this with a 403 regardless of the UI. */}
+                    {canGrantAllBranches && (
+                      <Col lg={3}>
+                        <div className="d-flex align-items-center h-100 mb-3">
+                          <div className="form-check">
+                            <Input
+                              type="checkbox"
+                              id="isSuperAdmin"
+                              name="isSuperAdmin"
+                              onChange={handlecheck}
+                              checked={values.isSuperAdmin}
+                            />
+                            <Label htmlFor="isSuperAdmin" className="form-check-label">
+                              Super Admin (both branches)
+                            </Label>
+                          </div>
+                        </div>
+                      </Col>
+                    )}
+                  </Row>
                   {!updateForm && (
                     <Row>
                       <Col lg={4}>
@@ -1211,6 +1301,13 @@ const Employee = () => {
         sortable: true,
         sortField: "departmentId",
         maxWidth: "200px",
+      },
+      {
+        name: "Branch",
+        cell: BranchCell,
+        sortable: true,
+        sortField: "branch",
+        maxWidth: "150px",
       },
       {
         name: "Created By",
@@ -1552,6 +1649,18 @@ const DepartmentCell = (props) => {
 };
 
 DepartmentCell.propTypes = {
+  row: PropTypes.object,
+};
+
+const BranchCell = (props) => {
+  const row = props.row || props;
+  if (row.isSuperAdmin || !row.branch) {
+    return <span className="badge bg-primary-subtle text-primary">All Branches</span>;
+  }
+  return <span className="badge bg-light text-dark border">{row.branch}</span>;
+};
+
+BranchCell.propTypes = {
   row: PropTypes.object,
 };
 

@@ -30,6 +30,7 @@ import Trainers from "../pages/Trainers/Trainers";
 import CashFlow from "../pages/Accounts/CashFlow";
 import ExpenseCategories from "../pages/Accounts/ExpenseCategories";
 import MembershipPlans from "../pages/Master/MembershipPlans";
+import MemberExercisePlan from "../pages/Master/MemberExercisePlan";
 
 
 const authProtectedRoutes = [
@@ -57,6 +58,7 @@ const authProtectedRoutes = [
     { path: "/cash-flow", component: <CashFlow /> },
     { path: "/expense-categories", component: <ExpenseCategories /> },
     { path: "/membership-plans", component: <MembershipPlans /> },
+    { path: "/member-exercise-plan", component: <MemberExercisePlan /> },
     { path: "/dashboard", component: <Dashboard /> },
     { path: "/menu-group", component: <MenuGroup /> },
     { path: "/menu-master", component: <MenuMaster /> },

@@ -193,6 +193,7 @@ export const ENDPOINTS = {
         PAYMENTS: (id) => `${V1}/members/${id}/payments`,
         SET_PASSWORD: (id) => `${V1}/members/${id}/set-password`,
         REVOKE_PORTAL: (id) => `${V1}/members/${id}/portal-access`,
+        WORKOUT_PLAN: (id) => `${V1}/members/${id}/workout-plan`,
     },
 
     // Gym membership plan master endpoints
@@ -219,6 +220,12 @@ export const ENDPOINTS = {
         BY_ID: (id) => `${V1}/expense-categories/${id}`,
         SEARCH: `${V1}/expense-categories-by-params`,
         LIST_ALL: `${V1}/expense-categories-list`,
+    },
+
+    // Workout / exercise plan endpoints
+    WORKOUT_PLANS: {
+        BASE: `${V1}/workout-plans`,
+        BY_ID: (id) => `${V1}/workout-plans/${id}`,
     },
 
     // Gym trainer endpoints
