@@ -7,19 +7,12 @@ const Footer = () => {
             <Container fluid>
                 <Row className="gy-1">
                     <Col xs={12} sm={6} className="text-center text-sm-start">
-                        {new Date().getFullYear()} © Barodaweb
+                        {new Date().getFullYear()} © Mid City Gym
                     </Col>
                     <Col xs={12} sm={6}>
-                        <a
-                            href="https://barodaweb.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-center text-sm-end text-dark d-block"
-                            style={{ textDecoration: "none" }}
-                        >
-                            Powered by{" "}
-                            <b>BarodaWeb: The e-Catalogue Designer</b>
-                        </a>
+                        <span className="text-center text-sm-end text-dark d-block">
+                            Mid City Gym · Vadodara — <b>Vasna &amp; Gotri</b>
+                        </span>
                     </Col>
                 </Row>
             </Container>

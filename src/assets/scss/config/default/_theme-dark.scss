@@ -3,16 +3,16 @@
 
 [data-layout-mode="dark"]{
 
-  // Color system - Dark Mode only (neutral monochrome)
-  $gray-100: #161618;
-  $gray-200: #1c1c1f;
-  $gray-300: #2a2a2e;
-  $gray-400: #6e6e73;
-  $gray-500: #8e8e93;
-  $gray-600: #aeaeb2;
-  $gray-700: #d4d4d8;
-  $gray-800: #ececee;
-  $gray-900: #f7f7f8;
+  // Color system - Dark Mode only (neutral charcoal greys)
+  $gray-100: #1f2228;
+  $gray-200: #262a31;
+  $gray-300: #333840;
+  $gray-400: #767c86;
+  $gray-500: #9ca3ae;
+  $gray-600: #b8bec7;
+  $gray-700: #d8dce1;
+  $gray-800: #eef0f3;
+  $gray-900: #f6f7f9;
   
   $grays: (
       "100": $gray-100,
@@ -48,7 +48,7 @@
   --#{$prefix}vertical-menu-title-color:             #{$gray-400};
 
   //vertical dark
-  --#{$prefix}vertical-menu-bg-dark:                 #0f0f10;
+  --#{$prefix}vertical-menu-bg-dark:                 #2b2f36;
   --#{$prefix}vertical-menu-item-color-dark:         #{$gray-400};
   --#{$prefix}vertical-menu-item-hover-color-dark:   #{$white};
   --#{$prefix}vertical-menu-item-active-color-dark:  #{$white};
@@ -58,17 +58,17 @@
   --#{$prefix}vertical-menu-title-color-dark:         #{darken($gray-400, 16%)};
 
   // Topbar - (Default Light)
-  --#{$prefix}header-bg:  #292e32;
-  --#{$prefix}header-item-color:  #e9ecef;
+  --#{$prefix}header-bg:  #262a31;
+  --#{$prefix}header-item-color:  #{$gray-700};
   // Topbar - Dark
-  --#{$prefix}header-bg-dark:  #{$primary};
-  --#{$prefix}header-item-color-dark:  #b0c4d9;
+  --#{$prefix}header-bg-dark:  #2b2f36;
+  --#{$prefix}header-item-color-dark:  rgba(255, 255, 255, 0.75);
 
   // Topbar Search
-  --#{$prefix}topbar-search-bg: #202328;
+  --#{$prefix}topbar-search-bg: #1f2228;
   // Topbar User
   --#{$prefix}topbar-user-bg: #{lighten($gray-300, 3%)};
-  --#{$prefix}topbar-user-bg-dark: #52639c;
+  --#{$prefix}topbar-user-bg-dark: #3a3f47;
   
   //footer
   --#{$prefix}footer-bg: #{$gray-200};
@@ -85,7 +85,7 @@
   
   // two column dark
   --#{$prefix}twocolumn-menu-iconview-bg-dark: var(--#{$prefix}vertical-menu-bg-dark);
-  --#{$prefix}twocolumn-menu-bg-dark:  #30363a;
+  --#{$prefix}twocolumn-menu-bg-dark:  #343941;
   --#{$prefix}twocolumn-menu-item-color-dark: var(--#{$prefix}vertical-menu-item-color-dark);
   --#{$prefix}twocolumn-menu-item-active-color-dark:  #{$white};
   --#{$prefix}twocolumn-menu-item-active-bg-dark:  #{rgba($white, .15)};

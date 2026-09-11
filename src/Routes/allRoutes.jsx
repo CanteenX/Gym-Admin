@@ -27,6 +27,8 @@ import GuidesGallery from "../pages/HelpGuides/GuidesGallery";
 import ManageGuides from "../pages/HelpGuides/ManageGuides";
 import Members from "../pages/Members/Members";
 import Trainers from "../pages/Trainers/Trainers";
+import CashFlow from "../pages/Accounts/CashFlow";
+import ExpenseCategories from "../pages/Accounts/ExpenseCategories";
 import MembershipPlans from "../pages/Master/MembershipPlans";
 
 
@@ -52,6 +54,8 @@ const authProtectedRoutes = [
     { path: "/manage-guides", component: <ManageGuides /> },
     { path: "/members", component: <Members /> },
     { path: "/trainers", component: <Trainers /> },
+    { path: "/cash-flow", component: <CashFlow /> },
+    { path: "/expense-categories", component: <ExpenseCategories /> },
     { path: "/membership-plans", component: <MembershipPlans /> },
     { path: "/dashboard", component: <Dashboard /> },
     { path: "/menu-group", component: <MenuGroup /> },

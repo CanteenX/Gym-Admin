@@ -12,8 +12,8 @@
   --#{$prefix}vertical-menu-sub-item-active-color:   #{$gray-900};
   --#{$prefix}vertical-menu-title-color:             #8a8a8f;
 
-  //vertical dark - monochrome near-black
-  --#{$prefix}vertical-menu-bg-dark:                 #0f0f10;
+  //vertical dark - refined charcoal
+  --#{$prefix}vertical-menu-bg-dark:                 #2b2f36;
   --#{$prefix}vertical-menu-item-color-dark:         rgba(255, 255, 255, 0.72);
   --#{$prefix}vertical-menu-item-hover-color-dark:   #{$white};
   --#{$prefix}vertical-menu-item-active-color-dark:  #{$white};
@@ -26,14 +26,14 @@
   --#{$prefix}header-bg:  #{$white};
   --#{$prefix}header-item-color:  #{$gray-700};
   // Topbar - Dark
-  --#{$prefix}header-bg-dark:  #0f0f10;
-  --#{$prefix}header-item-color-dark:  rgba(255, 255, 255, 0.72);
+  --#{$prefix}header-bg-dark:  #1b2a4e;
+  --#{$prefix}header-item-color-dark:  rgba(255, 255, 255, 0.75);
 
   // Topbar Search
   --#{$prefix}topbar-search-bg: #{$gray-100};
   // Topbar User
   --#{$prefix}topbar-user-bg: #{$gray-100};
-  --#{$prefix}topbar-user-bg-dark: #232326;
+  --#{$prefix}topbar-user-bg-dark: #22346b;
 
   //footer
   --#{$prefix}footer-bg: #{$white};
@@ -49,7 +49,7 @@
   --#{$prefix}twocolumn-menu-bg:  #{$white};
   // two column dark
   --#{$prefix}twocolumn-menu-iconview-bg-dark: var(--#{$prefix}vertical-menu-bg-dark);
-  --#{$prefix}twocolumn-menu-bg-dark:  #1a1a1d;
+  --#{$prefix}twocolumn-menu-bg-dark:  #22346b;
   --#{$prefix}twocolumn-menu-item-color-dark: var(--#{$prefix}vertical-menu-item-color-dark);
   --#{$prefix}twocolumn-menu-item-active-color-dark:  #{$white};
   --#{$prefix}twocolumn-menu-item-active-bg-dark:  #{rgba($white, .15)};
@@ -62,8 +62,8 @@
 
   // component variable
   // link
-  --#{$prefix}link-color: #{$gray-900};
-  --#{$prefix}link-hover-color: #{$black};
+  --#{$prefix}link-color: #{$gray-800};
+  --#{$prefix}link-hover-color: #{$gray-900};
 
   // Border variable - hairline
   --#{$prefix}border-color:  #{$gray-300};

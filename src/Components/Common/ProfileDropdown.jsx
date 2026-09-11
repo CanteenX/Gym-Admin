@@ -7,7 +7,7 @@ import {
 } from "reactstrap";
 
 
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/gym-logo.svg";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { logout } from "../../api/auth.api";

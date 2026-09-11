@@ -50,6 +50,261 @@ File: Custom Css File
 }
 
 
+//
+// Grey & white theme overrides
+// Sleek charcoal-on-white chrome. Kept here (rather than in page components)
+// so no page-level file needs editing.
+//
+
+// --- Typography: crisp hierarchy, comfortable rhythm
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    letter-spacing: -0.006em;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--#{$prefix}heading-color);
+    font-weight: 600;
+    letter-spacing: -0.018em;
+    line-height: 1.3;
+}
+
+.text-muted {
+    color: #6b7280 !important;
+}
+
+// --- Whitespace: generous, even breathing room
+.card-body {
+    padding: 1.5rem;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+}
+
+// --- Guard: force monochrome sidebar even if a legacy coloured value is
+// --- still stored in the CompanyMaster record and injected at runtime.
+.minimal-sidebar,
+.app-menu.navbar-menu {
+    background: #2b2f36 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.minimal-sidebar .navbar-nav .nav-link.active {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #fff !important;
+}
+
+// --- Topbar: white with a hairline bottom border, no heavy shadow
+#page-topbar {
+    background-color: #fff;
+    border-bottom: 1px solid var(--#{$prefix}border-color);
+    box-shadow: none !important;
+
+    &.topbar-shadow {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+    }
+}
+
+// --- Cards: hairline border, soft radius, minimal shadow
+.card {
+    border: 1px solid var(--#{$prefix}border-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+    border-bottom: 1px solid var(--#{$prefix}border-color);
+    background-color: transparent;
+}
+
+// --- Buttons: crisp monochrome primary
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    box-shadow: none;
+}
+
+.btn-primary,
+.btn-success {
+    background-color: #3a3f47;
+    border-color: #3a3f47;
+    color: #fff;
+
+    &:hover, &:focus, &:active {
+        background-color: #4b515a !important;
+        border-color: #4b515a !important;
+        color: #fff !important;
+    }
+}
+
+.btn-outline-primary {
+    color: #3a3f47;
+    border-color: #3a3f47;
+
+    &:hover, &:focus, &:active {
+        background-color: #3a3f47 !important;
+        border-color: #3a3f47 !important;
+        color: #fff !important;
+    }
+}
+
+// --- Links
+a {
+    color: #3a3f47;
+
+    &:hover {
+        color: #22262c;
+    }
+}
+
+// --- Forms: hairline inputs, black focus ring
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border-color: var(--#{$prefix}border-color);
+
+    &:focus {
+        border-color: #3a3f47;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.form-check-input:checked {
+    background-color: #3a3f47;
+    border-color: #3a3f47;
+}
+
+// --- Tables: hairline separators, neutral head
+.table {
+    > :not(caption) > * > * {
+        border-bottom-color: var(--#{$prefix}border-color);
+    }
+
+    > thead {
+        th {
+            background-color: #f6f7f9;
+            color: var(--#{$prefix}gray-700);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--#{$prefix}border-color);
+        }
+    }
+}
+
+// --- Nav / tabs / pagination: monochrome active state
+.nav-pills .nav-link.active,
+.nav-tabs .nav-link.active {
+    color: #3a3f47;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #3a3f47;
+    color: #fff;
+}
+
+.page-item.active .page-link {
+    background-color: #3a3f47;
+    border-color: #3a3f47;
+    color: #fff;
+}
+
+.page-link {
+    color: var(--#{$prefix}gray-700);
+
+    &:hover {
+        color: #3a3f47;
+    }
+}
+
+// --- Badges: semantic states stay distinguishable but muted.
+// Soft backgrounds with dark, high-contrast text (WCAG AA).
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    border-radius: 6px;
+}
+
+.badge.bg-success,
+.badge.bg-primary,
+.badge.bg-danger,
+.badge.bg-warning,
+.badge.bg-info,
+.badge.bg-secondary {
+    color: #fff;
+}
+
+.badge.bg-warning {
+    color: #fff;
+}
+
+// Soft variants - readable text on tinted ground (all >= 4.5:1)
+.badge.bg-success-subtle { background-color: #e8f0ea !important; color: #2f5a3f !important; }
+.badge.bg-danger-subtle  { background-color: #f9e9e8 !important; color: #8a2d26 !important; }
+.badge.bg-warning-subtle { background-color: #f6f0e2 !important; color: #6f5722 !important; }
+.badge.bg-info-subtle    { background-color: #edeff2 !important; color: #3a4452 !important; }
+.badge.bg-primary-subtle { background-color: #eef0f3 !important; color: #3a3f47 !important; }
+.badge.bg-secondary-subtle { background-color: #eef0f3 !important; color: #4b515a !important; }
+
+// --- Dropdowns
+.dropdown-menu {
+    border: 1px solid var(--#{$prefix}border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+}
+
+.dropdown-item {
+    &:hover, &:focus {
+        background-color: #eef0f3;
+        color: #3a3f47;
+    }
+
+    &.active, &:active {
+        background-color: #3a3f47;
+        color: #fff;
+    }
+}
+
+// --- Modals
+.modal-content {
+    border: 1px solid var(--#{$prefix}border-color);
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--#{$prefix}border-color);
+}
+
+// --- Footer: hairline top border
+.footer {
+    background-color: #fff;
+    border-top: 1px solid var(--#{$prefix}border-color);
+}
+
+// --- Text accents that previously read blue
+.text-primary {
+    color: #3a3f47 !important;
+}
+
+// --- Page title / breadcrumb
+.page-title-box {
+    .breadcrumb a {
+        color: var(--#{$prefix}gray-600);
+
+        &:hover {
+            color: #3a3f47;
+        }
+    }
+}
+
+
 .marquee {
     width: 100%;
     overflow: hidden;
@@ -81,3 +336,149 @@ File: Custom Css File
         left: -100%;
     }
 }
+
+// ============================================================
+// NAVY THEME — card & tile refinement
+// Appended last so these rules win over the template defaults.
+// ============================================================
+
+$navy-900: #14213d;
+$navy-800: #1b2a4e;
+$navy-700: #22346b;
+$navy-600: #2e4480;
+$navy-tint: #eef1f8;
+
+// ---- Cards: real elevation, hairline border, breathing room ----
+.card {
+    background: #fff;
+    border: 1px solid #e6eaf2;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(20, 33, 61, .04), 0 4px 16px rgba(20, 33, 61, .04);
+    transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+
+    .card-body { padding: 1.35rem 1.5rem; }
+
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid #eef1f5;
+        padding: 1.1rem 1.5rem;
+
+        .card-title {
+            font-weight: 600;
+            letter-spacing: -.01em;
+            color: $navy-900;
+        }
+    }
+}
+
+// Stat tiles lift slightly on hover — a cue that they are clickable.
+.card-animate:hover {
+    transform: translateY(-2px);
+    border-color: #d8dfee;
+    box-shadow: 0 2px 4px rgba(20, 33, 61, .05), 0 12px 28px rgba(20, 33, 61, .08);
+}
+
+// ---- Icon tiles: soft tinted ground, not a solid block ----
+.avatar-title {
+    border-radius: 10px;
+    font-size: 1.15rem;
+}
+
+.bg-primary-subtle { background-color: $navy-tint !important; }
+.text-primary { color: $navy-700 !important; }
+.bg-success-subtle { background-color: #e8f2ec !important; }
+.bg-danger-subtle  { background-color: #fbeceb !important; }
+.bg-warning-subtle { background-color: #fbf3e3 !important; }
+
+// ---- Headline numbers: the hero of each tile ----
+.card .fs-22 {
+    font-size: 1.6rem !important;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: $navy-900;
+}
+
+// ---- Buttons ----
+.btn-primary {
+    background-color: $navy-700;
+    border-color: $navy-700;
+    &:hover, &:focus, &:active { background-color: $navy-600 !important; border-color: $navy-600 !important; }
+}
+.btn-soft-primary {
+    background-color: $navy-tint;
+    color: $navy-700;
+    &:hover { background-color: $navy-700; color: #fff; }
+}
+
+// ---- Tables: lighter rules, clearer header ----
+.table > :not(caption) > * > * { padding: .85rem .75rem; }
+.table thead th {
+    background: #f7f8fb;
+    color: #5a6782;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e6eaf2;
+}
+
+// ---- Page heading ----
+.page-content h4 { color: $navy-900; font-weight: 700; letter-spacing: -.02em; }
+
+// ---- Sidebar: guarantee navy regardless of any stale saved colour ----
+.minimal-sidebar,
+.app-menu.navbar-menu {
+    background: $navy-800 !important;
+}
+
+// ---- Badge legibility fix ----
+// A "light" badge renders white text on a pale ground, which disappears.
+// Give every badge variant an explicit readable foreground.
+.badge {
+    font-weight: 600;
+    letter-spacing: .01em;
+    padding: .35em .6em;
+
+    &.bg-light,
+    &.badge-light {
+        background-color: #eef1f8 !important;
+        color: #5a6782 !important;
+        border: 1px solid #e0e5f0;
+    }
+
+    &.bg-primary   { background-color: #22346b !important; color: #fff !important; }
+    &.bg-success   { background-color: #2f6b4f !important; color: #fff !important; }
+    &.bg-danger    { background-color: #a83a32 !important; color: #fff !important; }
+    &.bg-warning   { background-color: #8a6d2f !important; color: #fff !important; }
+    &.bg-secondary { background-color: #5a6782 !important; color: #fff !important; }
+}
+
+// ---- Action buttons: navy family, not template teal/orange ----
+.btn-success {
+    background-color: #2f6b4f;
+    border-color: #2f6b4f;
+    color: #fff;
+    &:hover, &:focus, &:active {
+        background-color: #275a42 !important;
+        border-color: #275a42 !important;
+    }
+}
+
+.btn-danger {
+    background-color: #a83a32;
+    border-color: #a83a32;
+    color: #fff;
+    &:hover, &:focus, &:active {
+        background-color: #8f3029 !important;
+        border-color: #8f3029 !important;
+    }
+}
+
+.btn-soft-danger {
+    background-color: #fbeceb;
+    color: #a83a32;
+    &:hover { background-color: #a83a32; color: #fff; }
+}
+
+// Table row hover: a faint navy wash rather than grey mud.
+.table tbody tr:hover { background-color: #f6f8fc; }

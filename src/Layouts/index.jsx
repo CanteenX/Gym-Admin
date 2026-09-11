@@ -73,9 +73,9 @@ const Layout = (props) => {
             root.style.setProperty('--sidebar-link-color', 'rgba(30, 41, 59, 0.85)');
             root.style.setProperty('--sidebar-link-icon-color', 'rgba(30, 41, 59, 0.7)');
             root.style.setProperty('--sidebar-link-hover-bg', 'rgba(0, 0, 0, 0.05)');
-            root.style.setProperty('--sidebar-link-hover-color', '#1e293b');
-            root.style.setProperty('--sidebar-link-active-bg', 'rgba(35, 119, 241, 0.15)');
-            root.style.setProperty('--sidebar-link-active-color', '#224c99');
+            root.style.setProperty('--sidebar-link-hover-color', '#22346b');
+            root.style.setProperty('--sidebar-link-active-bg', 'rgba(0, 0, 0, 0.08)');
+            root.style.setProperty('--sidebar-link-active-color', '#22346b');
             root.style.setProperty('--sidebar-collapse-icon-color', 'rgba(30, 41, 59, 0.8)');
         } else {
             root.style.setProperty('--sidebar-menu-title-color', 'rgba(255, 255, 255, 0.45)');
@@ -83,7 +83,7 @@ const Layout = (props) => {
             root.style.setProperty('--sidebar-link-icon-color', 'rgba(255, 255, 255, 0.65)');
             root.style.setProperty('--sidebar-link-hover-bg', 'rgba(255, 255, 255, 0.08)');
             root.style.setProperty('--sidebar-link-hover-color', '#ffffff');
-            root.style.setProperty('--sidebar-link-active-bg', 'rgba(53, 119, 241, 0.25)');
+            root.style.setProperty('--sidebar-link-active-bg', 'rgba(255, 255, 255, 0.14)');
             root.style.setProperty('--sidebar-link-active-color', '#ffffff');
             root.style.setProperty('--sidebar-collapse-icon-color', 'rgba(255, 255, 255, 0.8)');
         }
@@ -406,12 +406,25 @@ const Layout = (props) => {
         root.style.setProperty('--search-accent-contrast', addContrast);
     }, [adjustColorBrightness]);
 
+    /**
+     * The CompanyMaster record still carries the old template blue (#224c99),
+     * and applyTheme writes it as an INLINE style — which beats every
+     * stylesheet rule. Translate the legacy value to the navy theme here so the
+     * chrome is correct without editing the database. Any other saved colour is
+     * respected as-is.
+     */
+    const LEGACY_BLUES = ["#224c99", "#2b2f36", "#3577f1", "#405189"];
+    const resolveSidebarColor = (saved) =>
+        !saved || LEGACY_BLUES.includes(String(saved).toLowerCase())
+            ? "#1b2a4e"
+            : saved;
+
     // Set initial layout styles on load
     useEffect(() => {
         if (adminData) {
-            const savedBg = adminData.sidebarBgColor || "#224c99";
+            const savedBg = resolveSidebarColor(adminData.sidebarBgColor);
             const savedAdd = adminData.addButtonColor || savedBg;
-            const savedRemove = adminData.removeButtonColor || "#f06548";
+            const savedRemove = adminData.removeButtonColor || "#a83a32";
             const savedAddText = adminData.addButtonTextColor || "";
             const savedRemoveText = adminData.removeButtonTextColor || "";
             const savedRadius = adminData.buttonStyle?.borderRadius || "8px";
@@ -426,9 +439,9 @@ const Layout = (props) => {
     // Handle closing Customizer drawer and restoring saved states
     const handleCloseSettings = () => {
         setShowSettings(false);
-        const savedBg = adminData?.sidebarBgColor || "#224c99";
+        const savedBg = resolveSidebarColor(adminData?.sidebarBgColor);
         const savedAdd = adminData?.addButtonColor || savedBg;
-        const savedRemove = adminData?.removeButtonColor || "#f06548";
+        const savedRemove = adminData?.removeButtonColor || "#a83a32";
         const savedAddText = adminData?.addButtonTextColor || "";
         const savedRemoveText = adminData?.removeButtonTextColor || "";
         const savedRadius = adminData?.buttonStyle?.borderRadius || "8px";
@@ -489,7 +502,7 @@ const Layout = (props) => {
                 {`
                     /* Dynamic Theme Overrides using CSS custom variables */
                     .minimal-sidebar {
-                        background: var(--sidebar-bg, #224c99) !important;
+                        background: var(--sidebar-bg, #1b2a4e) !important;
                     }
                     
                     /* Text & icon contrast sizing overrides */
@@ -511,7 +524,7 @@ const Layout = (props) => {
                     }
                     
                     .minimal-sidebar .navbar-nav .nav-link.active {
-                        background: var(--sidebar-link-active-bg, rgba(53, 119, 241, 0.25)) !important;
+                        background: var(--sidebar-link-active-bg, rgba(255, 255, 255, 0.14)) !important;
                         color: var(--sidebar-link-active-color, #ffffff) !important;
                         font-weight: 600;
                     }
@@ -526,9 +539,9 @@ const Layout = (props) => {
                     }
                     
                     .btn-success {
-                        background: var(--btn-success-bg, linear-gradient(135deg, #0ab39c 0%, #02a8b5 100%)) !important;
-                        border-color: var(--btn-success-border, transparent) !important;
-                        box-shadow: var(--btn-success-shadow, 0 4px 12px rgba(10, 179, 156, 0.3)) !important;
+                        background: var(--btn-success-bg, #3a3f47) !important;
+                        border-color: var(--btn-success-border, #3a3f47) !important;
+                        box-shadow: var(--btn-success-shadow, 0 1px 2px rgba(0, 0, 0, 0.08)) !important;
                         color: var(--btn-success-color, white) !important;
                         transform: var(--btn-transform, translateY(0)) !important;
                         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -544,9 +557,9 @@ const Layout = (props) => {
                     }
                     
                     .btn-primary {
-                        background: var(--btn-primary-bg, linear-gradient(135deg, #3577f1 0%, #224c99 100%)) !important;
-                        border-color: var(--btn-primary-border, transparent) !important;
-                        box-shadow: var(--btn-primary-shadow, 0 4px 12px rgba(53, 119, 241, 0.3)) !important;
+                        background: var(--btn-primary-bg, #3a3f47) !important;
+                        border-color: var(--btn-primary-border, #3a3f47) !important;
+                        box-shadow: var(--btn-primary-shadow, 0 1px 2px rgba(0, 0, 0, 0.08)) !important;
                         color: var(--btn-primary-color, white) !important;
                         transform: var(--btn-transform, translateY(0)) !important;
                         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -562,9 +575,9 @@ const Layout = (props) => {
                     }
  
                     .btn-danger {
-                        background: var(--btn-danger-bg, linear-gradient(135deg, #f06548 0%, #f4806a 100%)) !important;
-                        border-color: var(--btn-danger-border, transparent) !important;
-                        box-shadow: var(--btn-danger-shadow, 0 4px 12px rgba(240, 101, 72, 0.3)) !important;
+                        background: var(--btn-danger-bg, #a83a32) !important;
+                        border-color: var(--btn-danger-border, #a83a32) !important;
+                        box-shadow: var(--btn-danger-shadow, 0 1px 2px rgba(0, 0, 0, 0.08)) !important;
                         color: var(--btn-danger-color, white) !important;
                         transform: var(--btn-transform, translateY(0)) !important;
                         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -580,16 +593,16 @@ const Layout = (props) => {
                     }
 
                     /* Dynamic Form Section Headers Accent borders & Icons */
-                    .form-section-header, 
+                    .form-section-header,
                     .form-section-card .form-section-header,
                     .profile-card-section-header {
-                        border-left: 3px solid var(--sidebar-bg, #3b82f6) !important;
+                        border-left: 3px solid #3a3f47 !important;
                     }
-                    
-                    .form-section-header i, 
+
+                    .form-section-header i,
                     .form-section-card .form-section-header i,
                     .profile-card-section-header i {
-                        color: var(--sidebar-bg, #3b82f6) !important;
+                        color: #3a3f47 !important;
                     }
                 `}
             </style>

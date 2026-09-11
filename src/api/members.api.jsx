@@ -5,12 +5,24 @@
 import api from "./index";
 import { ENDPOINTS } from "./endpoints";
 
+/**
+ * Create a member.
+ * @param {FormData} data - member fields plus optional photo / idProof files
+ */
 export const createMember = async (data) => {
-    return api.post(ENDPOINTS.MEMBERS.BASE, data);
+    return api.post(ENDPOINTS.MEMBERS.BASE, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
 };
 
+/**
+ * Update a member.
+ * @param {FormData} data - member fields plus optional photo / idProof files
+ */
 export const updateMember = async (id, data) => {
-    return api.put(ENDPOINTS.MEMBERS.BY_ID(id), data);
+    return api.put(ENDPOINTS.MEMBERS.BY_ID(id), data, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
 };
 
 export const deleteMember = async (id) => {

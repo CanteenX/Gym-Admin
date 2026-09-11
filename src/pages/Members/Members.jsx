@@ -42,9 +42,6 @@ import {
 } from "../../api/members.api";
 import { listAllTrainers } from "../../api/trainers.api";
 
-/** Plans that require a dedicated trainer. */
-const TRAINER_REQUIRED_PLANS = ["PERSONAL_TRAINING"];
-
 const toInputDate = (value) => {
   if (!value) return "";
   const d = new Date(value);
@@ -102,6 +99,26 @@ const initialState = {
   initialPayment: { amount: "", mode: "Cash", receiptNo: "", note: "" },
 };
 
+/** Upload rules, mirrored on the server in routes/v1/members.routes.js. */
+const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+const PHOTO_ACCEPT = ".jpg,.jpeg,.png,.webp";
+const ID_PROOF_ACCEPT = ".jpg,.jpeg,.png,.webp,.pdf";
+
+const humanSize = (bytes) => {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+/** Server stores paths like "uploads\\members\\uuid.webp" — normalise for the browser. */
+const fileUrl = (storedPath) => {
+  if (!storedPath) return "";
+  const normalised = String(storedPath).replace(/\\/g, "/").replace(/^\/+/, "");
+  const base = import.meta.env?.VITE_API_URL_DEV || "http://localhost:7002";
+  return `${base}/${normalised}`;
+};
+
 const STATUS_TABS = [
   { key: "", label: "All Members" },
   { key: "EXPIRING", label: "Expiring in 7 Days" },
@@ -129,6 +146,14 @@ const Members = () => {
   const [plans, setPlans] = useState([]);
   const [trainers, setTrainers] = useState([]);
   const [members, setMembers] = useState([]);
+
+  // Selected File objects (not part of `values`, which is JSON-serialisable).
+  const [photoFile, setPhotoFile] = useState(null);
+  const [idProofFile, setIdProofFile] = useState(null);
+  // Paths already stored on the member, shown when editing.
+  const [existingPhoto, setExistingPhoto] = useState("");
+  const [existingIdProof, setExistingIdProof] = useState("");
+  const [fileErrors, setFileErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const [showForm, setShowForm] = useState(false);
@@ -177,8 +202,13 @@ const Members = () => {
       .catch((err) => console.error("Error loading trainers:", err));
   }, []);
 
-  // The trainer picker only appears for plans that need a dedicated coach.
-  const trainerRequired = TRAINER_REQUIRED_PLANS.includes(values.planCode);
+  // The trainer picker only appears for plans that need a dedicated coach —
+  // driven by the plan master's requiresTrainer flag, not a hardcoded list.
+  const planRequiresTrainer = useCallback(
+    (code) => Boolean(plans.find((p) => p.code === code)?.requiresTrainer),
+    [plans],
+  );
+  const trainerRequired = planRequiresTrainer(values.planCode);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -216,12 +246,22 @@ const Members = () => {
     fetchMembers();
   }, [fetchMembers]);
 
+  /** Clear file selections so nothing leaks between records. */
+  const resetFiles = () => {
+    setPhotoFile(null);
+    setIdProofFile(null);
+    setExistingPhoto("");
+    setExistingIdProof("");
+    setFileErrors({});
+  };
+
   const tog_list = () => {
     setShowForm(false);
     setUpdateForm(false);
     setValues(initialState);
     setIsSubmit(false);
     setFormErrors({});
+    resetFiles();
   };
 
   const handleOpenAddForm = () => {
@@ -230,6 +270,48 @@ const Members = () => {
     setValues(initialState);
     setIsSubmit(false);
     setFormErrors({});
+    resetFiles();
+  };
+
+  /**
+   * Validates size and extension before the file ever leaves the browser.
+   * The server enforces the same limits (plus magic-byte checks) — this is
+   * purely so the user finds out immediately instead of after an upload.
+   */
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    const file = files?.[0];
+    if (!file) {
+      if (name === "photo") setPhotoFile(null);
+      else setIdProofFile(null);
+      setFileErrors((p) => ({ ...p, [name]: "" }));
+      return;
+    }
+
+    const accept = name === "photo" ? PHOTO_ACCEPT : ID_PROOF_ACCEPT;
+    const ext = `.${file.name.split(".").pop()?.toLowerCase()}`;
+
+    if (!accept.split(",").includes(ext)) {
+      setFileErrors((p) => ({
+        ...p,
+        [name]: `Only ${accept.replaceAll(",", ", ")} files are allowed`,
+      }));
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setFileErrors((p) => ({
+        ...p,
+        [name]: `File is ${humanSize(file.size)} — the limit is 2 MB`,
+      }));
+      e.target.value = "";
+      return;
+    }
+
+    setFileErrors((p) => ({ ...p, [name]: "" }));
+    if (name === "photo") setPhotoFile(file);
+    else setIdProofFile(file);
   };
 
   const tog_delete = (id) => {
@@ -261,6 +343,11 @@ const Members = () => {
       isActive: row.isActive !== undefined ? row.isActive : true,
       initialPayment: { amount: "", mode: "Cash", receiptNo: "", note: "" },
     });
+    setPhotoFile(null);
+    setIdProofFile(null);
+    setExistingPhoto(row.photo || "");
+    setExistingIdProof(row.idProof || "");
+    setFileErrors({});
   };
 
   const handleChange = (e) => {
@@ -311,8 +398,10 @@ const Members = () => {
     if (val.totalFee !== "" && Number(val.totalFee) < 0) {
       errors.totalFee = "Fee cannot be negative";
     }
-    if (TRAINER_REQUIRED_PLANS.includes(val.planCode) && !val.trainerId) {
-      errors.trainerId = "Select a trainer for a Personal Training plan";
+    if (planRequiresTrainer(val.planCode) && !val.trainerId) {
+      const planLabel =
+        plans.find((p) => p.code === val.planCode)?.label || "this";
+      errors.trainerId = `Select a trainer for a ${planLabel} plan`;
     }
     return errors;
   };
@@ -324,7 +413,27 @@ const Members = () => {
     if (!payload.endDate) delete payload.endDate;
     if (payload.totalFee === "") delete payload.totalFee;
     if (!payload.initialPayment?.amount) delete payload.initialPayment;
-    return payload;
+
+    // The endpoints accept multipart/form-data so files can ride along.
+    const form = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value === undefined) return;
+      if (key === "initialPayment") {
+        // Nested object — flatten so the server's body parser sees the fields.
+        Object.entries(value).forEach(([k, v]) => {
+          if (v !== "" && v !== undefined && v !== null) {
+            form.append(`initialPayment[${k}]`, v);
+          }
+        });
+        return;
+      }
+      form.append(key, value === null ? "" : value);
+    });
+
+    if (photoFile) form.append("photo", photoFile);
+    if (idProofFile) form.append("idProof", idProofFile);
+
+    return form;
   };
 
   const handleClick = (e) => {
@@ -911,6 +1020,106 @@ const Members = () => {
             </Col>
           </Row>
         )}
+
+        <hr className="my-4" />
+        <h6
+          className="text-uppercase text-muted fw-bold mb-3"
+          style={{ letterSpacing: "0.5px" }}
+        >
+          Photo &amp; ID Proof
+        </h6>
+        <Row>
+          <Col md={6}>
+            <FormGroup className="mb-3">
+              <Label className="form-label fw-bold">Member Photo</Label>
+              <Input
+                type="file"
+                name="photo"
+                accept={PHOTO_ACCEPT}
+                onChange={handleFileChange}
+              />
+              <small className="text-muted d-block mt-1">
+                JPG, PNG or WebP · max 2 MB · converted to WebP automatically
+              </small>
+              {fileErrors.photo && (
+                <p className="text-danger small mt-1 mb-0">{fileErrors.photo}</p>
+              )}
+              {photoFile && (
+                <div className="d-flex align-items-center gap-2 mt-2">
+                  <img
+                    src={URL.createObjectURL(photoFile)}
+                    alt="Selected preview"
+                    style={{
+                      width: 48,
+                      height: 48,
+                      objectFit: "cover",
+                      borderRadius: 6,
+                    }}
+                  />
+                  <span className="small text-muted">
+                    {photoFile.name} ({humanSize(photoFile.size)})
+                  </span>
+                </div>
+              )}
+              {!photoFile && existingPhoto && (
+                <div className="d-flex align-items-center gap-2 mt-2">
+                  <img
+                    src={fileUrl(existingPhoto)}
+                    alt="Current member"
+                    style={{
+                      width: 48,
+                      height: 48,
+                      objectFit: "cover",
+                      borderRadius: 6,
+                    }}
+                  />
+                  <span className="small text-muted">
+                    Current photo — choose a file to replace it
+                  </span>
+                </div>
+              )}
+            </FormGroup>
+          </Col>
+
+          <Col md={6}>
+            <FormGroup className="mb-3">
+              <Label className="form-label fw-bold">ID Proof</Label>
+              <Input
+                type="file"
+                name="idProof"
+                accept={ID_PROOF_ACCEPT}
+                onChange={handleFileChange}
+              />
+              <small className="text-muted d-block mt-1">
+                Image or PDF · max 2 MB · PDFs are stored as-is
+              </small>
+              {fileErrors.idProof && (
+                <p className="text-danger small mt-1 mb-0">
+                  {fileErrors.idProof}
+                </p>
+              )}
+              {idProofFile && (
+                <div className="mt-2 small text-muted">
+                  <i className="ri-attachment-2 align-bottom me-1"></i>
+                  {idProofFile.name} ({humanSize(idProofFile.size)})
+                </div>
+              )}
+              {!idProofFile && existingIdProof && (
+                <div className="mt-2 small">
+                  <a
+                    href={fileUrl(existingIdProof)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <i className="ri-external-link-line align-bottom me-1"></i>
+                    View current ID proof
+                  </a>
+                  <span className="text-muted"> — choose a file to replace</span>
+                </div>
+              )}
+            </FormGroup>
+          </Col>
+        </Row>
 
         <Row>
           <Col md={9}>

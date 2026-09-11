@@ -151,17 +151,17 @@ $auth-bg-cover: linear-gradient(-45deg, $primary 50%, $success);
 // Color system
 
 // scss-docs-start gray-color-variables
-// Monochrome ramp - neutral greys with no blue cast
+// Grey ramp - soft neutral greys, very faint cool cast
 $white:    #fff;
-$gray-100: #f7f7f8;
-$gray-200: #f0f0f1;
-$gray-300: #e5e5e5;
-$gray-400: #d4d4d4;
-$gray-500: #a3a3a3;
-$gray-600: #737373;
-$gray-700: #525252;
-$gray-800: #2e2e30;
-$gray-900: #18181b;
+$gray-100: #f6f7f9;
+$gray-200: #eef0f3;
+$gray-300: #e6e8eb;
+$gray-400: #d2d6dc;
+$gray-500: #9ca3ae;
+$gray-600: #6b7280;
+$gray-700: #4b515a;
+$gray-800: #3a3f47;
+$gray-900: #22262c;
 $black:    #000;
 
 // fusv-disable
@@ -181,19 +181,19 @@ $grays: (
 // fusv-enable
 
 // scss-docs-start color-variables
-// Monochrome theme: "blue" is the primary slot and is now near-black.
-// Semantic hues are kept but heavily desaturated so status stays legible
-// without reintroducing saturated colour into the chrome.
-$blue:       #101012;
-$indigo:     #3f3f46;
-$purple:     #52525b;
+// Navy/white theme: "blue" is the primary slot and is a deep navy.
+// Semantic hues stay muted so status remains legible without competing with
+// the navy chrome.
+$blue:       #22346b;
+$indigo:     #3f4c6b;
+$purple:     #4c4d7a;
 $pink:       #8a5a68;
 $red:        #a83a32;
 $orange:     #9a6a34;
 $yellow:     #9a7b34;
 $green:      #4b7c5c;
-$teal:       #4a6b6b;
-$cyan:       #4a5568;
+$teal:       #45646e;
+$cyan:       #3f5478;
 // scss-docs-end color-variables
 
 // scss-docs-start colors-map

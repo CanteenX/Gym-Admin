@@ -94,15 +94,15 @@ const Sidebar = ({ layoutType }) => {
         <React.Fragment>
             <style>
                 {`
-                    /* Minimal Sidebar Styling */
+                    /* Minimal Sidebar Styling - monochrome */
                     .minimal-sidebar {
-                        background: #224c99;
-                        border-right: 1px solid rgba(255, 255, 255, 0.1);
+                        background: #1b2a4e;
+                        border-right: 1px solid rgba(255, 255, 255, 0.08);
                     }
-                    
+
                     .minimal-logo-box {
-                        background: white;
-                        border-bottom: 2px solid #224c99;
+                        background: #ffffff;
+                        border-bottom: 1px solid #e6e8eb;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -149,7 +149,7 @@ const Sidebar = ({ layoutType }) => {
                     }
                     
                     .navbar-nav .nav-link.active {
-                        background: rgba(53, 119, 241, 0.15);
+                        background: rgba(255, 255, 255, 0.14);
                         color: #ffffff !important;
                         font-weight: 500;
                     }
@@ -232,15 +232,16 @@ const Sidebar = ({ layoutType }) => {
                     
                     /* Toggle button visibility */
                     .btn-vertical-sm-hover {
-                        background: rgba(53, 119, 241, 0.1) !important;
-                        border: 1px solid #224c99 !important;
-                        border-radius: 4px !important;
+                        background: transparent !important;
+                        border: 1px solid #d2d6dc !important;
+                        border-radius: 6px !important;
                         padding: 4px 8px !important;
-                        color: #224c99 !important;
+                        color: #4b515a !important;
                     }
-                    
+
                     .btn-vertical-sm-hover:hover {
-                        background: rgba(53, 119, 241, 0.2) !important;
+                        background: #eef0f3 !important;
+                        color: #22262c !important;
                     }
                     
                     /* Collapsed Sidebar (sm or sm-hover) - Support both */
@@ -374,7 +375,7 @@ const Sidebar = ({ layoutType }) => {
                     [data-sidebar-size="sm-hover"] .nav-item:not(:has(.menu-dropdown)):hover > .menu-link {
                         position: relative !important;
                         width: 250px !important;
-                        background-color: var(--sidebar-bg, #224c99) !important;
+                        background-color: var(--sidebar-bg, #1b2a4e) !important;
                         z-index: 999 !important;
                         font-size: 13px !important;
                         display: flex !important;
@@ -433,7 +434,7 @@ const Sidebar = ({ layoutType }) => {
                         top: 0 !important;
                         min-width: 200px !important;
                         max-width: 250px !important;
-                        background: var(--sidebar-bg, #224c99) !important;
+                        background: var(--sidebar-bg, #1b2a4e) !important;
                         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3) !important;
                         border-radius: 4px !important;
                         padding: 0 !important;

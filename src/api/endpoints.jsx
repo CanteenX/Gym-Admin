@@ -201,6 +201,24 @@ export const ENDPOINTS = {
         LIST_ALL: `${V1}/membership-plans-list`,
     },
 
+    // Cash flow ledger endpoints
+    TRANSACTIONS: {
+        SEARCH: `${V1}/transactions-by-params`,
+        SUMMARY: `${V1}/transactions-summary`,
+        INCOME: `${V1}/transactions-income`,
+        EXPENSE: `${V1}/transactions-expense`,
+        BY_ID: (id) => `${V1}/transactions/${id}`,
+        RECEIPT: (id) => `${V1}/transactions/${id}/receipt`,
+    },
+
+    // Expense category master endpoints
+    EXPENSE_CATEGORIES: {
+        BASE: `${V1}/expense-categories`,
+        BY_ID: (id) => `${V1}/expense-categories/${id}`,
+        SEARCH: `${V1}/expense-categories-by-params`,
+        LIST_ALL: `${V1}/expense-categories-list`,
+    },
+
     // Gym trainer endpoints
     TRAINERS: {
         BASE: `${V1}/trainers`,
