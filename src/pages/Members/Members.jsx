@@ -96,6 +96,7 @@ const initialState = {
   startDate: toInputDate(new Date()),
   endDate: "",
   totalFee: "",
+  heightCm: "",
   notes: "",
   isActive: true,
   initialPayment: { amount: "", mode: "Cash", receiptNo: "", note: "" },
@@ -349,6 +350,7 @@ const Members = () => {
       startDate: toInputDate(row.startDate),
       endDate: toInputDate(row.endDate),
       totalFee: row.totalFee ?? "",
+      heightCm: row.heightCm ?? "",
       notes: row.notes || "",
       isActive: row.isActive !== undefined ? row.isActive : true,
       initialPayment: { amount: "", mode: "Cash", receiptNo: "", note: "" },
@@ -908,6 +910,26 @@ const Members = () => {
                 value={values.address}
                 onChange={handleChange}
               />
+            </FormGroup>
+          </Col>
+          <Col md={4}>
+            <FormGroup className="mb-3">
+              <Label className="form-label fw-bold">Height (cm)</Label>
+              <Input
+                type="number"
+                name="heightCm"
+                min={50}
+                max={260}
+                step={0.5}
+                placeholder="e.g. 172"
+                value={values.heightCm}
+                onChange={handleChange}
+              />
+              {/* Optional, but without it the member portal cannot show BMI
+                  alongside their weight log. */}
+              <small className="text-muted">
+                Enables BMI in the member portal
+              </small>
             </FormGroup>
           </Col>
         </Row>
