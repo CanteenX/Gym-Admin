@@ -1,0 +1,54 @@
+/**
+ * Members API Service
+ * Gym membership records, renewals, payments and dashboard reminders.
+ */
+import api from "./index";
+import { ENDPOINTS } from "./endpoints";
+
+export const createMember = async (data) => {
+    return api.post(ENDPOINTS.MEMBERS.BASE, data);
+};
+
+export const updateMember = async (id, data) => {
+    return api.put(ENDPOINTS.MEMBERS.BY_ID(id), data);
+};
+
+export const deleteMember = async (id) => {
+    return api.delete(ENDPOINTS.MEMBERS.BY_ID(id));
+};
+
+export const getMemberById = async (id) => {
+    return api.get(ENDPOINTS.MEMBERS.BY_ID(id));
+};
+
+export const searchMembers = async (params) => {
+    return api.post(ENDPOINTS.MEMBERS.SEARCH, params);
+};
+
+export const getMemberDashboardStats = async () => {
+    return api.get(ENDPOINTS.MEMBERS.DASHBOARD_STATS);
+};
+
+export const listMemberPlans = async () => {
+    return api.get(ENDPOINTS.MEMBERS.PLANS);
+};
+
+export const renewMembership = async (id, data) => {
+    return api.post(ENDPOINTS.MEMBERS.RENEW(id), data);
+};
+
+export const addMemberPayment = async (id, data) => {
+    return api.post(ENDPOINTS.MEMBERS.PAYMENTS(id), data);
+};
+
+export default {
+    createMember,
+    updateMember,
+    deleteMember,
+    getMemberById,
+    searchMembers,
+    getMemberDashboardStats,
+    listMemberPlans,
+    renewMembership,
+    addMemberPayment,
+};

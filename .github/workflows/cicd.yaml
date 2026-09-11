@@ -1,0 +1,39 @@
+name: Deploy Demo Project
+
+on:
+    push:
+        branches:
+            - redacted
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 16.15.0
+
+            - name: Install dependencies
+              run: npm install --legacy-peer-deps
+
+            - name: Build React project
+              run: CI=false npm run build
+
+            - name: Deploy to FTP server (overwrite only)
+              uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+              with:
+                  server: ${{ secrets.FTP_SERVER }}
+                  username: ${{ secrets.FTP_USERNAME }}
+                  password: ${{ secrets.FTP_PASSWORD }}
+                  local-dir: ./build/
+                  server-dir: /public_html/out/admin/ # this path (admin) will change depending upon the panel name
+                  dangerous-clean-slate: false
+                  exclude: |
+                      **/.git*
+                      **/.github*
+                      **/node_modules/*

@@ -1,0 +1,48 @@
+{
+    "name": "barodaweb-demo-admin-panel",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@react-jvectormap/core": "^1.0.4",
+        "@react-jvectormap/world": "^1.1.2",
+        "axios": "^0.26.0",
+        "bootstrap": "5.2.3",
+        "date-fns": "^4.1.0",
+        "formik": "^2.2.9",
+        "jodit-react": "^5.2.6",
+        "moment-timezone": "^0.5.43",
+        "react": "^18.2.0",
+        "react-data-table-component": "^7.5.2",
+        "react-dom": "^18.0.0",
+        "react-icons": "^5.5.0",
+        "react-router-dom": "^6.4.1",
+        "react-select": "^5.2.2",
+        "react-simple-maps": "^3.0.0",
+        "react-toastify": "^8.2.0",
+        "react-tooltip": "^5.30.0",
+        "reactstrap": "^9.0.1",
+        "recharts": "^3.6.0",
+        "sass": "^1.77.8",
+        "simplebar-react": "^2.3.6",
+        "styled-components": "^6.1.19",
+        "yup": "^0.32.11"
+    },
+    "engines": {
+        "node": ">=22.0.0"
+    },
+    "scripts": {
+        "dev": "vite",
+        "start": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "format": "prettier --write \"**/*.{js,jsx,json,md,html,css,less,scss}\""
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^5.1.2",
+        "ajv": "^7.2.4",
+        "vite": "^7.3.1"
+    }
+}

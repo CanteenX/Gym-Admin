@@ -1,0 +1,103 @@
+// :root CSS variables
+
+:root{
+
+    //vertical light
+  --#{$prefix}vertical-menu-bg:                      #{$white};
+  --#{$prefix}vertical-menu-item-color:              #{$gray-700};
+  --#{$prefix}vertical-menu-item-hover-color:        #{$gray-900};
+  --#{$prefix}vertical-menu-item-active-color:       #{$gray-900};
+  --#{$prefix}vertical-menu-sub-item-color:          #{$gray-600};
+  --#{$prefix}vertical-menu-sub-item-hover-color:    #{$gray-900};
+  --#{$prefix}vertical-menu-sub-item-active-color:   #{$gray-900};
+  --#{$prefix}vertical-menu-title-color:             #8a8a8f;
+
+  //vertical dark - monochrome near-black
+  --#{$prefix}vertical-menu-bg-dark:                 #0f0f10;
+  --#{$prefix}vertical-menu-item-color-dark:         rgba(255, 255, 255, 0.72);
+  --#{$prefix}vertical-menu-item-hover-color-dark:   #{$white};
+  --#{$prefix}vertical-menu-item-active-color-dark:  #{$white};
+  --#{$prefix}vertical-menu-sub-item-color-dark:     rgba(255, 255, 255, 0.62);
+  --#{$prefix}vertical-menu-sub-item-hover-color-dark: #{$white};
+  --#{$prefix}vertical-menu-sub-item-active-color-dark: #{$white};
+  --#{$prefix}vertical-menu-title-color-dark:         rgba(255, 255, 255, 0.42);
+
+  // Topbar - (Default Light)
+  --#{$prefix}header-bg:  #{$white};
+  --#{$prefix}header-item-color:  #{$gray-700};
+  // Topbar - Dark
+  --#{$prefix}header-bg-dark:  #0f0f10;
+  --#{$prefix}header-item-color-dark:  rgba(255, 255, 255, 0.72);
+
+  // Topbar Search
+  --#{$prefix}topbar-search-bg: #{$gray-100};
+  // Topbar User
+  --#{$prefix}topbar-user-bg: #{$gray-100};
+  --#{$prefix}topbar-user-bg-dark: #232326;
+
+  //footer
+  --#{$prefix}footer-bg: #{$white};
+  --#{$prefix}footer-color: #{$gray-600};
+
+  // Horizontal nav
+  --#{$prefix}topnav-bg: #{$white};
+  --#{$prefix}topnav-item-color: #{$gray-700};
+  --#{$prefix}topnav-item-color-active: #{$gray-900};
+
+  // twocolumn menu
+  --#{$prefix}twocolumn-menu-iconview-bg: #{$white};
+  --#{$prefix}twocolumn-menu-bg:  #{$white};
+  // two column dark
+  --#{$prefix}twocolumn-menu-iconview-bg-dark: var(--#{$prefix}vertical-menu-bg-dark);
+  --#{$prefix}twocolumn-menu-bg-dark:  #1a1a1d;
+  --#{$prefix}twocolumn-menu-item-color-dark: var(--#{$prefix}vertical-menu-item-color-dark);
+  --#{$prefix}twocolumn-menu-item-active-color-dark:  #{$white};
+  --#{$prefix}twocolumn-menu-item-active-bg-dark:  #{rgba($white, .15)};
+
+  // boxed 
+  --#{$prefix}boxed-body-bg: #{darken($body-bg, 4%)};
+
+  // heading-color
+  --#{$prefix}heading-color: #{$gray-900};
+
+  // component variable
+  // link
+  --#{$prefix}link-color: #{$gray-900};
+  --#{$prefix}link-hover-color: #{$black};
+
+  // Border variable - hairline
+  --#{$prefix}border-color:  #{$gray-300};
+
+  // card
+  --#{$prefix}card-bg-custom: #{$white};
+  --#{$prefix}card-logo-dark: block;
+  --#{$prefix}card-logo-light: none;
+
+  // nav tabs
+  .nav-tabs {
+    --#{$prefix}nav-tabs-link-active-bg:           #{$body-bg};
+  }
+
+  //choices 
+  .choices, .flatpickr-calendar, .ck, .ql-toolbar, .select2-container, .menu-dropdown{
+    --#{$prefix}choices-bg:                        #{$white};
+    --#{$prefix}choices-link-color:                #{$gray-900};
+    --#{$prefix}choices-link-hover-bg:             #{$gray-100};
+    --#{$prefix}choices-link-active-color:         #{shade-color($gray-900, 10%)};
+  }
+
+  //list
+  --#{$prefix}list-group-hover-bg: #{$gray-100};
+
+  // form
+  --#{$prefix}input-bg: #{$white};
+  --#{$prefix}input-border: #{$gray-400};
+  --#{$prefix}input-focus-border: #{tint-color($component-active-bg, 50%)};
+  --#{$prefix}input-disabled-bg: #{$gray-200};
+
+  // input-group-addon
+  --#{$prefix}input-group-addon-bg: #{$gray-200};
+
+  //check
+  --#{$prefix}input-check-border: var(--#{$prefix}input-border);
+}
