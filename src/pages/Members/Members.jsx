@@ -1486,6 +1486,7 @@ const Members = () => {
                           <Input
                             type="select"
                             className="form-select form-select-sm"
+                            aria-label="Filter members by branch"
                             value={branchFilter}
                             onChange={(e) => {
                               setBranchFilter(e.target.value);

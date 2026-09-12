@@ -38,12 +38,13 @@ const FormsHeader = ({
               <Input
                 type="checkbox"
                 className="form-check-input"
+                id="activeFilter"
                 name="filter"
                 value={filter}
                 defaultChecked={true}
                 onChange={handleFilter}
               />
-              <Label className="form-check-label ms-2">Active</Label>
+              <Label htmlFor="activeFilter" className="form-check-label ms-2">Active</Label>
             </div>
           </div>
         </Col>

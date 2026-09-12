@@ -27,12 +27,13 @@ const FormsHeader = ({
             <Input
               type="checkbox"
               className="form-check-input"
+              id="activeFilterModal"
               name="filter"
               value={filter}
               defaultChecked={true}
               onChange={handleFilter}
             />
-            <Label className="form-check-label ms-2">Active</Label>
+            <Label htmlFor="activeFilterModal" className="form-check-label ms-2">Active</Label>
           </div>
         </Col>
         <Col className="col-sm-auto" sm={12} lg={4} md={12}>
