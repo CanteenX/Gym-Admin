@@ -122,6 +122,11 @@ const humanSize = (bytes) => {
 /** Server stores paths like "uploads\\members\\uuid.webp" — normalise for the browser. */
 const fileUrl = (storedPath) => {
   if (!storedPath) return "";
+  // Uploads now go to Supabase, which stores a FULL url. Older records still
+  // hold a relative path like "uploads\\members\\x.webp". Prefixing an absolute
+  // url would produce "http://localhost:7002/https://..." and break the image,
+  // so absolute urls pass through untouched and both eras render correctly.
+  if (/^https?:\/\//i.test(storedPath)) return storedPath;
   const normalised = String(storedPath).replace(/\\/g, "/").replace(/^\/+/, "");
   const base = import.meta.env?.VITE_API_URL_DEV || "http://localhost:7002";
   return `${base}/${normalised}`;
