@@ -446,38 +446,38 @@ $navy-tint: #eef1f8;
         border: 1px solid #e0e5f0;
     }
 
-    &.bg-primary   { background-color: #22346b !important; color: #fff !important; }
-    &.bg-success   { background-color: #15803d !important; color: #fff !important; }
-    &.bg-danger    { background-color: #dc2626 !important; color: #fff !important; }
-    &.bg-warning   { background-color: #8a6d2f !important; color: #fff !important; }
+    &.bg-primary   { background-color: $primary !important; color: #fff !important; }
+    &.bg-success   { background-color: $success !important; color: #fff !important; }
+    &.bg-danger    { background-color: $danger !important; color: #fff !important; }
+    &.bg-warning   { background-color: $warning !important; color: #fff !important; }
     &.bg-secondary { background-color: #5a6782 !important; color: #fff !important; }
 }
 
 // ---- Action buttons: navy family, not template teal/orange ----
 .btn-success {
-    background-color: #15803d;
-    border-color: #15803d;
+    background-color: $success;
+    border-color: $success;
     color: #fff;
     &:hover, &:focus, &:active {
-        background-color: #275a42 !important;
-        border-color: #275a42 !important;
+        background-color: shade-color($success, 18%) !important;
+        border-color: shade-color($success, 18%) !important;
     }
 }
 
 .btn-danger {
-    background-color: #dc2626;
-    border-color: #dc2626;
+    background-color: $danger;
+    border-color: $danger;
     color: #fff;
     &:hover, &:focus, &:active {
-        background-color: #8f3029 !important;
-        border-color: #8f3029 !important;
+        background-color: shade-color($danger, 18%) !important;
+        border-color: shade-color($danger, 18%) !important;
     }
 }
 
 .btn-soft-danger {
-    background-color: #fbeceb;
-    color: #dc2626;
-    &:hover { background-color: #dc2626; color: #fff; }
+    background-color: tint-color($danger, 92%);
+    color: $danger;
+    &:hover { background-color: $danger; color: #fff; }
 }
 
 // Table row hover: a faint navy wash rather than grey mud.
