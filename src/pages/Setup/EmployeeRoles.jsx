@@ -940,10 +940,12 @@ const EmployeeRoles = () => {
                 {role === "ADMIN" && (
                   <Col md={3}>
                     <FormGroup>
-                      <Label className="fw-bold">
+                      <Label htmlFor="employeeCreatedRoleSelect" className="fw-bold">
                         <i className="bx bx-user-check me-1"></i> Employee Created Roles
                       </Label>
                       <Select
+                        inputId="employeeCreatedRoleSelect"
+                        aria-label="Employee created roles"
                         options={employeeCreatedRoles.map(emp => ({
                           label: emp.employeeName,
                           options: emp.roles.map(r => ({

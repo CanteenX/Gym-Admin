@@ -583,6 +583,7 @@ const CashFlow = () => {
                     type="select"
                     bsSize="sm"
                     style={{ width: 130 }}
+                    aria-label="Chart range in months"
                     value={months}
                     onChange={(e) => setMonths(Number(e.target.value))}
                   >
@@ -751,6 +752,7 @@ const CashFlow = () => {
                       <Input
                         type="date"
                         bsSize="sm"
+                        aria-label="Filter from date"
                         value={fromDate}
                         onChange={(e) => {
                           setFromDate(e.target.value);
@@ -762,6 +764,7 @@ const CashFlow = () => {
                       <Input
                         type="date"
                         bsSize="sm"
+                        aria-label="Filter to date"
                         value={toDate}
                         onChange={(e) => {
                           setToDate(e.target.value);
@@ -773,6 +776,7 @@ const CashFlow = () => {
                       <Input
                         type="select"
                         bsSize="sm"
+                        aria-label="Filter by branch"
                         value={branch}
                         onChange={(e) => {
                           setBranch(e.target.value);
@@ -791,6 +795,7 @@ const CashFlow = () => {
                       <Input
                         type="select"
                         bsSize="sm"
+                        aria-label="Filter by expense category"
                         value={category}
                         onChange={(e) => {
                           setCategory(e.target.value);
