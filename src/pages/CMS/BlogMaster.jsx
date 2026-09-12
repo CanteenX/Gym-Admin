@@ -492,7 +492,7 @@ const BlogMaster = () => {
                 style={{ width: "48px", height: "48px", objectFit: "cover" }}
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/48/405189/ffffff?text=BLOG";
+                  e.target.style.display = "none"; /* via.placeholder.com is shut down - its fallback 404s too */
                 }}
               />
             ) : (
@@ -848,7 +848,7 @@ const BlogMaster = () => {
                         style={{ maxHeight: "150px", maxWidth: "100%", objectFit: "cover" }}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = "https://via.placeholder.com/300x150?text=Image+Not+Found";
+                          e.target.style.display = "none"; /* via.placeholder.com is shut down - its fallback 404s too */
                         }}
                       />
                       <Button
@@ -1075,7 +1075,7 @@ const BlogMaster = () => {
                     style={{ maxHeight: "450px", maxWidth: "100%", height: "auto", objectFit: "contain" }}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = "https://via.placeholder.com/600x300?text=Banner+Image";
+                      e.target.style.display = "none"; /* via.placeholder.com is shut down - its fallback 404s too */
                     }}
                   />
                 </div>

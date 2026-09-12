@@ -2,9 +2,27 @@ import PropTypes from "prop-types";
 import React from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteModal = ({ show, handleDelete, handleDeleteClose, setmodal_delete, disabled }) => {
+/**
+ * Every one of the ~17 call sites passes the dismiss handler as `toggle`, but
+ * this component only destructured `handleDeleteClose` - a prop nobody passes.
+ * So it was always undefined and <Modal toggle={undefined}> meant Escape and
+ * backdrop-click dismissed no delete dialog anywhere in the app.
+ *
+ * `toggle` is now the contract; `handleDeleteClose` stays accepted so any call
+ * site using the old name keeps working.
+ */
+const DeleteModal = ({
+  show,
+  handleDelete,
+  toggle,
+  handleDeleteClose,
+  setmodal_delete,
+  disabled,
+}) => {
+  const dismiss = toggle || handleDeleteClose;
+
   return (
-    <Modal fade={true} isOpen={show} toggle={disabled ? undefined : handleDeleteClose} centered={true}>
+    <Modal fade={true} isOpen={show} toggle={disabled ? undefined : dismiss} centered={true}>
        <ModalHeader
           className="bg-light p-3"
           toggle={() => {
@@ -81,6 +99,7 @@ const DeleteModal = ({ show, handleDelete, handleDeleteClose, setmodal_delete, d
 DeleteModal.propTypes = {
   show: PropTypes.bool,
   handleDelete: PropTypes.func,
+  toggle: PropTypes.func,
   handleDeleteClose: PropTypes.func,
   setmodal_delete: PropTypes.func,
   disabled: PropTypes.bool,

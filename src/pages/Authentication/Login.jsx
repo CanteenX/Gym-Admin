@@ -1061,7 +1061,7 @@ const Login = () => {
                                                         login to your account.
                                                     </p>
                                                 </div>
-                                                <Form>
+                                                <Form onSubmit={(e) => { e.preventDefault(); login(e); }}>
                                                     {/* Account Lock Warning */}
                                                     {isLocked && (
                                                         <div
@@ -1137,7 +1137,9 @@ const Login = () => {
                                                                 Email
                                                             </Label>
                                                             <Input
-                                                                onSubmit={login}
+                                                                // id matches the <Label htmlFor="email"> above, which was orphaned.
+                                                                id="email"
+                                                                autoComplete="username"
                                                                 name="email"
                                                                 className={
                                                                     errEmail &&
@@ -1183,9 +1185,8 @@ const Login = () => {
                                                             </Label>
                                                             <div className="position-relative auth-pass-inputgroup mb-3">
                                                                 <Input
-                                                                    onSubmit={
-                                                                        login
-                                                                    }
+                                                                    id="password-input"
+                                                                    autoComplete="current-password"
                                                                     name="password"
                                                                     type={
                                                                         showPassword

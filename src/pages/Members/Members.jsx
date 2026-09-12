@@ -160,6 +160,19 @@ const Members = () => {
 
   // Selected File objects (not part of `values`, which is JSON-serialisable).
   const [photoFile, setPhotoFile] = useState(null);
+
+  // The preview URL was built inline in the JSX, so React minted a fresh blob
+  // on EVERY re-render of this 34-field form and never revoked the old one -
+  // visible flicker plus an unbounded leak for as long as the modal stayed
+  // open. Derive it once per file instead, and revoke on change/unmount.
+  const photoPreview = useMemo(
+    () => (photoFile ? URL.createObjectURL(photoFile) : ""),
+    [photoFile],
+  );
+  useEffect(() => {
+    if (!photoPreview) return undefined;
+    return () => URL.revokeObjectURL(photoPreview);
+  }, [photoPreview]);
   const [idProofFile, setIdProofFile] = useState(null);
   // Paths already stored on the member, shown when editing.
   const [existingPhoto, setExistingPhoto] = useState("");
@@ -1208,7 +1221,7 @@ const Members = () => {
               {photoFile && (
                 <div className="d-flex align-items-center gap-2 mt-2">
                   <img
-                    src={URL.createObjectURL(photoFile)}
+                    src={photoPreview}
                     alt="Selected preview"
                     style={{
                       width: 48,
@@ -1329,6 +1342,7 @@ const Members = () => {
                   </Label>
                   <Input
                     type="text"
+                    autoComplete="new-password"
                     value={portalPassword}
                     placeholder="minimum 6 characters"
                     onChange={(e) => setPortalPassword(e.target.value)}

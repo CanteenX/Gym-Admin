@@ -651,6 +651,7 @@ const Sidebar = ({ layoutType }) => {
                         type="button"
                         className="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
                         id="vertical-hover"
+                            aria-label="Toggle hover-expand sidebar"
                     >
                         <i className="ri-record-circle-line"></i>
                     </button>
