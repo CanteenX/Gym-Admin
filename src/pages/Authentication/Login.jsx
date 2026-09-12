@@ -989,7 +989,7 @@ const Login = () => {
         );
     };
 
-    document.title = `Sign in | Barodaweb`;
+    document.title = `Sign in | Mid City Gym`;
 
 
 

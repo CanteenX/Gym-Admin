@@ -50,6 +50,7 @@ import {
   cancelTransaction,
 } from "../../api/transactions.api";
 import { listAllExpenseCategories } from "../../api/expenseCategories.api";
+import { listBranches } from "../../api/branches.api";
 import { searchMembers } from "../../api/members.api";
 
 const currency = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -74,12 +75,14 @@ const toInputDate = (value) => {
 
 const MODES = ["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "Other"];
 
+// branch is seeded from the branch master once it loads, so opening a third
+// gym needs no code change here.
 const emptyIncome = {
   memberId: "",
   amount: "",
   transactionDate: toInputDate(new Date()),
   mode: "Cash",
-  branch: "Vasna",
+  branch: "",
   note: "",
 };
 
@@ -87,7 +90,7 @@ const emptyExpense = {
   amount: "",
   transactionDate: toInputDate(new Date()),
   mode: "Cash",
-  branch: "Vasna",
+  branch: "",
   category: "",
   paidTo: "",
   billNo: "",
@@ -222,6 +225,9 @@ const CashFlow = () => {
   const [query, setQuery] = useState("");
 
   const [categories, setCategories] = useState([]);
+  // All branches INCLUDING non-physical cost buckets such as "Common" — shared
+  // expenses (rent, software, owner salary) are booked against those.
+  const [branches, setBranches] = useState([]);
   const [members, setMembers] = useState([]);
 
   const [incomeModal, setIncomeModal] = useState(false);
@@ -287,6 +293,24 @@ const CashFlow = () => {
     listAllExpenseCategories()
       .then((r) => r.data.isOk && setCategories(r.data.data || []))
       .catch(() => {});
+    // No physicalOnly here on purpose: the ledger must be able to book shared
+    // costs against non-physical branches like "Common".
+    listBranches()
+      .then((r) => {
+        if (!r.data.isOk) return;
+        const list = r.data.data || [];
+        setBranches(list);
+        // Default a new entry to the first branch in display order rather than
+        // a hardcoded name. Only fills a blank — never overwrites a user pick.
+        const first = list[0]?.name;
+        if (first) {
+          setIncomeForm((f) => (f.branch ? f : { ...f, branch: first }));
+          setExpenseForm((f) => (f.branch ? f : { ...f, branch: first }));
+        }
+      })
+      // An empty list is better than a hard failure; the forms keep whatever
+      // branch the record already carries.
+      .catch((err) => console.error("Error loading branches:", err));
     searchMembers({
       skip: 0,
       per_page: 500,
@@ -315,7 +339,7 @@ const CashFlow = () => {
       if (res.data.isOk) {
         toast.success(res.data.message);
         setIncomeModal(false);
-        setIncomeForm(emptyIncome);
+        setIncomeForm({ ...emptyIncome, branch: branches[0]?.name || "" });
         refreshAll();
         openReceipt(res.data.data, adminData?.companyName);
       } else {
@@ -343,7 +367,7 @@ const CashFlow = () => {
       if (res.data.isOk) {
         toast.success(res.data.message);
         setExpenseModal(false);
-        setExpenseForm(emptyExpense);
+        setExpenseForm({ ...emptyExpense, branch: branches[0]?.name || "" });
         refreshAll();
       } else {
         toast.error(res.data.message || "Failed to record expense");
@@ -756,8 +780,11 @@ const CashFlow = () => {
                         }}
                       >
                         <option value="">All Branches</option>
-                        <option value="Vasna">Vasna</option>
-                        <option value="Gotri">Gotri</option>
+                        {branches.map((b) => (
+                          <option key={b._id} value={b.name}>
+                            {b.displayName || b.name}
+                          </option>
+                        ))}
                       </Input>
                     </Col>
                     <Col md={2}>
@@ -954,8 +981,19 @@ const CashFlow = () => {
                     setIncomeForm({ ...incomeForm, branch: e.target.value })
                   }
                 >
-                  <option value="Vasna">Vasna</option>
-                  <option value="Gotri">Gotri</option>
+                  {branches.map((b) => (
+                    <option key={b._id} value={b.name}>
+                      {b.displayName || b.name}
+                    </option>
+                  ))}
+                  {/* Keep the current value selectable if the list failed to
+                      load or that branch is now inactive. */}
+                  {incomeForm.branch &&
+                    !branches.some((b) => b.name === incomeForm.branch) && (
+                      <option value={incomeForm.branch}>
+                        {incomeForm.branch}
+                      </option>
+                    )}
                 </Input>
               </FormGroup>
             </Col>
@@ -1047,8 +1085,19 @@ const CashFlow = () => {
                     setExpenseForm({ ...expenseForm, branch: e.target.value })
                   }
                 >
-                  <option value="Vasna">Vasna</option>
-                  <option value="Gotri">Gotri</option>
+                  {branches.map((b) => (
+                    <option key={b._id} value={b.name}>
+                      {b.displayName || b.name}
+                    </option>
+                  ))}
+                  {/* Keep the current value selectable if the list failed to
+                      load or that branch is now inactive. */}
+                  {expenseForm.branch &&
+                    !branches.some((b) => b.name === expenseForm.branch) && (
+                      <option value={expenseForm.branch}>
+                        {expenseForm.branch}
+                      </option>
+                    )}
                 </Input>
               </FormGroup>
             </Col>

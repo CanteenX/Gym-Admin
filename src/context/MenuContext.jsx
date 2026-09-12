@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useEffect, useState, useContext, useMemo, useCallback } from "react";
+import { createContext, useEffect, useState, useContext, useMemo, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import { getCurrentUser } from "../api/auth.api";
 import { getMenusByGroups } from "../api/menus.api";
@@ -86,7 +86,7 @@ const MenuProvider = ({ children }) => {
         setIsStatusFetched(false);
         try {
             if (!authRole) {
-                return false;
+                return { isFullAdmin: false, roleId: null };
             }
 
             const response = await getCurrentUser();
@@ -94,15 +94,58 @@ const MenuProvider = ({ children }) => {
             if (response.data.isOk) {
                 const userData = response.data.data;
                 setIsStatusFetched(true);
-                setIsAdmin(userData.role === "ADMIN");
-                setEmployeeRoleId(userData.roleId);
-                return userData.role === "ADMIN";
+                /**
+                 * A super admin is a full admin here, whichever table they
+                 * live in.
+                 *
+                 * This used to test `role === "ADMIN"` alone, which is true
+                 * only for CompanyMaster logins. An Employee created with the
+                 * "Super Admin (both branches)" box ticked logs in as
+                 * role "EMPLOYEE", so it fell through to the per-menu
+                 * permission path — and if its role had no EmployeeRoles
+                 * document, every route resolved to "no read permission" and
+                 * PermissionProtected bounced it to /dashboard, which failed
+                 * the same way. The symptom was being logged straight back out
+                 * with a perfectly valid session and 200s on every API call.
+                 *
+                 * The server already treats both the same way: checkPermission
+                 * short-circuits for ADMIN, and requireSuperAdmin reads
+                 * req.session.user.isSuperAdmin regardless of table.
+                 */
+                const isFullAdmin =
+                    userData.role === "ADMIN" || userData.isSuperAdmin === true;
+                setIsAdmin(isFullAdmin);
+                /**
+                 * Only write when the value actually CHANGES.
+                 *
+                 * This is what kept a non-admin stuck on "Loading menus...".
+                 * `employeeRoleId` is a dependency of processFetchedMenus, which
+                 * is a dependency of fetchMenus, which the mount effect depends
+                 * on. Setting it unconditionally here — inside a function that
+                 * fetchMenus itself calls — rebuilt fetchMenus, retriggered the
+                 * effect, and called checkUserRole again, forever. `loading`
+                 * was set true at the top of every pass and the finally-block's
+                 * setLoading(false) never won the race.
+                 *
+                 * Admins never saw it: processFetchedMenus returns early for
+                 * them, before employeeRoleId is ever read.
+                 */
+                const nextRoleId = userData.roleId ?? null;
+                setEmployeeRoleId((prev) =>
+                    String(prev ?? "") === String(nextRoleId ?? "") ? prev : nextRoleId,
+                );
+                // The roleId is RETURNED as well as stored: the setState above
+                // has not landed by the time fetchMenus needs it in the same
+                // pass, so callers must use this value rather than the state.
+                return { isFullAdmin, roleId: nextRoleId };
             }
 
-            return false;
+            // Every exit returns the same SHAPE — fetchMenus destructures this,
+            // and a bare `false` would throw before the menus were ever fetched.
+            return { isFullAdmin: false, roleId: null };
         } catch (err) {
             console.error("Error checking user role:", err);
-            return false;
+            return { isFullAdmin: false, roleId: null };
         }
     }, [authRole]);
 
@@ -113,8 +156,20 @@ const MenuProvider = ({ children }) => {
             const response = await getEmployeeRolesByRoleId(roleId);
 
             if (response.data.isOk) {
-                setEmployeeRoles(response.data.data[0]);
-                return response.data.data[0];
+                /**
+                 * The server returns the EmployeeRoles document itself, not an
+                 * array — there is exactly one per role. This used to read
+                 * `data[0]`, which silently became undefined, so the sidebar
+                 * filter got no permission rows and rendered "No menu items
+                 * available" despite a clean 200 carrying all 29 rows.
+                 *
+                 * Tolerating both shapes keeps this working if an older server
+                 * build is ever in front of it.
+                 */
+                const payload = response.data.data;
+                const roleDoc = Array.isArray(payload) ? payload[0] : payload;
+                setEmployeeRoles(roleDoc ?? null);
+                return roleDoc ?? null;
             }
 
             return null;
@@ -149,7 +204,20 @@ const MenuProvider = ({ children }) => {
         return null;
     }, [menuCache.adminMenus, menuCache.roleMenus, employeeRoleId]);
 
-    const processFetchedMenus = useCallback(async (menuGroups, adminStatus, now) => {
+    /**
+     * `roleIdOverride` is passed in by fetchMenus rather than read from state.
+     *
+     * THE RACE: checkUserRole() calls setEmployeeRoleId() a few lines earlier in
+     * the same fetchMenus pass, but React state updates are not synchronous — so
+     * on first load the `employeeRoleId` captured in this callback's closure is
+     * still null. The non-admin branch below was therefore skipped entirely,
+     * setMenuData never ran, and the sidebar rendered "No menu items available"
+     * with a perfectly good 29-row permission payload sitting unused.
+     *
+     * Admins are unaffected: their branch returns above this point.
+     */
+    const processFetchedMenus = useCallback(async (menuGroups, adminStatus, now, roleIdOverride = null) => {
+        const effectiveRoleId = roleIdOverride || employeeRoleId;
         setMenuCache(prev => ({
             ...prev,
             completeMenus: menuGroups,
@@ -167,8 +235,8 @@ const MenuProvider = ({ children }) => {
             return;
         }
 
-        if (employeeRoleId) {
-            const roles = await fetchEmployeeRoles(employeeRoleId);
+        if (effectiveRoleId) {
+            const roles = await fetchEmployeeRoles(effectiveRoleId);
             if (roles?.roles) {
                 const filteredMenuGroups = filterMenusByPermission(menuGroups, roles.roles);
                 setMenuData(filteredMenuGroups);
@@ -176,11 +244,16 @@ const MenuProvider = ({ children }) => {
                     ...prev,
                     roleMenus: {
                         ...prev.roleMenus,
-                        [employeeRoleId]: filteredMenuGroups
+                        [effectiveRoleId]: filteredMenuGroups
                     },
                     completeMenus: menuGroups,
                     timestamp: now
                 }));
+            } else {
+                // A role with no permission rows genuinely has no menus. Set an
+                // empty array so the sidebar shows its real empty state instead
+                // of sitting on a spinner forever.
+                setMenuData([]);
             }
         }
     }, [employeeRoleId, fetchEmployeeRoles]);
@@ -401,7 +474,9 @@ const MenuProvider = ({ children }) => {
             }
 
             setLoading(true);
-            const adminStatus = await checkUserRole();
+            // checkUserRole returns the roleId alongside the admin flag because
+            // its setEmployeeRoleId has not taken effect yet in this same pass.
+            const { isFullAdmin: adminStatus, roleId } = await checkUserRole();
 
             if (!forceRefresh && isCacheValid()) {
                 const cachedData = getCachedMenuData(adminStatus);
@@ -415,7 +490,7 @@ const MenuProvider = ({ children }) => {
             const response = await getMenusByGroups();
 
             if (response.data.isOk) {
-                await processFetchedMenus(response.data.data, adminStatus, Date.now());
+                await processFetchedMenus(response.data.data, adminStatus, Date.now(), roleId);
                 updatePermissionsByCurrentUrl();
             } else {
                 setError(response?.data?.message || "Failed to get menu data");
@@ -428,12 +503,28 @@ const MenuProvider = ({ children }) => {
         }
     }, [authRole, checkUserRole, isCacheValid, getCachedMenuData, processFetchedMenus, updatePermissionsByCurrentUrl]);
 
-    // Fetch menus once when session is verified and role exists
+    /**
+     * Fetch menus ONCE per verified session.
+     *
+     * `fetchMenus` is deliberately NOT a dependency. It is a useCallback whose
+     * identity changes whenever employeeRoleId or employeeRoles change — both
+     * of which fetchMenus itself sets — so depending on it made this effect
+     * re-arm every time it ran. For a non-admin that was an unbreakable loop
+     * and the sidebar sat on "Loading menus..." indefinitely.
+     *
+     * The ref key is what actually guards re-entry: a genuine change of user
+     * (different role, or a fresh session) produces a new key and refetches,
+     * while a mere identity change of the callback does not.
+     */
+    const lastFetchKey = useRef(null);
     useEffect(() => {
-        if (isSessionVerified && authRole) {
-            fetchMenus();
-        }
-    }, [isSessionVerified, authRole, fetchMenus]);
+        if (!isSessionVerified || !authRole) return;
+        const key = `${authRole}`;
+        if (lastFetchKey.current === key) return;
+        lastFetchKey.current = key;
+        fetchMenus();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSessionVerified, authRole]);
 
     useEffect(() => {
         if (!loading && menuData.length > 0) {

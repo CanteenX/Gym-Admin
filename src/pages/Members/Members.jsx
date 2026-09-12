@@ -44,6 +44,7 @@ import {
 } from "../../api/members.api";
 import { listAllTrainers } from "../../api/trainers.api";
 import { listWorkoutPlans } from "../../api/workoutPlans.api";
+import { listBranches } from "../../api/branches.api";
 
 const toInputDate = (value) => {
   if (!value) return "";
@@ -91,7 +92,8 @@ const initialState = {
   emergencyContactName: "",
   emergencyContactNumber: "",
   address: "",
-  branch: "Vasna",
+  // Seeded from the branch master on mount, so a new gym needs no code change.
+  branch: "",
   trainerId: "",
   // "" means the member follows the gym default exercise plan.
   workoutPlanId: "",
@@ -153,6 +155,9 @@ const Members = () => {
   const [trainers, setTrainers] = useState([]);
   // Active exercise plans for the workout-plan picker.
   const [workoutPlans, setWorkoutPlans] = useState([]);
+  // Physical branches only — a member can never be enrolled at a cost bucket
+  // such as "Common".
+  const [branches, setBranches] = useState([]);
   const [members, setMembers] = useState([]);
 
   // Selected File objects (not part of `values`, which is JSON-serialisable).
@@ -224,6 +229,23 @@ const Members = () => {
         }
       })
       .catch((err) => console.error("Error loading workout plans:", err));
+
+    // physicalOnly: cost buckets like "Common" are not places to enrol members.
+    listBranches(true)
+      .then((res) => {
+        if (!res.data.isOk) return;
+        const list = res.data.data || [];
+        setBranches(list);
+        // Default a new member to the first branch in display order. Only
+        // fills a blank — never overwrites a branch the user already picked.
+        const first = list[0]?.name;
+        if (first) {
+          setValues((v) => (v.branch ? v : { ...v, branch: first }));
+        }
+      })
+      // A failed fetch leaves the list empty; the form still keeps whatever
+      // branch the record already has rather than blocking the user.
+      .catch((err) => console.error("Error loading branches:", err));
   }, []);
 
   // The trainer picker only appears for plans that need a dedicated coach —
@@ -291,7 +313,7 @@ const Members = () => {
   const handleOpenAddForm = () => {
     setShowForm(true);
     setUpdateForm(false);
-    setValues(initialState);
+    setValues({ ...initialState, branch: branches[0]?.name || "" });
     setIsSubmit(false);
     setFormErrors({});
     resetFiles();
@@ -357,7 +379,7 @@ const Members = () => {
       emergencyContactName: row.emergencyContactName || "",
       emergencyContactNumber: row.emergencyContactNumber || "",
       address: row.address || "",
-      branch: row.branch || "Vasna",
+      branch: row.branch || branches[0]?.name || "",
       trainerId: row.trainerId?._id || row.trainerId || "",
       workoutPlanId: row.workoutPlanId?._id || row.workoutPlanId || "",
       planCode: row.planCode || "MONTHLY",
@@ -888,8 +910,17 @@ const Members = () => {
                 value={values.branch}
                 onChange={handleChange}
               >
-                <option value="Vasna">Vasna</option>
-                <option value="Gotri">Gotri</option>
+                {branches.map((b) => (
+                  <option key={b._id} value={b.name}>
+                    {b.displayName || b.name}
+                  </option>
+                ))}
+                {/* Keep whatever the record already has selectable, even if the
+                    branch list failed to load or that branch is now inactive. */}
+                {values.branch &&
+                  !branches.some((b) => b.name === values.branch) && (
+                    <option value={values.branch}>{values.branch}</option>
+                  )}
               </Input>
             </FormGroup>
           </Col>
@@ -1425,8 +1456,11 @@ const Members = () => {
                             }}
                           >
                             <option value="">All Branches</option>
-                            <option value="Vasna">Vasna</option>
-                            <option value="Gotri">Gotri</option>
+                            {branches.map((b) => (
+                              <option key={b._id} value={b.name}>
+                                {b.displayName || b.name}
+                              </option>
+                            ))}
                           </Input>
                         </div>
                         <div

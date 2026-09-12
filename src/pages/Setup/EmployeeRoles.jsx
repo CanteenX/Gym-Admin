@@ -307,9 +307,14 @@ const EmployeeRoles = () => {
     try {
       const response = await getEmployeeRolesByRoleId(roleId);
 
-      if (response.data.data && response.data.data.length > 0) {
+      // The server returns the EmployeeRoles document itself, not an array —
+      // there is one per role. Both shapes are tolerated so this keeps working
+      // against an older server build.
+      const payload = response.data.data;
+      const roleDoc = Array.isArray(payload) ? payload[0] : payload;
 
-        setEmployeeRoles(response.data.data[0]);
+      if (roleDoc) {
+        setEmployeeRoles(roleDoc);
       } else {
         // If no roles found, set to null
         setEmployeeRoles(null);

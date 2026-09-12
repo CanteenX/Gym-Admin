@@ -43,6 +43,7 @@ import {
 } from "../../api/companies.api";
 import { MenuContext } from "../../context/MenuContext";
 import { getAllRoles } from "../../api/roles.api";
+import { listBranches } from "../../api/branches.api";
 import config from "../../config";
 
 const Employee = () => {
@@ -80,9 +81,15 @@ const Employee = () => {
   // enforces this too (employee.controller.js) — this only keeps the UI honest.
   const canGrantAllBranches = adminData?.isSuperAdmin === true;
 
+  // Physical branches from the branch master. Cost buckets such as "Common"
+  // are excluded — an employee is posted to a real gym, not to a cost bucket.
+  const [branchList, setBranchList] = useState([]);
+
   const branchOptions = [
-    { value: "Vasna", label: "Vasna" },
-    { value: "Gotri", label: "Gotri" },
+    ...branchList.map((b) => ({
+      value: b.name,
+      label: b.displayName || b.name,
+    })),
     ...(canGrantAllBranches
       ? [{ value: "", label: "All Branches (Super Admin)" }]
       : []),
@@ -254,6 +261,14 @@ const Employee = () => {
     getDepartmentList();
     fetchCountries();
     getRoleList();
+    // physicalOnly: cost buckets are not postings an employee can hold.
+    listBranches(true)
+      .then((res) => {
+        if (res.data.isOk) setBranchList(res.data.data || []);
+      })
+      // On failure the branch list stays empty rather than blocking the form;
+      // a super admin still gets the "All Branches" option below.
+      .catch((err) => console.error("Error loading branches:", err));
   }, [fetchCountries]);
 
   useEffect(() => {
@@ -1041,7 +1056,12 @@ const Employee = () => {
                           }}
                           options={branchOptions}
                           value={
-                            branchOptions.find((b) => b.value === values.branch) || null
+                            branchOptions.find((b) => b.value === values.branch) ||
+                            // Keep showing whatever the record already has if the
+                            // branch list failed to load or that branch is gone.
+                            (values.branch
+                              ? { value: values.branch, label: values.branch }
+                              : null)
                           }
                           onChange={(opt) =>
                             setValues({ ...values, branch: opt?.value ?? "" })

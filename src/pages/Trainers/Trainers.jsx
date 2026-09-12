@@ -39,6 +39,7 @@ import {
   unassignMemberFromTrainer,
   listUnassignedMembers,
 } from "../../api/trainers.api";
+import { listBranches } from "../../api/branches.api";
 
 const formatDate = (value) => {
   if (!value) return "-";
@@ -55,7 +56,8 @@ const initialState = {
   fullName: "",
   mobileNumber: "",
   email: "",
-  branch: "Vasna",
+  // Seeded from the branch master on mount, so a new gym needs no code change.
+  branch: "",
   notes: "",
   isActive: true,
 };
@@ -78,6 +80,9 @@ const Trainers = () => {
   const [removeId, setRemoveId] = useState("");
 
   const [trainers, setTrainers] = useState([]);
+  // Physical branches only — a trainer is posted to a real gym, never to a
+  // cost bucket such as "Common".
+  const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [updateForm, setUpdateForm] = useState(false);
@@ -136,6 +141,25 @@ const Trainers = () => {
     fetchTrainers();
   }, [fetchTrainers]);
 
+  useEffect(() => {
+    // physicalOnly: cost buckets are not gyms a trainer can be posted to.
+    listBranches(true)
+      .then((res) => {
+        if (!res.data.isOk) return;
+        const list = res.data.data || [];
+        setBranches(list);
+        // Default a new trainer to the first branch in display order. Only
+        // fills a blank — never overwrites a branch the user already picked.
+        const first = list[0]?.name;
+        if (first) {
+          setValues((v) => (v.branch ? v : { ...v, branch: first }));
+        }
+      })
+      // On failure the list stays empty; the form still keeps whatever branch
+      // the record already has rather than blocking the user.
+      .catch((err) => console.error("Error loading branches:", err));
+  }, []);
+
   const tog_list = () => {
     setShowForm(false);
     setUpdateForm(false);
@@ -147,7 +171,7 @@ const Trainers = () => {
   const handleOpenAddForm = () => {
     setShowForm(true);
     setUpdateForm(false);
-    setValues(initialState);
+    setValues({ ...initialState, branch: branches[0]?.name || "" });
     setIsSubmit(false);
     setFormErrors({});
   };
@@ -166,7 +190,7 @@ const Trainers = () => {
       fullName: row.fullName || "",
       mobileNumber: row.mobileNumber || "",
       email: row.email || "",
-      branch: row.branch || "Vasna",
+      branch: row.branch || branches[0]?.name || "",
       notes: row.notes || "",
       isActive: row.isActive !== undefined ? row.isActive : true,
     });
@@ -494,8 +518,17 @@ const Trainers = () => {
                 value={values.branch}
                 onChange={handleChange}
               >
-                <option value="Vasna">Vasna</option>
-                <option value="Gotri">Gotri</option>
+                {branches.map((b) => (
+                  <option key={b._id} value={b.name}>
+                    {b.displayName || b.name}
+                  </option>
+                ))}
+                {/* Keep whatever the record already has selectable, even if the
+                    branch list failed to load or that branch is now inactive. */}
+                {values.branch &&
+                  !branches.some((b) => b.name === values.branch) && (
+                    <option value={values.branch}>{values.branch}</option>
+                  )}
               </Input>
             </FormGroup>
           </Col>
@@ -577,8 +610,11 @@ const Trainers = () => {
                             }}
                           >
                             <option value="">All Branches</option>
-                            <option value="Vasna">Vasna</option>
-                            <option value="Gotri">Gotri</option>
+                            {branches.map((b) => (
+                              <option key={b._id} value={b.name}>
+                                {b.displayName || b.name}
+                              </option>
+                            ))}
                           </Input>
                         </div>
                         <div

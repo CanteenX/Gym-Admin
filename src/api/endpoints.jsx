@@ -228,6 +228,18 @@ export const ENDPOINTS = {
         BY_ID: (id) => `${V1}/workout-plans/${id}`,
     },
 
+    // Branch master endpoints
+    BRANCHES: {
+        // POST /branches creates; the GET list lives at /branches-list, matching
+        // how members/trainers/expense-categories name their list routes. These
+        // are deliberately different paths, not a typo — pointing LIST_ALL at
+        // /branches returns 404 and every branch dropdown silently renders empty.
+        BASE: `${V1}/branches`,
+        BY_ID: (id) => `${V1}/branches/${id}`,
+        SEARCH: `${V1}/branches-by-params`,
+        LIST_ALL: `${V1}/branches-list`,
+    },
+
     // Gym trainer endpoints
     TRAINERS: {
         BASE: `${V1}/trainers`,
