@@ -31,7 +31,8 @@
         "preview": "vite preview",
         "lint": "eslint .",
         "lint:fix": "eslint --fix .",
-        "format": "prettier --write \"**/*.{js,jsx,json,md,html,css,less,scss}\""
+        "format": "prettier --write \"**/*.{js,jsx,json,md,html,css,less,scss}\"",
+        "check:icons": "node scripts/check-icons.mjs"
     },
     "devDependencies": {
         "@vitejs/plugin-react": "^5.1.2",
