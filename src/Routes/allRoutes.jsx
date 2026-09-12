@@ -1,37 +1,41 @@
+// Every page is code-split. Eager imports meant the whole admin bundle -
+// including the rich-text editor and charting library used by a handful of
+// pages - had to download and parse before the LOGIN FORM could paint.
+import { lazy } from "react";
 import { Navigate } from "react-router-dom";
-import Login from "../pages/Authentication/Login";
-import UserProfile from "../pages/Authentication/user-profile";
-import CompanyDetails from "../pages/Setup/CompanyDetails";
-import Department from "../pages/Setup/Department";
-import Employee from "../pages/Setup/Employee";
-import Country from "../pages/Master/Country";
-import State from "../pages/Master/State";
-import City from "../pages/Master/City";
-import EmailSetup from "../pages/CMS/EmailSetup";
-import EmailFor from "../pages/CMS/EmailFor";
-import EmailTo from "../pages/CMS/EmailTo";
-import EmailTemplate from "../pages/CMS/EmailTemplate";
-import Dashboard from "../pages/Dashboard/Dashboard";
-import MenuGroup from "../pages/Master/MenuGroup";
-import MenuMaster from "../pages/Master/MenuMaster";
-import EmployeeRoles from "../pages/Setup/EmployeeRoles";
-import RoleMaster from "../pages/Master/RoleMaster";
-import CurrencyMaster from "../pages/Master/CurrencyMaster";
-import LoginAttemptLogs from "../pages/Master/LoginAttemptLogs";
-import BlogCategory from "../pages/CMS/BlogCategory";
-import BlogTag from "../pages/CMS/BlogTag";
-import BlogMaster from "../pages/CMS/BlogMaster";
-import FaqCategory from "../pages/Setup/FaqCategory";
-import Faq from "../pages/Setup/Faq";
-import GuidesGallery from "../pages/HelpGuides/GuidesGallery";
-import ManageGuides from "../pages/HelpGuides/ManageGuides";
-import Members from "../pages/Members/Members";
-import Trainers from "../pages/Trainers/Trainers";
-import CashFlow from "../pages/Accounts/CashFlow";
-import ExpenseCategories from "../pages/Accounts/ExpenseCategories";
-import MembershipPlans from "../pages/Master/MembershipPlans";
-import BranchMaster from "../pages/Master/BranchMaster";
-import MemberExercisePlan from "../pages/Master/MemberExercisePlan";
+const Login = lazy(() => import("../pages/Authentication/Login"));
+const UserProfile = lazy(() => import("../pages/Authentication/user-profile"));
+const CompanyDetails = lazy(() => import("../pages/Setup/CompanyDetails"));
+const Department = lazy(() => import("../pages/Setup/Department"));
+const Employee = lazy(() => import("../pages/Setup/Employee"));
+const Country = lazy(() => import("../pages/Master/Country"));
+const State = lazy(() => import("../pages/Master/State"));
+const City = lazy(() => import("../pages/Master/City"));
+const EmailSetup = lazy(() => import("../pages/CMS/EmailSetup"));
+const EmailFor = lazy(() => import("../pages/CMS/EmailFor"));
+const EmailTo = lazy(() => import("../pages/CMS/EmailTo"));
+const EmailTemplate = lazy(() => import("../pages/CMS/EmailTemplate"));
+const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard"));
+const MenuGroup = lazy(() => import("../pages/Master/MenuGroup"));
+const MenuMaster = lazy(() => import("../pages/Master/MenuMaster"));
+const EmployeeRoles = lazy(() => import("../pages/Setup/EmployeeRoles"));
+const RoleMaster = lazy(() => import("../pages/Master/RoleMaster"));
+const CurrencyMaster = lazy(() => import("../pages/Master/CurrencyMaster"));
+const LoginAttemptLogs = lazy(() => import("../pages/Master/LoginAttemptLogs"));
+const BlogCategory = lazy(() => import("../pages/CMS/BlogCategory"));
+const BlogTag = lazy(() => import("../pages/CMS/BlogTag"));
+const BlogMaster = lazy(() => import("../pages/CMS/BlogMaster"));
+const FaqCategory = lazy(() => import("../pages/Setup/FaqCategory"));
+const Faq = lazy(() => import("../pages/Setup/Faq"));
+const GuidesGallery = lazy(() => import("../pages/HelpGuides/GuidesGallery"));
+const ManageGuides = lazy(() => import("../pages/HelpGuides/ManageGuides"));
+const Members = lazy(() => import("../pages/Members/Members"));
+const Trainers = lazy(() => import("../pages/Trainers/Trainers"));
+const CashFlow = lazy(() => import("../pages/Accounts/CashFlow"));
+const ExpenseCategories = lazy(() => import("../pages/Accounts/ExpenseCategories"));
+const MembershipPlans = lazy(() => import("../pages/Master/MembershipPlans"));
+const BranchMaster = lazy(() => import("../pages/Master/BranchMaster"));
+const MemberExercisePlan = lazy(() => import("../pages/Master/MemberExercisePlan"));
 
 
 const authProtectedRoutes = [

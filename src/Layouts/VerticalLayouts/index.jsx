@@ -319,7 +319,15 @@ const VerticalLayout = (props) => {
         if (loading) {
             return (
                 <li className="nav-item">
-                    <span className="nav-link">Loading menus...</span>
+                    <span className="nav-link d-flex align-items-center gap-2">
+                        {/* A bare text label read as a stuck screen; a spinner reads as progress. */}
+                        <span
+                            className="spinner-border spinner-border-sm text-primary"
+                            role="status"
+                            aria-hidden="true"
+                        />
+                        <span>Loading menus...</span>
+                    </span>
                 </li>
             );
         }
