@@ -1240,9 +1240,8 @@ const Login = () => {
 
                                                         <div className="mt-4">
                                                             <Button
-                                                                type="button"
+                                                                type="submit"
                                                                 className="w-100"
-                                                                onClick={login}
                                                                 disabled={
                                                                     isLoginLoading || isLocked
                                                                 }
