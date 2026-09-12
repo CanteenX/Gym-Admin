@@ -482,3 +482,78 @@ $navy-tint: #eef1f8;
 
 // Table row hover: a faint navy wash rather than grey mud.
 .table tbody tr:hover { background-color: #f6f8fc; }
+
+// ---- Navy: the selectors the layer above restated, and these did not ----
+//
+// The charcoal block earlier in this file paints #3a3f47 on links, focus rings,
+// pagination, tab/pill active states, checked checkboxes and dropdown-active.
+// The NAVY block then restated .btn-primary and .text-primary but NOT these, so
+// the app shipped navy buttons sitting beside charcoal links and charcoal focus
+// rings - two brand colours on the same screen.
+//
+// Restated here rather than edited in place: the earlier block stays intact, and
+// this whole hunk can be reverted in one commit if any of it reads wrong.
+//
+// Safe for the sidebar: Sidebar.jsx injects `.navbar-nav .nav-link { color }`,
+// which outranks a bare `a` selector, so dark-sidebar links keep their own
+// colour rather than turning navy-on-navy.
+
+.btn-outline-primary {
+    color: $navy-700;
+    border-color: $navy-700;
+
+    &:hover, &:focus, &:active {
+        background-color: $navy-700 !important;
+        border-color: $navy-700 !important;
+        color: #fff !important;
+    }
+}
+
+a {
+    color: $navy-700;
+
+    &:hover { color: $navy-800; }
+}
+
+.form-control,
+.form-select {
+    &:focus {
+        border-color: $navy-600;
+        // A tinted ring reads as "this is our brand" where the old neutral
+        // black shadow read as a browser default.
+        box-shadow: 0 0 0 3px rgba(34, 52, 107, 0.15);
+    }
+}
+
+.form-check-input:checked {
+    background-color: $navy-700;
+    border-color: $navy-700;
+}
+
+.nav-pills .nav-link.active,
+.nav-tabs .nav-link.active {
+    color: $navy-700;
+}
+
+.nav-pills .nav-link.active {
+    background-color: $navy-700;
+    color: #fff;
+}
+
+.page-item.active .page-link {
+    background-color: $navy-700;
+    border-color: $navy-700;
+    color: #fff;
+}
+
+.dropdown-item {
+    &:hover, &:focus {
+        background-color: $navy-tint;
+        color: $navy-800;
+    }
+
+    &.active, &:active {
+        background-color: $navy-700;
+        color: #fff;
+    }
+}

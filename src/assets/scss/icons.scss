@@ -10,5 +10,8 @@ File: Icons Css File
 // Icons Scss
 @import "plugins/icons/materialdesignicons";
 @import "plugins/icons/boxicons";
-@import "plugins/icons/line-awesome";
+// line-awesome dropped: 122KB of CSS declaring 3 webfont families, with zero
+// uses in any reachable JSX and zero `la-` icons among the 17 icon classes
+// stored in the production database (all remixicon). IconPicker only ever
+// offered ri-/bx-, so no admin could have selected one.
 @import "plugins/icons/remixicon";
