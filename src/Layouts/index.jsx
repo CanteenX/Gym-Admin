@@ -613,7 +613,11 @@ const Layout = (props) => {
                 layoutModeType={layoutModeType}
                 onChangeLayoutMode={onChangeLayoutMode}
                 onToggleSettings={() => setShowSettings(!showSettings)}
-                showSearchMenu={adminData?.enableSearchMenu !== false}
+                // previewSearchMenu tracks the customizer's live preview and is reverted to
+                    // adminData.enableSearchMenu when the panel closes, so this still shows
+                    // the saved value when nobody is previewing. Reading the saved field
+                    // directly made this the only setting with no live preview.
+                    showSearchMenu={previewSearchMenu}
             />
             <Sidebar layoutType="vertical" />
             <div className="main-content">

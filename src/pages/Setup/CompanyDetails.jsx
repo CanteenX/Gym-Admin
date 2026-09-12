@@ -727,6 +727,17 @@ const CompanyDetails = () => {
                       <div 
                         className="premium-upload-dropzone" 
                         onClick={() => imageRef.current && imageRef.current.click()}
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Upload logo"
+                        onKeyDown={(e) => {
+                          // The real file input is display:none, so it is not tabbable; this
+                          // makes the dropzone itself operable by keyboard.
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            imageRef.current && imageRef.current.click();
+                          }
+                        }}
                         onDragOver={handleDragOver}
                         onDrop={handleLogoDrop}
                         style={{ padding: "16px 10px" }}
@@ -778,6 +789,17 @@ const CompanyDetails = () => {
                         <div 
                           className="premium-upload-dropzone" 
                           onClick={() => faviconRef.current && faviconRef.current.click()}
+                          role="button"
+                          tabIndex={0}
+                          aria-label="Upload favicon"
+                          onKeyDown={(e) => {
+                            // The real file input is display:none, so it is not tabbable; this
+                            // makes the dropzone itself operable by keyboard.
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              faviconRef.current && faviconRef.current.click();
+                            }
+                          }}
                           onDragOver={handleDragOver}
                           onDrop={handleFaviconDrop}
                           style={{ padding: "16px 8px", minHeight: "100px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}
@@ -825,6 +847,17 @@ const CompanyDetails = () => {
                         <div 
                           className="premium-upload-dropzone" 
                           onClick={() => loginBannerRef.current && loginBannerRef.current.click()}
+                          role="button"
+                          tabIndex={0}
+                          aria-label="Upload login banner"
+                          onKeyDown={(e) => {
+                            // The real file input is display:none, so it is not tabbable; this
+                            // makes the dropzone itself operable by keyboard.
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              loginBannerRef.current && loginBannerRef.current.click();
+                            }
+                          }}
                           onDragOver={handleDragOver}
                           onDrop={handleLoginBannerDrop}
                           style={{ padding: "16px 8px", minHeight: "100px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}

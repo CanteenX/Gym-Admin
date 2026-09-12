@@ -919,7 +919,9 @@ const EmployeeRoles = () => {
                       <i className="bx bx-user me-1"></i>{" "}Select Role
                     </Label>
                     <Select
-                      id="employeeSelect"
+                      // react-select applies `id` to its wrapper div; `inputId` is what
+                      // reaches the real input, which is what htmlFor needs.
+                      inputId="employeeSelect"
                       options={roles}
                       value={selectedRole}
                       onChange={(val) => {

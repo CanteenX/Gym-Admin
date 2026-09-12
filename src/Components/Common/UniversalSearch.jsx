@@ -216,6 +216,10 @@ const UniversalSearch = () => {
         >
             <Select
                 ref={selectRef}
+                inputId="global-menu-search"
+                // react-select renders `placeholder` as a div, not an input
+                // attribute, so it gives the field no accessible name.
+                aria-label="Search menus"
                 options={searchOptions}
                 onChange={handleSelect}
                 placeholder="Search menus... (Ctrl+S)"
