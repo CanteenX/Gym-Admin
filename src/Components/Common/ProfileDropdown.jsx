@@ -12,13 +12,14 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { logout } from "../../api/auth.api";
 import config from "../../config";
+import { fileUrl } from "@/utils/fileUrl";
 
 const ProfileDropdown = () => {
     const navigate = useNavigate();
     const { adminData, setAdminData, role } = useContext(AuthContext);
 
     const logoSrc = adminData?.logo
-        ? (adminData.logo.startsWith("http") ? adminData.logo : `${config.api.API_URL}/${adminData.logo.replace(/^\/+/, "")}`)
+        ? fileUrl(adminData.logo)
         : logo;
 
     const handleLogout = async () => {

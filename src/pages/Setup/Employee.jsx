@@ -45,6 +45,7 @@ import { MenuContext } from "../../context/MenuContext";
 import { getAllRoles } from "../../api/roles.api";
 import { listBranches } from "../../api/branches.api";
 import config from "../../config";
+import { fileUrl } from "@/utils/fileUrl";
 
 const Employee = () => {
   const { adminData } = useContext(AuthContext);
@@ -1380,7 +1381,7 @@ const Employee = () => {
           <div className="d-flex align-items-center gap-2">
             {row.logo && (
               <img
-                src={`${config.api.API_URL}/${row.logo.replace(/^\/+/, "")}`}
+                src={fileUrl(row.logo)}
                 alt="logo"
                 style={{ width: "24px", height: "24px", objectFit: "contain" }}
               />

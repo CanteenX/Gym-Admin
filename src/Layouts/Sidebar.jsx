@@ -11,12 +11,13 @@ import TwoColumnLayout from "./TwoColumnLayout";
 import { Container } from "reactstrap";
 import HorizontalLayout from "./HorizontalLayout";
 import { AuthContext } from "../context/AuthContext";
+import { fileUrl } from "@/utils/fileUrl";
 
 const Sidebar = ({ layoutType }) => {
     const { adminData } = useContext(AuthContext);
 
     const logoSrc = adminData?.logo
-        ? (adminData.logo.startsWith("http") ? adminData.logo : `${config.api.API_URL}/${adminData.logo.replace(/^\/+/, "")}`)
+        ? fileUrl(adminData.logo)
         : logo;
 
     useEffect(() => {

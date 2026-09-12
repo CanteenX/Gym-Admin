@@ -10,6 +10,7 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 import ThemeCustomizer from "../Components/Common/ThemeCustomizer";
+import { fileUrl } from "@/utils/fileUrl";
 
 const Layout = (props) => {
     const { adminData } = useContext(AuthContext);
@@ -476,7 +477,7 @@ const Layout = (props) => {
     // Update favicon dynamically
     useEffect(() => {
         if (adminData?.favicon) {
-            const faviconUrl = `${config.api.API_URL}/${adminData.favicon.replace(/^\/+/, "")}`;
+            const faviconUrl = fileUrl(adminData.favicon);
             let link = document.querySelector("link[rel~='icon']");
             if (!link) {
                 link = document.createElement("link");

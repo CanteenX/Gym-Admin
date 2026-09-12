@@ -7,6 +7,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
     plugins: [react()],
+    // The admin SPA is served from /admin on the shared Vercel domain, so every
+    // asset URL and the react-router basename must carry that prefix. main.jsx
+    // already reads import.meta.env.BASE_URL, so setting base here is enough.
+    //
+    // Overridable because the legacy FTP/PM2 deployment serves the same build at
+    // the domain root instead (Express maps out/admin to "/"); that target must
+    // build with ADMIN_BASE_PATH=/ or every asset 404s.
+    base: process.env.ADMIN_BASE_PATH || "/admin/",
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),

@@ -27,6 +27,7 @@ import {
     resetPassword,
 } from "../../api/auth.api";
 import { useLoginAttempt } from "../../hooks/useLoginAttempt";
+import { fileUrl } from "@/utils/fileUrl";
 
 const initialState = {
     email: "",
@@ -797,11 +798,11 @@ const Login = () => {
     const [publicCompany, setPublicCompany] = useState(null);
 
     const logoSrc = publicCompany?.logo
-        ? (publicCompany.logo.startsWith("http") ? publicCompany.logo : `${config.api.API_URL}/${publicCompany.logo.replace(/^\/+/, "")}`)
+        ? fileUrl(publicCompany.logo)
         : logo;
 
     const sideLogoSrc = publicCompany?.loginBanner
-        ? (publicCompany.loginBanner.startsWith("http") ? publicCompany.loginBanner : `${config.api.API_URL}/${publicCompany.loginBanner.replace(/^\/+/, "")}`)
+        ? fileUrl(publicCompany.loginBanner)
         : bgImage;
 
     const loadBranding = (emailVal = "") => {
@@ -812,7 +813,7 @@ const Login = () => {
                     
                     // Update favicon dynamically on login page mount
                     if (res.data.data.favicon) {
-                        const faviconUrl = `${config.api.API_URL}/${res.data.data.favicon.replace(/^\/+/, "")}`;
+                        const faviconUrl = fileUrl(res.data.data.favicon);
                         let link = document.querySelector("link[rel~='icon']");
                         if (!link) {
                             link = document.createElement("link");
