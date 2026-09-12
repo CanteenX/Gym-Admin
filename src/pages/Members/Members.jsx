@@ -794,7 +794,7 @@ const Members = () => {
             {permissions.edit && daysUntil(row.endDate) < 0 && (
               <button
                 className="btn btn-sm btn-warning rounded-circle d-flex align-items-center justify-content-center p-0"
-                style={{ width: 28, height: 28 }}
+                style={{ width: 32, height: 32 }}
                 onClick={() => openRenewModal(row)}
                 title={`Renew membership — expired ${Math.abs(daysUntil(row.endDate))} day(s) ago`}
               >

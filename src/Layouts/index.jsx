@@ -405,6 +405,43 @@ const Layout = (props) => {
         root.style.setProperty('--search-accent-hover', addDark);
         root.style.setProperty('--search-accent-shadow', `rgba(${addR}, ${addG}, ${addB}, 0.15)`);
         root.style.setProperty('--search-accent-contrast', addContrast);
+
+        // ---- Flatten every gradient button background ----
+        //
+        // Four buttonType branches above (contained / outline / soft /
+        // animated) each fall back to a linear-gradient when buttonTheme is
+        // unset, and that fallback is what production was running - so save,
+        // edit and delete rendered as saturated teal and orange gradient
+        // pills on a navy panel.
+        //
+        // Rather than rewrite all four branches (and risk missing one, or a
+        // fifth being added later), any gradient that was just written is
+        // replaced with its flat base colour here. This is the single place
+        // that guarantees no button ships a gradient.
+        const FLAT = {
+            "--btn-success-bg": addColor,
+            "--btn-success-hover-bg": addDark,
+            "--btn-primary-bg": addColor,
+            "--btn-primary-hover-bg": addDark,
+            "--btn-danger-bg": removeColor,
+            "--btn-danger-hover-bg": removeDark,
+        };
+        for (const [prop, flat] of Object.entries(FLAT)) {
+            if (root.style.getPropertyValue(prop).includes("gradient")) {
+                root.style.setProperty(prop, flat);
+            }
+        }
+        // Gradient branches set border to transparent, which leaves a flat
+        // fill looking unfinished; match the border to the fill instead.
+        for (const [bg, border] of [
+            ["--btn-success-bg", "--btn-success-border"],
+            ["--btn-primary-bg", "--btn-primary-border"],
+            ["--btn-danger-bg", "--btn-danger-border"],
+        ]) {
+            if (root.style.getPropertyValue(border).trim() === "transparent") {
+                root.style.setProperty(border, root.style.getPropertyValue(bg));
+            }
+        }
     }, [adjustColorBrightness]);
 
     /**
@@ -429,7 +466,7 @@ const Layout = (props) => {
             const savedAddText = adminData.addButtonTextColor || "";
             const savedRemoveText = adminData.removeButtonTextColor || "";
             const savedRadius = adminData.buttonStyle?.borderRadius || "8px";
-            const savedTheme = adminData.buttonStyle?.themeType || "gradient";
+            const savedTheme = adminData.buttonStyle?.themeType || "solid";
             const savedType = adminData.buttonStyle?.buttonType || "contained";
             const savedSearch = adminData.enableSearchMenu !== false;
             applyTheme(savedBg, savedAdd, savedRemove, savedRadius, savedTheme, savedType, savedSearch, savedAddText, savedRemoveText);
@@ -446,7 +483,7 @@ const Layout = (props) => {
         const savedAddText = adminData?.addButtonTextColor || "";
         const savedRemoveText = adminData?.removeButtonTextColor || "";
         const savedRadius = adminData?.buttonStyle?.borderRadius || "8px";
-        const savedTheme = adminData?.buttonStyle?.themeType || "gradient";
+        const savedTheme = adminData?.buttonStyle?.themeType || "solid";
         const savedType = adminData?.buttonStyle?.buttonType || "contained";
         const savedSearch = adminData?.enableSearchMenu !== false;
         applyTheme(savedBg, savedAdd, savedRemove, savedRadius, savedTheme, savedType, savedSearch, savedAddText, savedRemoveText);

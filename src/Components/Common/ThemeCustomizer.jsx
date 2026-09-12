@@ -10,12 +10,12 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
 
     // Initial state setup
     const [sidebarBgColor, setSidebarBgColor] = useState("#224c99");
-    const [addButtonColor, setAddButtonColor] = useState("#0ab39c");
-    const [removeButtonColor, setRemoveButtonColor] = useState("#f06548");
+    const [addButtonColor, setAddButtonColor] = useState("#4b7c5c");
+    const [removeButtonColor, setRemoveButtonColor] = useState("#a83a32");
     const [addButtonTextColor, setAddButtonTextColor] = useState("#ffffff");
     const [removeButtonTextColor, setRemoveButtonTextColor] = useState("#ffffff");
     const [borderRadius, setBorderRadius] = useState("8px");
-    const [themeType, setThemeType] = useState("gradient");
+    const [themeType, setThemeType] = useState("solid");
     const [buttonType, setButtonType] = useState("contained");
     const [enableSearchMenu, setEnableSearchMenu] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -26,13 +26,13 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
             const savedBg = adminData.sidebarBgColor || "#224c99";
             setSidebarBgColor(savedBg);
             setAddButtonColor(adminData.addButtonColor || savedBg);
-            setRemoveButtonColor(adminData.removeButtonColor || "#f06548");
+            setRemoveButtonColor(adminData.removeButtonColor || "#a83a32");
             setAddButtonTextColor(adminData.addButtonTextColor || "#ffffff");
             setRemoveButtonTextColor(adminData.removeButtonTextColor || "#ffffff");
             setEnableSearchMenu(adminData.enableSearchMenu !== false);
             if (adminData.buttonStyle) {
                 setBorderRadius(adminData.buttonStyle.borderRadius || "8px");
-                setThemeType(adminData.buttonStyle.themeType || "gradient");
+                setThemeType(adminData.buttonStyle.themeType || "solid");
                 setButtonType(adminData.buttonStyle.buttonType || "contained");
             }
         }
@@ -533,13 +533,9 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                             >
                                 Solid Flat
                             </button>
-                            <button
-                                type="button"
-                                className={`style-btn ${themeType === "gradient" ? "active" : ""}`}
-                                onClick={() => setThemeType("gradient")}
-                            >
-                                Modern Gradient
-                            </button>
+                            {/* "Modern Gradient" removed: gradient button fills were the default and
+                                shipped saturated teal/orange pills on a navy panel. applyTheme also
+                                flattens any gradient it is handed, so this option was a no-op. */}
                             <button
                                 type="button"
                                 className={`style-btn ${themeType === "glassmorphic" ? "active" : ""}`}
