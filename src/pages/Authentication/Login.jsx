@@ -86,7 +86,7 @@ const ForgotPasswordForm = ({
                     <div className="text-center">
                         <h2
                             className="mobile-heading"
-                            style={{ color: "#0d6efd", fontWeight: "700" }}
+                            style={{ color: "#22346b", fontWeight: "700" }}
                         >
                             FORGOT PASSWORD
                         </h2>
@@ -158,7 +158,7 @@ const ForgotPasswordForm = ({
                     <div className="text-center">
                         <h2
                             className="mobile-heading"
-                            style={{ color: "#0d6efd", fontWeight: "700" }}
+                            style={{ color: "#22346b", fontWeight: "700" }}
                         >
                             VERIFY OTP
                         </h2>
@@ -271,7 +271,7 @@ const ForgotPasswordForm = ({
                     <div className="text-center">
                         <h2
                             className="mobile-heading"
-                            style={{ color: "#0d6efd", fontWeight: "700" }}
+                            style={{ color: "#22346b", fontWeight: "700" }}
                         >
                             RESET PASSWORD
                         </h2>
@@ -969,23 +969,64 @@ const Login = () => {
                 `}
             </style>
             <div className="auth-wrapper d-flex" style={{ height: "100vh" }}>
+                {/* Brand panel.
+                
+                    Was 70% of the viewport in pale blue, with the 260x70 wordmark stretched
+                    to 300px tall and labelled alt="Background" - a logo standing in for a
+                    hero image. Most of the screen sat empty while the form was squeezed
+                    into the remaining 30%.
+                
+                    Now 58/42, the logo at its own aspect ratio, and the space earns its
+                    keep. A real uploaded loginBanner is shown as an actual cover image. */}
                 <div
-                    className="left-panel d-flex align-items-center justify-content-center"
+                    className="left-panel d-none d-lg-flex align-items-center justify-content-center"
                     style={{
-                        backgroundColor: "#e7f3ff",
-                        width: "70%",
+                        backgroundColor: "#f1f5fb",
+                        width: "58%",
                         height: "100vh",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
+                        borderRight: "1px solid #e3e9f4",
+                        padding: "3rem",
                     }}
                 >
-                    <img src={sideLogoSrc} alt="Background" style={{ height: "300px", maxWidth: "80%", objectFit: "contain" }} />
+                    {publicCompany?.loginBanner ? (
+                        <img
+                            src={sideLogoSrc}
+                            alt=""
+                            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }}
+                        />
+                    ) : (
+                        <div className="text-center" style={{ maxWidth: "460px" }}>
+                            <img src={sideLogoSrc} alt="" style={{ width: "100%", maxWidth: "320px", height: "auto" }} />
+                            <p className="mt-4 mb-0" style={{ color: "#5a6782", fontSize: "1rem", lineHeight: 1.6 }}>
+                                Staff panel for memberships, attendance and daily collections.
+                            </p>
+                            <div className="d-flex justify-content-center gap-2 mt-4">
+                                {["Vasna", "Gotri"].map((b) => (
+                                    <span
+                                        key={b}
+                                        style={{
+                                            fontSize: ".78rem",
+                                            fontWeight: 600,
+                                            letterSpacing: ".05em",
+                                            textTransform: "uppercase",
+                                            color: "#22346b",
+                                            backgroundColor: "#e4ebf7",
+                                            border: "1px solid #d3ddef",
+                                            borderRadius: "999px",
+                                            padding: ".3rem .85rem",
+                                        }}
+                                    >
+                                        {b}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
                 <div
                     className="right-panel d-flex align-items-center justify-content-center"
                     style={{
-                        width: "30%",
+                        width: "42%",
                         backgroundColor: "white",
                         height: "100vh",
                     }}
@@ -996,7 +1037,7 @@ const Login = () => {
                                 <Card
                                     style={{
                                         border: "none",
-                                        boxShadow: "0 4px 24px rgba(0,0,0,0)",
+                                        boxShadow: "0 4px 24px rgba(34,52,107,0.08)",
                                         borderRadius: "12px",
                                     }}
                                 >
@@ -1043,7 +1084,7 @@ const Login = () => {
                                                     <h2
                                                         className="mobile-heading"
                                                         style={{
-                                                            color: "#0d6efd",
+                                                            color: "#22346b",
                                                             fontWeight: "700",
                                                             letterSpacing:
                                                                 "1px",
@@ -1247,9 +1288,9 @@ const Login = () => {
                                                                 }
                                                                 style={{
                                                                     backgroundColor:
-                                                                        "#0d6efd",
+                                                                        "#22346b",
                                                                     borderColor:
-                                                                        "#0d6efd",
+                                                                        "#22346b",
                                                                     padding:
                                                                         "0.65rem 1rem",
                                                                     borderRadius:
@@ -1277,7 +1318,7 @@ const Login = () => {
                                                                     e
                                                                 ) => {
                                                                     e.target.style.backgroundColor =
-                                                                        "#0d6efd";
+                                                                        "#22346b";
                                                                     e.target.style.boxShadow =
                                                                         "none";
                                                                 }}
