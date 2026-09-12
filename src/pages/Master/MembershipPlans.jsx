@@ -586,6 +586,7 @@ const MembershipPlans = () => {
                             type="text"
                             className="form-control form-control-sm search"
                             placeholder="Search plans..."
+                            aria-label="Search membership plans"
                             style={{ paddingLeft: "30px", height: "30px" }}
                             value={query}
                             onChange={(e) => {

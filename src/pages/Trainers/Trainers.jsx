@@ -609,6 +609,7 @@ const Trainers = () => {
                             type="select"
                             className="form-select form-select-sm"
                             value={branchFilter}
+                            aria-label="Filter trainers by branch"
                             onChange={(e) => {
                               setBranchFilter(e.target.value);
                               setPageNo(1);
@@ -630,6 +631,7 @@ const Trainers = () => {
                             type="text"
                             className="form-control form-control-sm search"
                             placeholder="Search name or number..."
+                            aria-label="Search trainers by name or number"
                             style={{ paddingLeft: "30px", height: "30px" }}
                             value={query}
                             onChange={(e) => {

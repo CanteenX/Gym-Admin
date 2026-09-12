@@ -114,6 +114,7 @@ const FormsHeader = ({
               <input
                 className="form-control search"
                 placeholder="Search..."
+                aria-label="Search"
                 onChange={(e) => setQuery(e.target.value)}
               />
               <i className="ri-search-line search-icon "></i>

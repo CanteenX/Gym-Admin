@@ -721,7 +721,7 @@ const CashFlow = () => {
                         </Button>
                       </>
                     )}
-                    <Button color="light" size="sm" onClick={refreshAll}>
+                    <Button color="light" size="sm" onClick={refreshAll} aria-label="Refresh" title="Refresh">
                       <i className="ri-refresh-line align-bottom"></i>
                     </Button>
                   </div>
@@ -815,6 +815,7 @@ const CashFlow = () => {
                         type="text"
                         bsSize="sm"
                         placeholder="Search name, receipt, bill..."
+                        aria-label="Search transactions by name, receipt or bill"
                         value={query}
                         onChange={(e) => {
                           setQuery(e.target.value);

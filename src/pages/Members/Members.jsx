@@ -1509,6 +1509,7 @@ const Members = () => {
                             type="text"
                             className="form-control form-control-sm search"
                             placeholder="Search name or number..."
+                            aria-label="Search members by name or number"
                             style={{ paddingLeft: "30px", height: "30px" }}
                             value={query}
                             onChange={(e) => {

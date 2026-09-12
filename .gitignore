@@ -1,1 +1,4 @@
 node_modules
+
+# Playwright gate output (screenshots, gate-result.json)
+.e2e-out/

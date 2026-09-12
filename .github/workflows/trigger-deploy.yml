@@ -1,8 +1,8 @@
 # Pushing here must make the change live.
 #
-# The production deploy lives in CanteenX/Gym-Server, because one Vercel project
-# serves all three repos from one domain and only that repo can assemble the
-# build. Without this, an admin-panel change sat unreleased until something
+# The production deploy lives in CanteenX/Gym-frontend, because that project owns
+# the domain and its workflow is the one that assembles the admin SPA into the
+# deployment. Without this, an admin-panel change sat unreleased until something
 # unrelated happened to land on Gym-Server.
 #
 # This sends the pushed SHA, so the deploy builds exactly this commit rather
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Ask Gym-Server to deploy this commit
+      - name: Ask Gym-frontend to deploy this commit
         env:
           # GITHUB_TOKEN cannot reach another repository, so this needs a PAT
           # with access to CanteenX/Gym-Server.
@@ -36,6 +36,6 @@ jobs:
           # jq --arg keeps the SHA out of the shell's parsing entirely.
           jq -n --arg sha "$SHA" \
             '{event_type:"deploy", client_payload:{admin_ref:$sha, source:"Gym-Admin"}}' \
-            | gh api repos/CanteenX/Gym-Server/dispatches --input -
+            | gh api repos/CanteenX/Gym-frontend/dispatches --input -
           echo "Dispatched deploy for Gym-Admin@$SHA"
-          echo "Watch: https://github.com/CanteenX/Gym-Server/actions" >> "$GITHUB_STEP_SUMMARY"
+          echo "Watch: https://github.com/CanteenX/Gym-frontend/actions" >> "$GITHUB_STEP_SUMMARY"

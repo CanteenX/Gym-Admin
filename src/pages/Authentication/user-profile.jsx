@@ -23,8 +23,8 @@ const UserProfile = () => {
                                 <Row>
                                     <Col lg={4}>
                                         <div className="mb-3">
-                                            <Label>Employee Name</Label>
-                                            <Input
+                                            <Label htmlFor="profile-employee-name">Employee Name</Label>
+                                            <Input id="profile-employee-name"
                                                 value={adminData?.employeeName || ""}
                                                 disabled
                                             />
@@ -33,8 +33,8 @@ const UserProfile = () => {
 
                                     <Col lg={4}>
                                         <div className="mb-3">
-                                            <Label>Email</Label>
-                                            <Input
+                                            <Label htmlFor="profile-email">Email</Label>
+                                            <Input id="profile-email"
                                                 value={adminData?.emailOffice || ""}
                                                 disabled
                                             />
@@ -43,8 +43,8 @@ const UserProfile = () => {
 
                                     <Col lg={4}>
                                         <div className="mb-3">
-                                            <Label>Mobile Number</Label>
-                                            <Input
+                                            <Label htmlFor="profile-mobile-number">Mobile Number</Label>
+                                            <Input id="profile-mobile-number"
                                                 value={adminData?.mobileNumber || ""}
                                                 disabled
                                             />
@@ -53,8 +53,8 @@ const UserProfile = () => {
 
                                     <Col lg={4}>
                                         <div className="mb-3">
-                                            <Label>Department</Label>
-                                            <Input
+                                            <Label htmlFor="profile-department">Department</Label>
+                                            <Input id="profile-department"
                                                 value={adminData?.departmentId?.departmentName || ""}
                                                 disabled
                                             />
@@ -63,8 +63,8 @@ const UserProfile = () => {
 
                                     <Col lg={4}>
                                         <div className="mb-3">
-                                            <Label>Country</Label>
-                                            <Input
+                                            <Label htmlFor="profile-country">Country</Label>
+                                            <Input id="profile-country"
                                                 value={adminData?.countryId?.countryName || ""}
                                                 disabled
                                             />
@@ -73,8 +73,8 @@ const UserProfile = () => {
 
                                     <Col lg={4}>
                                         <div className="mb-3">
-                                            <Label>State</Label>
-                                            <Input
+                                            <Label htmlFor="profile-state">State</Label>
+                                            <Input id="profile-state"
                                                 value={adminData?.stateId?.stateName || ""}
                                                 disabled
                                             />
@@ -83,8 +83,8 @@ const UserProfile = () => {
 
                                     <Col lg={6}>
                                         <div className="mb-3">
-                                            <Label>City</Label>
-                                            <Input
+                                            <Label htmlFor="profile-city">City</Label>
+                                            <Input id="profile-city"
                                                 value={adminData?.cityId?.cityName || ""}
                                                 disabled
                                             />
@@ -93,8 +93,8 @@ const UserProfile = () => {
 
                                     <Col lg={6}>
                                         <div className="mb-3">
-                                            <Label>Status</Label>
-                                            <Input
+                                            <Label htmlFor="profile-status">Status</Label>
+                                            <Input id="profile-status"
                                                 value={adminData?.isActive ? "Active" : "Inactive"}
                                                 disabled
                                             />
@@ -103,8 +103,8 @@ const UserProfile = () => {
 
                                     <Col lg={12}>
                                         <div className="mb-3">
-                                            <Label>Address</Label>
-                                            <Input
+                                            <Label htmlFor="profile-address">Address</Label>
+                                            <Input id="profile-address"
                                                 type="textarea"
                                                 rows="4"
                                                 value={adminData?.address || ""}
