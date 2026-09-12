@@ -56,38 +56,6 @@ const getUserIP = async () => {
 };
 
 // Function to get user's location with high accuracy
-const getUserLocation = () => {
-    return new Promise((resolve) => {
-        if (!navigator.geolocation) {
-            console.warn('Geolocation is not supported by this browser');
-            resolve({ latitude: null, longitude: null });
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                console.log('Geolocation obtained:', {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy + ' meters'
-                });
-                resolve({
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                });
-            },
-            (error) => {
-                console.error('Geolocation error:', error);
-                resolve({ latitude: null, longitude: null });
-            },
-            {
-                timeout: 15000,
-                maximumAge: 120000
-            }
-        );
-    });
-};
-
 const ForgotPasswordForm = ({
     forgotPasswordStep,
     setForgotPasswordStep,
@@ -692,8 +660,6 @@ const handleLoginResponse = (res, updateFromResponse, setAdminData, setRole, fet
 
 const executeLogin = async ({
     values,
-    locationConsent,
-    ipConsent,
     updateFromResponse,
     setAdminData,
     setRole,
@@ -704,20 +670,15 @@ const executeLogin = async ({
 }) => {
     setIsLoginLoading(true);
     try {
-        const userLocation = await getUserLocation();
-        const securityHeaders = {
-            'X-Client-Latitude': userLocation.latitude?.toString() || '',
-            'X-Client-Longitude': userLocation.longitude?.toString() || '',
-        };
-
+        // Geolocation was awaited here before every login. It prompted the
+        // browser for a permission the product does not need, and stalled the
+        // request until the user answered - or indefinitely if they ignored it.
+        // Every one of these fields is optional server-side, and the request IP
+        // is recorded from req.ip regardless.
         const res = await loginCompany({
             email: values.email,
             password: values.password,
-            locationConsent: locationConsent,
-            ipConsent: ipConsent,
-            clientLatitude: userLocation.latitude,
-            clientLongitude: userLocation.longitude,
-        }, securityHeaders);
+        });
 
         handleLoginResponse(res, updateFromResponse, setAdminData, setRole, fetchMenus, navigate);
     } catch (error) {
@@ -734,8 +695,6 @@ const performLogin = async (e, {
     setErrPassword,
     setIsSubmit,
     setFormErrors,
-    locationConsent,
-    ipConsent,
     isLocked,
     formattedTime,
     updateFromResponse,
@@ -755,22 +714,6 @@ const performLogin = async (e, {
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) return;
-    if (!locationConsent || !ipConsent) return;
-
-    const confirmMessage = `By proceeding, you confirm that you agree to share:
-
-• Your IP Address - for security logging
-• Your Location - for security verification
-
-This information will be used to monitor and protect your account from unauthorized access.
-
-Do you want to continue?`;
-
-    if (!globalThis.confirm(confirmMessage)) {
-        toast.info("Login cancelled. Please accept the sharing consent to continue.");
-        return;
-    }
-
     if (isLocked) {
         toast.error(`Your account is locked. Try again in ${formattedTime}`);
         return;
@@ -778,8 +721,6 @@ Do you want to continue?`;
 
     await executeLogin({
         values,
-        locationConsent,
-        ipConsent,
         updateFromResponse,
         setAdminData,
         setRole,
@@ -859,8 +800,6 @@ const Login = () => {
     const [otpResendDisabled, setOtpResendDisabled] = useState(false);
 
     // Consent checkboxes for location and IP tracking
-    const [locationConsent, setLocationConsent] = useState(false);
-    const [ipConsent, setIpConsent] = useState(false);
 
     // Login attempt limitation hook
     const {
@@ -915,8 +854,6 @@ const Login = () => {
             setErrPassword,
             setIsSubmit,
             setFormErrors,
-            locationConsent,
-            ipConsent,
             isLocked,
             formattedTime,
             updateFromResponse,
@@ -1300,82 +1237,6 @@ const Login = () => {
                                                            
                                                         </div>
 
-                                                        {/* Consent Checkboxes */}
-                                                        <div
-                                                            className="consent-section mb-3 p-3"
-                                                            style={{
-                                                                backgroundColor: "#f8f9fa",
-                                                                borderRadius: "8px",
-                                                                border: "1px solid #e9ecef",
-                                                            }}
-                                                        >
-                                                            <p
-                                                                className="mb-2"
-                                                                style={{
-                                                                    fontSize: "0.85rem",
-                                                                    color: "#6c757d",
-                                                                    fontWeight: "500"
-                                                                }}
-                                                            >
-                                                                <i className="ri-shield-check-line me-1"></i> Security Consent Required
-                                                            </p>
-                                                            <div className="form-check mb-2">
-                                                                <Input
-                                                                    type="checkbox"
-                                                                    className="form-check-input"
-                                                                    id="locationConsent"
-                                                                    checked={locationConsent}
-                                                                    onChange={(e) => setLocationConsent(e.target.checked)}
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        width: "18px",
-                                                                        height: "18px"
-                                                                    }}
-                                                                />
-                                                                <Label
-                                                                    className="form-check-label"
-                                                                    htmlFor="locationConsent"
-                                                                    style={{
-                                                                        fontSize: "0.85rem",
-                                                                        cursor: "pointer",
-                                                                        marginLeft: "4px"
-                                                                    }}
-                                                                >
-                                                                    <i className="ri-map-pin-line me-1" style={{ color: "#0d6efd" }}></i> I consent to location tracking for security purposes
-                                                                    {isSubmit && !locationConsent && (
-                                                                        <span className="text-danger ms-1" style={{ fontSize: "0.8rem" }}>*Required</span>
-                                                                    )}
-                                                                </Label>
-                                                            </div>
-                                                            <div className="form-check">
-                                                                <Input
-                                                                    type="checkbox"
-                                                                    className="form-check-input"
-                                                                    id="ipConsent"
-                                                                    checked={ipConsent}
-                                                                    onChange={(e) => setIpConsent(e.target.checked)}
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        width: "18px",
-                                                                        height: "18px"
-                                                                    }}
-                                                                />
-                                                                <Label
-                                                                    className="form-check-label"
-                                                                    htmlFor="ipConsent"
-                                                                    style={{
-                                                                        fontSize: "0.85rem",
-                                                                        cursor: "pointer",
-                                                                        marginLeft: "4px"
-                                                                    }}
-                                                                >
-                                                                    <i className="ri-global-line me-1" style={{ color: "#0d6efd" }}></i> I consent to IP address tracking for security purposes
-                                                                    {isSubmit && !ipConsent && (
-                                                                        <span className="text-danger ms-1" style={{ fontSize: "0.8rem" }}>*Required</span>
-                                                                    )}
-                                                                </Label>
-                                                            </div>
-                                                        </div>
                                                         <div className="mt-4">
                                                             <Button
                                                                 type="button"

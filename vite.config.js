@@ -53,6 +53,12 @@ export default defineConfig({
     },
     esbuild: {
         jsx: 'automatic',
+        // Drops console.log from production builds while keeping console.error
+        // and console.warn. The app carries ~114 console.log calls, including
+        // one that JSON.stringify'd the whole menu tree on every search render;
+        // marking them pure lets esbuild remove the calls AND the work done to
+        // build their arguments, without touching the source or the dev server.
+        pure: ['console.log', 'console.debug'],
     },
     optimizeDeps: {
         esbuildOptions: {
