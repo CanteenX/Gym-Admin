@@ -20,6 +20,7 @@ import BreadCrumb from "../../Components/Common/BreadCrumb";
 import { AuthContext } from "../../context/AuthContext";
 import { searchGuides } from "../../api/guides.api";
 import config from "../../config";
+import { fileUrl } from "@/utils/fileUrl";
 
 const GuidesGallery = () => {
   const { adminData } = useContext(AuthContext);
@@ -149,8 +150,7 @@ const GuidesGallery = () => {
     } else if (guide.type === "System Video") {
       toggleVideoModal(guide);
     } else if (guide.type === "Document") {
-      const fileUrl = `${config.api.API_URL}/${guide.filePath}`;
-      window.open(fileUrl, "_blank");
+      window.open(fileUrl(guide.filePath), "_blank");
     }
   };
 
@@ -276,7 +276,7 @@ const GuidesGallery = () => {
                         ) : guide.type === "Document" ? (
                           <Button
                             tag="a"
-                            href={`${config.api.API_URL}/${guide.filePath}`}
+                            href={fileUrl(guide.filePath)}
                             target="_blank"
                             rel="noopener noreferrer"
                             color="success"
@@ -337,7 +337,7 @@ const GuidesGallery = () => {
                 ) : selectedGuide.type === "Document" ? (
                   <Button
                     tag="a"
-                    href={`${config.api.API_URL}/${selectedGuide.filePath}`}
+                    href={fileUrl(selectedGuide.filePath)}
                     target="_blank"
                     rel="noopener noreferrer"
                     color="success"

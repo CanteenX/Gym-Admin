@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthContext";
 import { MenuContext } from "../../context/MenuContext";
 import config from "../../config";
+import { fileUrl } from "@/utils/fileUrl";
 import {
   createGuide,
   updateGuide,
@@ -450,7 +451,7 @@ const ManageGuides = () => {
                 </a>
               ) : row.type === "Document" ? (
                 <a
-                  href={`${config.api.API_URL}/${row.filePath}`}
+                  href={fileUrl(row.filePath)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-sm btn-info edit-item-btn d-inline-flex align-items-center gap-1"
@@ -601,7 +602,7 @@ const ManageGuides = () => {
                     <span className="text-muted small">
                       Current file:{" "}
                       <a
-                        href={`${config.api.API_URL}/${existingFilePath}`}
+                        href={fileUrl(existingFilePath)}
                         target="_blank"
                         rel="noreferrer"
                         className="text-primary fw-medium"
@@ -833,7 +834,7 @@ const ManageGuides = () => {
             <div className="mb-4">
               <h6 className="fw-semibold mb-2">Video Playback</h6>
               <video controls width="100%" height="auto" className="rounded bg-dark">
-                <source src={`${config.api.API_URL}/${previewGuide.filePath}`} />
+                <source src={fileUrl(previewGuide.filePath)} />
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -845,7 +846,7 @@ const ManageGuides = () => {
                 <span className="fw-medium">{getFileName(previewGuide.filePath)}</span>
               </div>
               <a
-                href={`${config.api.API_URL}/${previewGuide.filePath}`}
+                href={fileUrl(previewGuide.filePath)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-sm btn-primary"

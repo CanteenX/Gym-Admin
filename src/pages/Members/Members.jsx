@@ -45,6 +45,7 @@ import {
 import { listAllTrainers } from "../../api/trainers.api";
 import { listWorkoutPlans } from "../../api/workoutPlans.api";
 import { listBranches } from "../../api/branches.api";
+import { fileUrl } from "@/utils/fileUrl";
 
 const toInputDate = (value) => {
   if (!value) return "";
@@ -119,18 +120,10 @@ const humanSize = (bytes) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-/** Server stores paths like "uploads\\members\\uuid.webp" — normalise for the browser. */
-const fileUrl = (storedPath) => {
-  if (!storedPath) return "";
-  // Uploads now go to Supabase, which stores a FULL url. Older records still
-  // hold a relative path like "uploads\\members\\x.webp". Prefixing an absolute
-  // url would produce "http://localhost:7002/https://..." and break the image,
-  // so absolute urls pass through untouched and both eras render correctly.
-  if (/^https?:\/\//i.test(storedPath)) return storedPath;
-  const normalised = String(storedPath).replace(/\\/g, "/").replace(/^\/+/, "");
-  const base = import.meta.env?.VITE_API_URL_DEV || "http://localhost:7002";
-  return `${base}/${normalised}`;
-};
+// fileUrl now comes from @/utils/fileUrl. The local copy resolved against
+// VITE_API_URL_DEV and fell back to http://localhost:7002, so member photos and
+// ID proofs pointed at the developer's machine in every production build; it
+// also could not handle the absolute URLs the Supabase and Blob backends store.
 
 const STATUS_TABS = [
   { key: "", label: "All Members" },

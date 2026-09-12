@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { getAllCountries, getStatesByCountry, getCitiesByState } from "../../api/locations.api";
 import { updateCompany } from "../../api/companies.api";
 import config from "../../config";
+import { fileUrl } from "@/utils/fileUrl";
 
 const getInitialState = (adminData) => {
   if (!adminData) {
@@ -511,7 +512,7 @@ const CompanyDetails = () => {
     // blob: URLs are from local file selection, return as-is
     if (preview.startsWith("blob:") || preview.startsWith("http")) return preview;
     // Server paths need the API URL prefix
-    return `${config.api.API_URL}/${preview.replace(/^\/+/, "")}`;
+    return fileUrl(preview);
   };
 
   document.title = `Company Details | Shree Balaji Trade-Wing`;
