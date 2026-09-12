@@ -22,7 +22,14 @@ import config from "@/config";
 export const fileUrl = (stored) => {
   if (!stored) return "";
   const value = String(stored);
-  if (/^(https?:)?\/\//i.test(value) || value.startsWith("data:")) return value;
+  // Absolute http(s) and protocol-relative urls are already loadable.
+  if (/^(https?:)?\/\//i.test(value)) return value;
+
+  // data: is allowed ONLY for images, and blob: for in-page previews. These
+  // values reach href={} in the guides pages, so a stored
+  // "data:text/html,<script>..." would render as a clickable script url;
+  // restricting the media type keeps previews working without that.
+  if (/^data:image\//i.test(value) || value.startsWith("blob:")) return value;
   const normalised = value.split("\\").join("/").replace(/^\/+/, "");
   const base = config.api.API_URL || "";
   return base ? `${base}/${normalised}` : `/${normalised}`;
