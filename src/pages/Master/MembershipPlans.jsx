@@ -379,10 +379,11 @@ const MembershipPlans = () => {
         <Row>
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="codeForm" className="form-label fw-bold">
                 Plan Code <span className="text-danger">*</span>
               </Label>
               <Input
+                id="codeForm"
                 name="code"
                 placeholder="e.g. HALF_YEARLY"
                 value={values.code}
@@ -401,10 +402,11 @@ const MembershipPlans = () => {
 
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="labelForm" className="form-label fw-bold">
                 Plan Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="labelForm"
                 name="label"
                 placeholder="e.g. Half Yearly"
                 value={values.label}
@@ -418,10 +420,11 @@ const MembershipPlans = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="monthsForm" className="form-label fw-bold">
                 Duration (months) <span className="text-danger">*</span>
               </Label>
               <Input
+                id="monthsForm"
                 type="number"
                 min="1"
                 name="months"
@@ -439,10 +442,11 @@ const MembershipPlans = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="defaultFeeForm" className="form-label fw-bold">
                 Default Fee (₹) <span className="text-danger">*</span>
               </Label>
               <Input
+                id="defaultFeeForm"
                 type="number"
                 min="0"
                 name="defaultFee"
@@ -457,8 +461,9 @@ const MembershipPlans = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Sequence</Label>
+              <Label htmlFor="sequenceForm" className="form-label fw-bold">Sequence</Label>
               <Input
+                id="sequenceForm"
                 type="number"
                 name="sequence"
                 value={values.sequence}

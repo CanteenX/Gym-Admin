@@ -464,10 +464,11 @@ const Trainers = () => {
         <Row>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="fullNameTrainer" className="form-label fw-bold">
                 Trainer Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="fullNameTrainer"
                 name="fullName"
                 placeholder="e.g. Rohit Parmar"
                 value={values.fullName}
@@ -480,10 +481,11 @@ const Trainers = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="mobileNumberTrainer" className="form-label fw-bold">
                 Contact Number <span className="text-danger">*</span>
               </Label>
               <Input
+                id="mobileNumberTrainer"
                 name="mobileNumber"
                 placeholder="e.g. 98000 00001"
                 value={values.mobileNumber}
@@ -498,8 +500,9 @@ const Trainers = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Email</Label>
+              <Label htmlFor="emailTrainer" className="form-label fw-bold">Email</Label>
               <Input
+                id="emailTrainer"
                 type="email"
                 name="email"
                 placeholder="optional"
@@ -511,8 +514,9 @@ const Trainers = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Branch</Label>
+              <Label htmlFor="branchTrainer" className="form-label fw-bold">Branch</Label>
               <Input
+                id="branchTrainer"
                 type="select"
                 name="branch"
                 value={values.branch}
@@ -534,8 +538,9 @@ const Trainers = () => {
           </Col>
           <Col md={5}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Notes</Label>
+              <Label htmlFor="notesTrainer" className="form-label fw-bold">Notes</Label>
               <Input
+                id="notesTrainer"
                 name="notes"
                 value={values.notes}
                 onChange={handleChange}

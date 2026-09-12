@@ -385,6 +385,7 @@ const EmailSetup = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="add-email"
                 type="text"
                 placeholder="Enter Email"
                 required
@@ -392,7 +393,7 @@ const EmailSetup = () => {
                 value={values.email}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-email">
                 Email <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -401,6 +402,7 @@ const EmailSetup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-appPassword"
                 type="text"
                 placeholder="Enter App Password"
                 required
@@ -408,7 +410,7 @@ const EmailSetup = () => {
                 value={values.appPassword}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-appPassword">
                 App Password <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -417,6 +419,7 @@ const EmailSetup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-port"
                 type="text"
                 placeholder="Enter Port"
                 required
@@ -424,7 +427,7 @@ const EmailSetup = () => {
                 value={values.port}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-port">
                 Port <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -433,6 +436,7 @@ const EmailSetup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-host"
                 type="text"
                 placeholder="Enter Host"
                 required
@@ -440,7 +444,7 @@ const EmailSetup = () => {
                 value={values.host}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-host">
                 Host <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -450,23 +454,25 @@ const EmailSetup = () => {
 
             <div className=" mb-3">
               <Input
+                id="add-SSL"
                 type="checkbox"
                 className="form-check-input"
                 name="SSL"
                 value={values.SSL}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">SSL</Label>
+              <Label htmlFor="add-SSL" className="form-check-label ms-1">SSL</Label>
             </div>
             <div className=" mb-3">
               <Input
+                id="add-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 value={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="add-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -500,6 +506,7 @@ const EmailSetup = () => {
         <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="edit-email"
                 type="text"
                 placeholder="Enter Email"
                 required
@@ -507,7 +514,7 @@ const EmailSetup = () => {
                 value={values.email}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-email">
                 Email <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -516,6 +523,7 @@ const EmailSetup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-appPassword"
                 type="text"
                 placeholder="Enter App Password"
                 required
@@ -523,7 +531,7 @@ const EmailSetup = () => {
                 value={values.appPassword}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-appPassword">
                 App Password <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -532,6 +540,7 @@ const EmailSetup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-port"
                 type="text"
                 placeholder="Enter Port"
                 required
@@ -539,7 +548,7 @@ const EmailSetup = () => {
                 value={values.port}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-port">
                 Port <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -548,6 +557,7 @@ const EmailSetup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-host"
                 type="text"
                 placeholder="Enter Host"
                 required
@@ -555,7 +565,7 @@ const EmailSetup = () => {
                 value={values.host}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-host">
                 Host <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -565,6 +575,7 @@ const EmailSetup = () => {
 
             <div className=" mb-3">
               <Input
+                id="edit-SSL"
                 type="checkbox"
                 className="form-check-input"
                 name="SSL"
@@ -572,10 +583,11 @@ const EmailSetup = () => {
                 checked={values.SSL}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">SSL</Label>
+              <Label htmlFor="edit-SSL" className="form-check-label ms-1">SSL</Label>
             </div>
             <div className=" mb-3">
               <Input
+                id="edit-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -583,7 +595,7 @@ const EmailSetup = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="edit-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 

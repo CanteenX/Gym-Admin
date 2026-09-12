@@ -446,6 +446,7 @@ const State = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-stateName"
                 type="text"
                 placeholder="Enter State Name"
                 required
@@ -453,7 +454,7 @@ const State = () => {
                 value={values.stateName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-stateName">
                 State <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -462,6 +463,7 @@ const State = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-stateCode"
                 type="text"
                 placeholder="Enter Country Code"
                 required
@@ -469,7 +471,7 @@ const State = () => {
                 value={values.stateCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-stateCode">
                 State Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -479,13 +481,14 @@ const State = () => {
 
             <div className=" mb-3">
               <Input
+                id="add-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 value={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="add-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -537,6 +540,7 @@ const State = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-stateName"
                 type="text"
                 placeholder="Enter State Name"
                 required
@@ -544,7 +548,7 @@ const State = () => {
                 value={values.stateName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-stateName">
                 State <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -553,6 +557,7 @@ const State = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-stateCode"
                 type="text"
                 placeholder="Enter Country Code"
                 required
@@ -560,7 +565,7 @@ const State = () => {
                 value={values.stateCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-stateCode">
                 State Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -570,6 +575,7 @@ const State = () => {
 
             <div className=" mb-3">
               <Input
+                id="edit-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -577,7 +583,7 @@ const State = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="edit-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 

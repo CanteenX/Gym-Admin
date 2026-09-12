@@ -459,13 +459,14 @@ const Department = () => {
                     <ModalBody>
                         <div className="form-floating mb-3">
                             <Input
+                                id="add-departmentName"
                                 type="text"
                                 required
                                 name="departmentName"
                                 value={values.departmentName}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="add-departmentName">
                                 Department Name <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -476,13 +477,14 @@ const Department = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                                id="add-departmentCode"
                                 type="text"
                                 required
                                 name="departmentCode"
                                 value={values.departmentCode}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="add-departmentCode">
                                 Department Code <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -493,13 +495,14 @@ const Department = () => {
                         </div>
                         <div className=" mb-3">
                             <Input
+                                id="add-isActive"
                                 type="checkbox"
                                 className="form-check-input"
                                 name="isActive"
                                 value={values.isActive}
                                 onChange={handleCheck}
                             />
-                            <Label className="form-check-label ms-1">
+                            <Label htmlFor="add-isActive" className="form-check-label ms-1">
                                 Is Active
                             </Label>
                         </div>
@@ -535,13 +538,14 @@ const Department = () => {
                     <ModalBody>
                         <div className="form-floating mb-3">
                             <Input
+                                id="edit-departmentName"
                                 type="text"
                                 required
                                 name="departmentName"
                                 value={values.departmentName}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="edit-departmentName">
                                 Department Name <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -552,13 +556,14 @@ const Department = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                                id="edit-departmentCode"
                                 type="text"
                                 required
                                 name="departmentCode"
                                 value={values.departmentCode}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="edit-departmentCode">
                                 Department Code <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -569,6 +574,7 @@ const Department = () => {
                         </div>
                         <div className=" mb-3">
                             <Input
+                                id="edit-isActive"
                                 type="checkbox"
                                 className="form-check-input"
                                 name="isActive"
@@ -576,7 +582,7 @@ const Department = () => {
                                 checked={values.isActive}
                                 onChange={handleCheck}
                             />
-                            <Label className="form-check-label ms-1">
+                            <Label htmlFor="edit-isActive" className="form-check-label ms-1">
                                 Is Active
                             </Label>
                         </div>

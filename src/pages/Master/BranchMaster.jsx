@@ -358,10 +358,11 @@ const BranchMaster = () => {
         <Row>
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="nameForm" className="form-label fw-bold">
                 Branch Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="nameForm"
                 name="name"
                 placeholder="e.g. Vasna"
                 value={values.name}
@@ -379,10 +380,11 @@ const BranchMaster = () => {
 
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="displayNameForm" className="form-label fw-bold">
                 Display Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="displayNameForm"
                 name="displayName"
                 placeholder="e.g. Vasna Branch"
                 value={values.displayName}
@@ -401,8 +403,9 @@ const BranchMaster = () => {
 
           <Col md={8}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Address</Label>
+              <Label htmlFor="addressForm" className="form-label fw-bold">Address</Label>
               <Input
+                id="addressForm"
                 name="address"
                 placeholder="e.g. Vasna Road, Vadodara"
                 value={values.address}
@@ -413,8 +416,9 @@ const BranchMaster = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Phone</Label>
+              <Label htmlFor="phoneForm" className="form-label fw-bold">Phone</Label>
               <Input
+                id="phoneForm"
                 name="phone"
                 placeholder="e.g. 98000 00001"
                 value={values.phone}
@@ -425,8 +429,9 @@ const BranchMaster = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Sequence</Label>
+              <Label htmlFor="sequenceForm" className="form-label fw-bold">Sequence</Label>
               <Input
+                id="sequenceForm"
                 type="number"
                 name="sequence"
                 value={values.sequence}

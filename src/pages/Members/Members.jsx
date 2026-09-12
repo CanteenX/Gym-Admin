@@ -840,10 +840,11 @@ const Members = () => {
         <Row>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="member-fullName" className="form-label fw-bold">
                 Full Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="member-fullName"
                 name="fullName"
                 placeholder="e.g. Rohit Parmar"
                 value={values.fullName}
@@ -856,10 +857,11 @@ const Members = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="member-mobileNumber" className="form-label fw-bold">
                 Contact Number <span className="text-danger">*</span>
               </Label>
               <Input
+                id="member-mobileNumber"
                 name="mobileNumber"
                 placeholder="e.g. 96872 94124"
                 value={values.mobileNumber}
@@ -874,8 +876,9 @@ const Members = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Email</Label>
+              <Label htmlFor="member-email" className="form-label fw-bold">Email</Label>
               <Input
+                id="member-email"
                 type="email"
                 name="email"
                 placeholder="optional"
@@ -887,8 +890,9 @@ const Members = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Gender</Label>
+              <Label htmlFor="member-gender" className="form-label fw-bold">Gender</Label>
               <Input
+                id="member-gender"
                 type="select"
                 name="gender"
                 value={values.gender}
@@ -903,8 +907,9 @@ const Members = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Date of Birth</Label>
+              <Label htmlFor="member-dateOfBirth" className="form-label fw-bold">Date of Birth</Label>
               <Input
+                id="member-dateOfBirth"
                 type="date"
                 name="dateOfBirth"
                 value={values.dateOfBirth}
@@ -914,8 +919,9 @@ const Members = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Branch</Label>
+              <Label htmlFor="member-branch" className="form-label fw-bold">Branch</Label>
               <Input
+                id="member-branch"
                 type="select"
                 name="branch"
                 value={values.branch}
@@ -938,10 +944,11 @@ const Members = () => {
 
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="member-emergencyContactName" className="form-label fw-bold">
                 Emergency Contact Name
               </Label>
               <Input
+                id="member-emergencyContactName"
                 name="emergencyContactName"
                 value={values.emergencyContactName}
                 onChange={handleChange}
@@ -950,10 +957,11 @@ const Members = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="member-emergencyContactNumber" className="form-label fw-bold">
                 Emergency Contact Number
               </Label>
               <Input
+                id="member-emergencyContactNumber"
                 name="emergencyContactNumber"
                 value={values.emergencyContactNumber}
                 onChange={handleChange}
@@ -962,8 +970,9 @@ const Members = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Address</Label>
+              <Label htmlFor="member-address" className="form-label fw-bold">Address</Label>
               <Input
+                id="member-address"
                 name="address"
                 value={values.address}
                 onChange={handleChange}
@@ -972,8 +981,9 @@ const Members = () => {
           </Col>
           <Col md={4}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Height (cm)</Label>
+              <Label htmlFor="member-heightCm" className="form-label fw-bold">Height (cm)</Label>
               <Input
+                id="member-heightCm"
                 type="number"
                 name="heightCm"
                 min={50}
@@ -1002,8 +1012,9 @@ const Members = () => {
         <Row>
           <Col md={3}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Plan</Label>
+              <Label htmlFor="member-planCode" className="form-label fw-bold">Plan</Label>
               <Input
+                id="member-planCode"
                 type="select"
                 name="planCode"
                 value={values.planCode}
@@ -1019,10 +1030,11 @@ const Members = () => {
           </Col>
           <Col md={3}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="member-startDate" className="form-label fw-bold">
                 Start Date <span className="text-danger">*</span>
               </Label>
               <Input
+                id="member-startDate"
                 type="date"
                 name="startDate"
                 value={values.startDate}
@@ -1035,8 +1047,9 @@ const Members = () => {
           </Col>
           <Col md={3}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">End Date</Label>
+              <Label htmlFor="member-endDate" className="form-label fw-bold">End Date</Label>
               <Input
+                id="member-endDate"
                 type="date"
                 name="endDate"
                 value={values.endDate}
@@ -1052,8 +1065,9 @@ const Members = () => {
           </Col>
           <Col md={3}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Total Fee (₹)</Label>
+              <Label htmlFor="member-totalFee" className="form-label fw-bold">Total Fee (₹)</Label>
               <Input
+                id="member-totalFee"
                 type="number"
                 name="totalFee"
                 value={values.totalFee}
@@ -1070,7 +1084,7 @@ const Members = () => {
         {trainerRequired && (
           <Row className="bg-light rounded p-2 mx-0 mb-3">
             <Col md={12}>
-              <Label className="form-label fw-bold mb-2">
+              <Label htmlFor="member-trainerId" className="form-label fw-bold mb-2">
                 <i className="ri-user-star-line align-bottom me-1"></i>
                 Assigned Trainer <span className="text-danger">*</span>
               </Label>
@@ -1078,6 +1092,7 @@ const Members = () => {
             <Col md={6}>
               <FormGroup className="mb-2">
                 <Input
+                  id="member-trainerId"
                   type="select"
                   name="trainerId"
                   value={values.trainerId}
@@ -1111,11 +1126,12 @@ const Members = () => {
         <Row className="mb-3">
           <Col md={6}>
             <FormGroup className="mb-0">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="member-workoutPlanId" className="form-label fw-bold">
                 <i className="ri-run-line align-bottom me-1"></i>
                 Exercise Plan
               </Label>
               <Input
+                id="member-workoutPlanId"
                 type="select"
                 name="workoutPlanId"
                 value={values.workoutPlanId}
@@ -1146,8 +1162,9 @@ const Members = () => {
             </Col>
             <Col md={3}>
               <FormGroup className="mb-2">
-                <Label className="form-label small">Amount Received (₹)</Label>
+                <Label htmlFor="join-amount" className="form-label small">Amount Received (₹)</Label>
                 <Input
+                  id="join-amount"
                   type="number"
                   name="amount"
                   value={values.initialPayment.amount}
@@ -1157,8 +1174,9 @@ const Members = () => {
             </Col>
             <Col md={3}>
               <FormGroup className="mb-2">
-                <Label className="form-label small">Mode</Label>
+                <Label htmlFor="join-mode" className="form-label small">Mode</Label>
                 <Input
+                  id="join-mode"
                   type="select"
                   name="mode"
                   value={values.initialPayment.mode}
@@ -1174,8 +1192,9 @@ const Members = () => {
             </Col>
             <Col md={3}>
               <FormGroup className="mb-2">
-                <Label className="form-label small">Receipt No.</Label>
+                <Label htmlFor="join-receiptNo" className="form-label small">Receipt No.</Label>
                 <Input
+                  id="join-receiptNo"
                   name="receiptNo"
                   value={values.initialPayment.receiptNo}
                   onChange={handlePaymentField}
@@ -1184,8 +1203,9 @@ const Members = () => {
             </Col>
             <Col md={3}>
               <FormGroup className="mb-2">
-                <Label className="form-label small">Note</Label>
+                <Label htmlFor="join-note" className="form-label small">Note</Label>
                 <Input
+                  id="join-note"
                   name="note"
                   value={values.initialPayment.note}
                   onChange={handlePaymentField}
@@ -1205,8 +1225,9 @@ const Members = () => {
         <Row>
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Member Photo</Label>
+              <Label htmlFor="member-photo" className="form-label fw-bold">Member Photo</Label>
               <Input
+                id="member-photo"
                 type="file"
                 name="photo"
                 accept={PHOTO_ACCEPT}
@@ -1257,8 +1278,9 @@ const Members = () => {
 
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">ID Proof</Label>
+              <Label htmlFor="member-idProof" className="form-label fw-bold">ID Proof</Label>
               <Input
+                id="member-idProof"
                 type="file"
                 name="idProof"
                 accept={ID_PROOF_ACCEPT}
@@ -1323,8 +1345,9 @@ const Members = () => {
               </Col>
               <Col md={4}>
                 <FormGroup className="mb-2">
-                  <Label className="form-label small">Login ID</Label>
+                  <Label htmlFor="portal-loginId" className="form-label small">Login ID</Label>
                   <Input
+                    id="portal-loginId"
                     type="text"
                     value={portalLoginId}
                     placeholder={values.mobileNumber || "mobile number"}
@@ -1337,10 +1360,11 @@ const Members = () => {
               </Col>
               <Col md={4}>
                 <FormGroup className="mb-2">
-                  <Label className="form-label small">
+                  <Label htmlFor="portal-password" className="form-label small">
                     {hasPortalAccess ? "Reset password" : "Set password"}
                   </Label>
                   <Input
+                    id="portal-password"
                     type="text"
                     autoComplete="new-password"
                     value={portalPassword}
@@ -1390,8 +1414,9 @@ const Members = () => {
         <Row>
           <Col md={9}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Notes</Label>
+              <Label htmlFor="member-notes" className="form-label fw-bold">Notes</Label>
               <Input
+                id="member-notes"
                 type="textarea"
                 rows="2"
                 name="notes"
@@ -1593,8 +1618,9 @@ const Members = () => {
             </span>
           </p>
           <FormGroup>
-            <Label className="fw-bold">Amount (₹)</Label>
+            <Label htmlFor="pay-amount" className="fw-bold">Amount (₹)</Label>
             <Input
+              id="pay-amount"
               type="number"
               value={payForm.amount}
               onChange={(e) =>
@@ -1603,8 +1629,9 @@ const Members = () => {
             />
           </FormGroup>
           <FormGroup>
-            <Label className="fw-bold">Mode</Label>
+            <Label htmlFor="pay-mode" className="fw-bold">Mode</Label>
             <Input
+              id="pay-mode"
               type="select"
               value={payForm.mode}
               onChange={(e) => setPayForm({ ...payForm, mode: e.target.value })}
@@ -1617,8 +1644,9 @@ const Members = () => {
             </Input>
           </FormGroup>
           <FormGroup>
-            <Label className="fw-bold">Receipt No.</Label>
+            <Label htmlFor="pay-receiptNo" className="fw-bold">Receipt No.</Label>
             <Input
+              id="pay-receiptNo"
               value={payForm.receiptNo}
               onChange={(e) =>
                 setPayForm({ ...payForm, receiptNo: e.target.value })
@@ -1647,8 +1675,9 @@ const Members = () => {
             starts the next day unless you pick a date.
           </p>
           <FormGroup>
-            <Label className="fw-bold">Plan</Label>
+            <Label htmlFor="renew-planCode" className="fw-bold">Plan</Label>
             <Input
+              id="renew-planCode"
               type="select"
               value={renewForm.planCode}
               onChange={(e) => {
@@ -1668,8 +1697,9 @@ const Members = () => {
             </Input>
           </FormGroup>
           <FormGroup>
-            <Label className="fw-bold">Start Date (optional)</Label>
+            <Label htmlFor="renew-startDate" className="fw-bold">Start Date (optional)</Label>
             <Input
+              id="renew-startDate"
               type="date"
               value={renewForm.startDate}
               onChange={(e) =>
@@ -1678,8 +1708,9 @@ const Members = () => {
             />
           </FormGroup>
           <FormGroup>
-            <Label className="fw-bold">New Fee (₹)</Label>
+            <Label htmlFor="renew-totalFee" className="fw-bold">New Fee (₹)</Label>
             <Input
+              id="renew-totalFee"
               type="number"
               value={renewForm.totalFee}
               onChange={(e) =>
@@ -1688,8 +1719,9 @@ const Members = () => {
             />
           </FormGroup>
           <FormGroup>
-            <Label className="fw-bold">Amount Received Now (₹)</Label>
+            <Label htmlFor="renew-amount" className="fw-bold">Amount Received Now (₹)</Label>
             <Input
+              id="renew-amount"
               type="number"
               value={renewForm.amount}
               onChange={(e) =>

@@ -897,8 +897,9 @@ const CashFlow = () => {
         </ModalHeader>
         <ModalBody>
           <FormGroup>
-            <Label className="fw-bold">Member</Label>
+            <Label htmlFor="income-memberId" className="fw-bold">Member</Label>
             <Input
+              id="income-memberId"
               type="select"
               value={incomeForm.memberId}
               onChange={(e) => {
@@ -930,8 +931,9 @@ const CashFlow = () => {
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Amount (₹)</Label>
+                <Label htmlFor="income-amount" className="fw-bold">Amount (₹)</Label>
                 <Input
+                  id="income-amount"
                   type="number"
                   value={incomeForm.amount}
                   onChange={(e) =>
@@ -942,8 +944,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Date</Label>
+                <Label htmlFor="income-transactionDate" className="fw-bold">Date</Label>
                 <Input
+                  id="income-transactionDate"
                   type="date"
                   value={incomeForm.transactionDate}
                   onChange={(e) =>
@@ -957,8 +960,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Mode</Label>
+                <Label htmlFor="income-mode" className="fw-bold">Mode</Label>
                 <Input
+                  id="income-mode"
                   type="select"
                   value={incomeForm.mode}
                   onChange={(e) =>
@@ -973,8 +977,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Branch</Label>
+                <Label htmlFor="income-branch" className="fw-bold">Branch</Label>
                 <Input
+                  id="income-branch"
                   type="select"
                   value={incomeForm.branch}
                   onChange={(e) =>
@@ -999,8 +1004,9 @@ const CashFlow = () => {
             </Col>
           </Row>
           <FormGroup>
-            <Label className="fw-bold">Note</Label>
+            <Label htmlFor="income-note" className="fw-bold">Note</Label>
             <Input
+              id="income-note"
               value={incomeForm.note}
               onChange={(e) =>
                 setIncomeForm({ ...incomeForm, note: e.target.value })
@@ -1031,8 +1037,9 @@ const CashFlow = () => {
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Category</Label>
+                <Label htmlFor="expense-category" className="fw-bold">Category</Label>
                 <Input
+                  id="expense-category"
                   type="select"
                   value={expenseForm.category}
                   onChange={(e) =>
@@ -1050,8 +1057,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Amount (₹)</Label>
+                <Label htmlFor="expense-amount" className="fw-bold">Amount (₹)</Label>
                 <Input
+                  id="expense-amount"
                   type="number"
                   value={expenseForm.amount}
                   onChange={(e) =>
@@ -1062,8 +1070,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Date</Label>
+                <Label htmlFor="expense-transactionDate" className="fw-bold">Date</Label>
                 <Input
+                  id="expense-transactionDate"
                   type="date"
                   value={expenseForm.transactionDate}
                   onChange={(e) =>
@@ -1077,8 +1086,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Branch</Label>
+                <Label htmlFor="expense-branch" className="fw-bold">Branch</Label>
                 <Input
+                  id="expense-branch"
                   type="select"
                   value={expenseForm.branch}
                   onChange={(e) =>
@@ -1103,8 +1113,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Paid To</Label>
+                <Label htmlFor="expense-paidTo" className="fw-bold">Paid To</Label>
                 <Input
+                  id="expense-paidTo"
                   value={expenseForm.paidTo}
                   onChange={(e) =>
                     setExpenseForm({ ...expenseForm, paidTo: e.target.value })
@@ -1114,8 +1125,9 @@ const CashFlow = () => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="fw-bold">Bill No.</Label>
+                <Label htmlFor="expense-billNo" className="fw-bold">Bill No.</Label>
                 <Input
+                  id="expense-billNo"
                   value={expenseForm.billNo}
                   onChange={(e) =>
                     setExpenseForm({ ...expenseForm, billNo: e.target.value })
@@ -1125,8 +1137,9 @@ const CashFlow = () => {
             </Col>
           </Row>
           <FormGroup>
-            <Label className="fw-bold">Note</Label>
+            <Label htmlFor="expense-note" className="fw-bold">Note</Label>
             <Input
+              id="expense-note"
               value={expenseForm.note}
               onChange={(e) =>
                 setExpenseForm({ ...expenseForm, note: e.target.value })

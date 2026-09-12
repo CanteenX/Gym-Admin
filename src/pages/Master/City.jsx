@@ -483,6 +483,7 @@ const City = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-cityName"
                 type="text"
                 placeholder="Enter City Name"
                 required
@@ -490,7 +491,7 @@ const City = () => {
                 value={values.cityName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-cityName">
                 City <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -499,6 +500,7 @@ const City = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-cityCode"
                 type="text"
                 placeholder="Enter Country Code"
                 required
@@ -506,7 +508,7 @@ const City = () => {
                 value={values.cityCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-cityCode">
                 City Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -516,13 +518,14 @@ const City = () => {
 
             <div className=" mb-3">
               <Input
+                id="add-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 value={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="add-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -592,6 +595,7 @@ const City = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-cityName"
                 type="text"
                 placeholder="Enter City Name"
                 required
@@ -599,7 +603,7 @@ const City = () => {
                 value={values.cityName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-cityName">
                 City <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -608,6 +612,7 @@ const City = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-cityCode"
                 type="text"
                 placeholder="Enter Country Code"
                 required
@@ -615,7 +620,7 @@ const City = () => {
                 value={values.cityCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-cityCode">
                 City Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -625,6 +630,7 @@ const City = () => {
 
             <div className=" mb-3">
               <Input
+                id="edit-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -632,7 +638,7 @@ const City = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="edit-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 

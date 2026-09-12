@@ -412,6 +412,7 @@ const Country = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="add-countryName"
                 type="text"
                 placeholder="Enter Country Name"
                 required
@@ -419,7 +420,7 @@ const Country = () => {
                 value={values.countryName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-countryName">
                 Country <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -428,6 +429,7 @@ const Country = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="add-countryCode"
                 type="text"
                 placeholder="Enter Country Code"
                 required
@@ -435,7 +437,7 @@ const Country = () => {
                 value={values.countryCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-countryCode">
                 Country Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -445,13 +447,14 @@ const Country = () => {
 
             <div className=" mb-3">
               <Input
+                id="add-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 value={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="add-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -485,6 +488,7 @@ const Country = () => {
           <ModalBody>
           <div className="form-floating mb-3">
               <Input
+                id="edit-countryName"
                 type="text"
                 placeholder="Enter Country Name"
                 required
@@ -492,7 +496,7 @@ const Country = () => {
                 value={values.countryName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-countryName">
                 Country <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -501,6 +505,7 @@ const Country = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="edit-countryCode"
                 type="text"
                 placeholder="Enter Country Code"
                 required
@@ -508,7 +513,7 @@ const Country = () => {
                 value={values.countryCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-countryCode">
                 Country Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -518,6 +523,7 @@ const Country = () => {
 
             <div className=" mb-3">
               <Input
+                id="edit-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -525,7 +531,7 @@ const Country = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="edit-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 

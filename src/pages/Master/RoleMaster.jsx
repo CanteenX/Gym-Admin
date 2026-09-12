@@ -403,6 +403,7 @@ const RoleMaster = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="add-roleName"
                 type="text"
                 placeholder="Enter Role Name"
                 required
@@ -410,7 +411,7 @@ const RoleMaster = () => {
                 value={values.roleName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="add-roleName">
                 Role Name <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -419,6 +420,7 @@ const RoleMaster = () => {
             </div>
             <div className=" mb-3">
               <Input
+                id="add-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -426,7 +428,7 @@ const RoleMaster = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="add-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -460,6 +462,7 @@ const RoleMaster = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="edit-roleName"
                 type="text"
                 placeholder="Enter Role Name"
                 required
@@ -467,7 +470,7 @@ const RoleMaster = () => {
                 value={values.roleName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="edit-roleName">
                 Role Name <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -476,6 +479,7 @@ const RoleMaster = () => {
             </div>
             <div className=" mb-3">
               <Input
+                id="edit-isActive"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -483,7 +487,7 @@ const RoleMaster = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="edit-isActive" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 
