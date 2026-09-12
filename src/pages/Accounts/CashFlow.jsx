@@ -621,7 +621,7 @@ const CashFlow = () => {
                         <Bar
                           dataKey="outgoing"
                           name="Outgoing"
-                          fill="#a83a32"
+                          fill="#dc2626"
                           radius={[4, 4, 0, 0]}
                         />
                       </BarChart>

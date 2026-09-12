@@ -10,8 +10,8 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
 
     // Initial state setup
     const [sidebarBgColor, setSidebarBgColor] = useState("#224c99");
-    const [addButtonColor, setAddButtonColor] = useState("#4b7c5c");
-    const [removeButtonColor, setRemoveButtonColor] = useState("#a83a32");
+    const [addButtonColor, setAddButtonColor] = useState("#15803d");
+    const [removeButtonColor, setRemoveButtonColor] = useState("#dc2626");
     const [addButtonTextColor, setAddButtonTextColor] = useState("#ffffff");
     const [removeButtonTextColor, setRemoveButtonTextColor] = useState("#ffffff");
     const [borderRadius, setBorderRadius] = useState("8px");
@@ -26,7 +26,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
             const savedBg = adminData.sidebarBgColor || "#224c99";
             setSidebarBgColor(savedBg);
             setAddButtonColor(adminData.addButtonColor || savedBg);
-            setRemoveButtonColor(adminData.removeButtonColor || "#a83a32");
+            setRemoveButtonColor(adminData.removeButtonColor || "#dc2626");
             setAddButtonTextColor(adminData.addButtonTextColor || "#ffffff");
             setRemoveButtonTextColor(adminData.removeButtonTextColor || "#ffffff");
             setEnableSearchMenu(adminData.enableSearchMenu !== false);

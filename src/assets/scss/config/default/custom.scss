@@ -447,16 +447,16 @@ $navy-tint: #eef1f8;
     }
 
     &.bg-primary   { background-color: #22346b !important; color: #fff !important; }
-    &.bg-success   { background-color: #2f6b4f !important; color: #fff !important; }
-    &.bg-danger    { background-color: #a83a32 !important; color: #fff !important; }
+    &.bg-success   { background-color: #15803d !important; color: #fff !important; }
+    &.bg-danger    { background-color: #dc2626 !important; color: #fff !important; }
     &.bg-warning   { background-color: #8a6d2f !important; color: #fff !important; }
     &.bg-secondary { background-color: #5a6782 !important; color: #fff !important; }
 }
 
 // ---- Action buttons: navy family, not template teal/orange ----
 .btn-success {
-    background-color: #2f6b4f;
-    border-color: #2f6b4f;
+    background-color: #15803d;
+    border-color: #15803d;
     color: #fff;
     &:hover, &:focus, &:active {
         background-color: #275a42 !important;
@@ -465,8 +465,8 @@ $navy-tint: #eef1f8;
 }
 
 .btn-danger {
-    background-color: #a83a32;
-    border-color: #a83a32;
+    background-color: #dc2626;
+    border-color: #dc2626;
     color: #fff;
     &:hover, &:focus, &:active {
         background-color: #8f3029 !important;
@@ -476,8 +476,8 @@ $navy-tint: #eef1f8;
 
 .btn-soft-danger {
     background-color: #fbeceb;
-    color: #a83a32;
-    &:hover { background-color: #a83a32; color: #fff; }
+    color: #dc2626;
+    &:hover { background-color: #dc2626; color: #fff; }
 }
 
 // Table row hover: a faint navy wash rather than grey mud.

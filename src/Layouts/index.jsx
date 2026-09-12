@@ -462,7 +462,7 @@ const Layout = (props) => {
         if (adminData) {
             const savedBg = resolveSidebarColor(adminData.sidebarBgColor);
             const savedAdd = adminData.addButtonColor || savedBg;
-            const savedRemove = adminData.removeButtonColor || "#a83a32";
+            const savedRemove = adminData.removeButtonColor || "#dc2626";
             const savedAddText = adminData.addButtonTextColor || "";
             const savedRemoveText = adminData.removeButtonTextColor || "";
             const savedRadius = adminData.buttonStyle?.borderRadius || "8px";
@@ -479,7 +479,7 @@ const Layout = (props) => {
         setShowSettings(false);
         const savedBg = resolveSidebarColor(adminData?.sidebarBgColor);
         const savedAdd = adminData?.addButtonColor || savedBg;
-        const savedRemove = adminData?.removeButtonColor || "#a83a32";
+        const savedRemove = adminData?.removeButtonColor || "#dc2626";
         const savedAddText = adminData?.addButtonTextColor || "";
         const savedRemoveText = adminData?.removeButtonTextColor || "";
         const savedRadius = adminData?.buttonStyle?.borderRadius || "8px";
@@ -613,8 +613,8 @@ const Layout = (props) => {
                     }
  
                     .btn-danger {
-                        background: var(--btn-danger-bg, #a83a32) !important;
-                        border-color: var(--btn-danger-border, #a83a32) !important;
+                        background: var(--btn-danger-bg, #dc2626) !important;
+                        border-color: var(--btn-danger-border, #dc2626) !important;
                         box-shadow: var(--btn-danger-shadow, 0 1px 2px rgba(0, 0, 0, 0.08)) !important;
                         color: var(--btn-danger-color, white) !important;
                         transform: var(--btn-transform, translateY(0)) !important;
