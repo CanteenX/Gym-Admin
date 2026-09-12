@@ -36,6 +36,9 @@ const ExpenseCategories = lazy(() => import("../pages/Accounts/ExpenseCategories
 const MembershipPlans = lazy(() => import("../pages/Master/MembershipPlans"));
 const BranchMaster = lazy(() => import("../pages/Master/BranchMaster"));
 const MemberExercisePlan = lazy(() => import("../pages/Master/MemberExercisePlan"));
+const WebsitePages = lazy(() => import("../pages/Website/WebsitePages"));
+const WebsiteAdverts = lazy(() => import("../pages/Website/WebsiteAdverts"));
+const WebsiteLeads = lazy(() => import("../pages/Website/WebsiteLeads"));
 
 
 const authProtectedRoutes = [
@@ -65,6 +68,11 @@ const authProtectedRoutes = [
     { path: "/membership-plans", component: <MembershipPlans /> },
     { path: "/branch-master", component: <BranchMaster /> },
     { path: "/member-exercise-plan", component: <MemberExercisePlan /> },
+    // Public-website CMS. These three menuUrls must exist in MenuMaster or
+    // PermissionProtected denies them for every non-super-admin.
+    { path: "/website-pages", component: <WebsitePages /> },
+    { path: "/website-adverts", component: <WebsiteAdverts /> },
+    { path: "/website-leads", component: <WebsiteLeads /> },
     { path: "/dashboard", component: <Dashboard /> },
     { path: "/menu-group", component: <MenuGroup /> },
     { path: "/menu-master", component: <MenuMaster /> },

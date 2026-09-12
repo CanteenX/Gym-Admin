@@ -64,7 +64,13 @@ const ENFORCE_CONTRAST = has("enforce-contrast");
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 
-/** Admin routes worth sweeping. One list, so checks cannot drift apart. */
+/**
+ * Admin routes worth sweeping. One list, so checks cannot drift apart.
+ *
+ * `--routes a,b,c` appends to this rather than replacing it, so a phase can
+ * gate its own new screens without anyone editing (and accidentally shrinking)
+ * the shared list.
+ */
 const ADMIN_ROUTES = [
   "dashboard",
   "members",
@@ -75,6 +81,10 @@ const ADMIN_ROUTES = [
   "employee-roles",
   "cash-flow",
   "profile",
+  ...arg("routes", "")
+    .split(",")
+    .map((r) => r.trim().replace(/^\/+/, ""))
+    .filter(Boolean),
 ];
 
 // ------------------------------------------------------------------ results

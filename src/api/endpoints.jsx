@@ -240,6 +240,30 @@ export const ENDPOINTS = {
         LIST_ALL: `${V1}/branches-list`,
     },
 
+    // Public-website CMS endpoints.
+    //
+    // All three domains share the /site prefix because the server mounts them
+    // flat under /api/v1 like every other route file, and the prefix is what
+    // keeps the public (unauthenticated) reads - /site/content, /site/ads,
+    // /site/leads POST - grouped with the staff-only writes they mirror.
+    SITE_CONTENT: {
+        BASE: `${V1}/site/content`,
+        BY_ID: (id) => `${V1}/site/content/${id}`,
+        SEARCH: `${V1}/site/content-by-params`,
+    },
+
+    SITE_ADS: {
+        BASE: `${V1}/site/ads`,
+        BY_ID: (id) => `${V1}/site/ads/${id}`,
+        SEARCH: `${V1}/site/ads-by-params`,
+    },
+
+    SITE_LEADS: {
+        BASE: `${V1}/site/leads`,
+        BY_ID: (id) => `${V1}/site/leads/${id}`,
+        SEARCH: `${V1}/site/leads-by-params`,
+    },
+
     // Gym trainer endpoints
     TRAINERS: {
         BASE: `${V1}/trainers`,
