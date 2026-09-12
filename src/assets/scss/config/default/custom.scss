@@ -557,3 +557,217 @@ a {
         color: #fff;
     }
 }
+
+// ============================================================
+// LOGIN PAGE — navy gradient brand panel
+//
+// Why these rules live HERE and not in `pages/_authentication.scss`:
+// `themes.scss` imports `app.scss` BEFORE `custom.scss`, and `app.scss`
+// pulls in `pages/authentication` at its line 102. The $navy-* variables
+// above are therefore NOT yet defined when `_authentication.scss` is
+// compiled — referencing them there fails the Sass build outright with
+// "Undefined variable". custom.scss is the first file in the chain where
+// the navy palette exists, so this is the only correct home for it.
+//
+// Why the gradient is a static SCSS rule and not part of the theme system:
+// `applyTheme()` in `src/Layouts/index.jsx` only rewrites the `--btn-*`
+// CSS custom properties — it never touches panel backgrounds — and the
+// default `themeType` is `solid`, which would flatten a gradient fed
+// through it anyway. On top of that the login page renders under
+// `NonAuthLayout` and never mounts `Layout`, so `applyTheme` does not
+// even run here. A plain rule is both simpler and unflattenable.
+//
+// Why the JSX inline styles had to be DELETED rather than overridden:
+// inline `style={{...}}` beats any stylesheet selector regardless of
+// specificity. The old `backgroundColor: "#f1f5fb"` / `"white"` /
+// `border: "none"` objects on .left-panel, .right-panel and the Card are
+// gone from Login.jsx for that reason. Do not reintroduce them.
+// ============================================================
+
+.auth-wrapper {
+    // The panels own their own heights; the wrapper only needs to stop
+    // short viewports from clipping the form.
+    min-height: 100vh;
+}
+
+// ---- Left: gradient brand panel ----
+.left-panel {
+    width: 58%;
+    // Both height and min-height on purpose: the .auth-brand-banner branch
+    // sizes itself with `height: 100%`, which only resolves against a
+    // DEFINITE parent height. min-height alone would collapse an uploaded
+    // loginBanner to zero. (This is the same 100vh the deleted inline style
+    // carried, so behaviour for that branch is unchanged.)
+    height: 100vh;
+    min-height: 100vh;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, $navy-900 0%, $navy-700 100%);
+    // The old pale panel needed a divider to separate it from the white
+    // form side. Navy against a tinted ground separates itself.
+    border-right: 0;
+}
+
+// Texture overlay. Pure CSS on purpose: an external image (or a CDN
+// pattern) would be a network request the CSP allowlist does not cover,
+// and would flash unstyled on a cold load. White at 3% alpha lifts the
+// darkest end of the gradient from a relative luminance of 0.0157 to
+// about 0.047 — worst case for white body copy is still ~10.9:1, far
+// above the 4.5:1 AA floor, so the texture cannot cost us contrast.
+.left-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, .03) 0,
+        rgba(255, 255, 255, .03) 1px,
+        transparent 1px,
+        transparent 14px
+    );
+}
+
+// A single soft highlight stops the flat gradient from looking like a
+// screenshot artefact on large monitors.
+.left-panel::after {
+    content: "";
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 60%;
+    height: 70%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 255, 255, .06) 0%, transparent 70%);
+}
+
+.left-panel > * {
+    // Keep the brand block above both decorative layers.
+    position: relative;
+    z-index: 1;
+}
+
+.auth-brand-inner {
+    max-width: 520px;
+}
+
+// The white tile is load-bearing, not decoration. gym-logo.svg is
+// dark-on-transparent and its dumbbell mark is #22346b — literally
+// $navy-700 — so on this gradient the logo would vanish. The tile also
+// covers the runtime case where `logoSrc` is a company-uploaded image of
+// unknown contrast. Sized for the mark's real 3.71:1 aspect ratio
+// (260x70); a square tile would letterbox it with dead white space.
+.auth-brand-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 22px;
+    padding: 1.35rem 1.85rem;
+    box-shadow: 0 10px 30px rgba(8, 16, 34, .28);
+
+    img {
+        display: block;
+        width: 210px;
+        max-width: 100%;
+        height: auto;
+        // Guards the uploaded-logo case: a tall image is contained in the
+        // tile instead of stretching it into a column.
+        max-height: 76px;
+        object-fit: contain;
+    }
+}
+
+.auth-brand-title {
+    margin: 2.25rem 0 0;
+    font-size: 2.6rem;      // ~41.6px at the 16px root
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: #fff;            // 15.97:1 on $navy-900, 11.88:1 on $navy-700
+
+    span {
+        display: block;
+        // The second line is the qualifier, not the brand — lighter
+        // weight and 90% alpha keep the hierarchy without a second hue.
+        font-weight: 500;
+        color: rgba(255, 255, 255, .9);
+    }
+}
+
+// Body copy at 82% alpha: ~8.5:1 against the lightest end of the
+// gradient, ~7.9:1 once the texture overlay is accounted for. Comfortably
+// over the 4.5:1 AA requirement for body text.
+.auth-brand-sub {
+    margin: 1.1rem 0 0;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, .82);
+}
+
+.auth-brand-chips {
+    margin-top: 2rem;
+}
+
+// Chips restyled for a dark ground: the old #e4ebf7 fill with #22346b
+// text was a pale-panel treatment and is unreadable here.
+.auth-branch-chip {
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #fff;                                    // 8.29:1 over the fill
+    background-color: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .26);
+    border-radius: 999px;
+    padding: .38rem .95rem;
+    backdrop-filter: blur(2px);
+}
+
+// A company-uploaded loginBanner is still honoured — it now sits on the
+// navy ground rather than the old pale one, so its edges read as
+// deliberate instead of as a mismatched crop.
+.auth-brand-banner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 14px 40px rgba(8, 16, 34, .3);
+}
+
+// ---- Right: tinted ground, floating card ----
+.right-panel {
+    width: 42%;
+    min-height: 100vh;
+    // Tinted rather than pure white. A white form card on a white panel
+    // has no edge at all; the tint is what makes the card read as a
+    // floating surface.
+    background-color: #f3f4f9;
+}
+
+.auth-login-card {
+    border: 1px solid rgba(20, 33, 61, .08);
+    border-radius: 16px;
+    // Navy-tinted shadow instead of neutral black: on the #f3f4f9 ground
+    // a grey shadow reads as dirt. This plus the hairline border is what
+    // separates the card from the ground — the two whites cannot do it.
+    box-shadow: 0 2px 6px rgba(20, 33, 61, .05), 0 18px 44px rgba(20, 33, 61, .1);
+}
+
+// Below `lg` the left panel is display:none via `d-none d-lg-flex`, so the
+// form side must take the whole viewport. This breakpoint (991.98px) is
+// deliberately the Bootstrap lg boundary, i.e. exactly where the utility
+// class flips — any other value leaves a dead band.
+//
+// It also fixes a pre-existing bug. Login.jsx used to carry an inline
+// <style> rule setting BOTH panels to width:50% between 768px and 991px.
+// The .left-panel half of that could never apply (the panel is hidden
+// there), but the .right-panel half did — so on tablets the form sat in
+// 50% of the screen with the other 50% blank. That rule is gone; this is
+// its correct replacement.
+@media (max-width: 991.98px) {
+    .right-panel {
+        width: 100%;
+    }
+}

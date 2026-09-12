@@ -958,14 +958,6 @@ const Login = () => {
                             padding: 2rem 1.5rem !important;
                         }
                     }
-                    @media (min-width: 768px) and (max-width: 991px) {
-                        .left-panel {
-                            width: 50% !important;
-                        }
-                        .right-panel {
-                            width: 50% !important;
-                        }
-                    }
                 `}
             </style>
             <div className="auth-wrapper d-flex" style={{ height: "100vh" }}>
@@ -978,44 +970,30 @@ const Login = () => {
                 
                     Now 58/42, the logo at its own aspect ratio, and the space earns its
                     keep. A real uploaded loginBanner is shown as an actual cover image. */}
-                <div
-                    className="left-panel d-none d-lg-flex align-items-center justify-content-center"
-                    style={{
-                        backgroundColor: "#f1f5fb",
-                        width: "58%",
-                        height: "100vh",
-                        borderRight: "1px solid #e3e9f4",
-                        padding: "3rem",
-                    }}
-                >
+                <div className="left-panel d-none d-lg-flex align-items-center justify-content-center">
                     {publicCompany?.loginBanner ? (
-                        <img
-                            src={sideLogoSrc}
-                            alt=""
-                            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }}
-                        />
+                        <img src={sideLogoSrc} alt="" className="auth-brand-banner" />
                     ) : (
-                        <div className="text-center" style={{ maxWidth: "460px" }}>
-                            <img src={sideLogoSrc} alt="" style={{ width: "100%", maxWidth: "320px", height: "auto" }} />
-                            <p className="mt-4 mb-0" style={{ color: "#5a6782", fontSize: "1rem", lineHeight: 1.6 }}>
-                                Staff panel for memberships, attendance and daily collections.
+                        <div className="auth-brand-inner text-center">
+                            {/* The logo sits on a white tile, not straight on the
+                                gradient. gym-logo.svg is dark-on-transparent and its
+                                dumbbell mark is #22346b — exactly $navy-700 — so on
+                                this ground it would disappear entirely. The tile also
+                                covers the runtime case where publicCompany.logo is an
+                                uploaded image whose contrast we cannot know. */}
+                            <div className="auth-brand-tile">
+                                <img src={sideLogoSrc} alt="" />
+                            </div>
+                            <h1 className="auth-brand-title">
+                                Mid City Gym
+                                <span>Staff Panel</span>
+                            </h1>
+                            <p className="auth-brand-sub">
+                                Memberships, attendance and daily collections.
                             </p>
-                            <div className="d-flex justify-content-center gap-2 mt-4">
+                            <div className="auth-brand-chips d-flex justify-content-center gap-2">
                                 {["Vasna", "Gotri"].map((b) => (
-                                    <span
-                                        key={b}
-                                        style={{
-                                            fontSize: ".78rem",
-                                            fontWeight: 600,
-                                            letterSpacing: ".05em",
-                                            textTransform: "uppercase",
-                                            color: "#22346b",
-                                            backgroundColor: "#e4ebf7",
-                                            border: "1px solid #d3ddef",
-                                            borderRadius: "999px",
-                                            padding: ".3rem .85rem",
-                                        }}
-                                    >
+                                    <span key={b} className="auth-branch-chip">
                                         {b}
                                     </span>
                                 ))}
@@ -1023,24 +1001,17 @@ const Login = () => {
                         </div>
                     )}
                 </div>
-                <div
-                    className="right-panel d-flex align-items-center justify-content-center"
-                    style={{
-                        width: "42%",
-                        backgroundColor: "white",
-                        height: "100vh",
-                    }}
-                >
+                {/* No inline style objects on either panel or the Card any more:
+                    inline styles outrank every stylesheet selector, so the navy
+                    gradient, the tinted form ground and the card elevation could
+                    not be applied from SCSS while they were here. All of it now
+                    lives in the LOGIN PAGE block at the end of
+                    src/assets/scss/config/default/custom.scss. */}
+                <div className="right-panel d-flex align-items-center justify-content-center">
                     <Container>
                         <Row className="justify-content-center">
                             <Col xs={12} sm={12} md={10} lg={6} xl={12}>
-                                <Card
-                                    style={{
-                                        border: "none",
-                                        boxShadow: "0 4px 24px rgba(34,52,107,0.08)",
-                                        borderRadius: "12px",
-                                    }}
-                                >
+                                <Card className="auth-login-card">
                                     <CardBody className="p-5 mobile-card-body">
                                          {forgotPasswordMode ? (
                                              <ForgotPasswordForm
@@ -1074,8 +1045,13 @@ const Login = () => {
                                                             src={logoSrc}
                                                             alt="Logo"
                                                             style={{
-                                                                width: "100px",
-                                                                height: "100px",
+                                                                // The wordmark is 260x70. A 100x100 box letterboxed it into
+                                                                // a ~100x27 sliver with dead space above and below; height
+                                                                // auto lets it render at its own aspect ratio. max-height
+                                                                // still contains a tall company-uploaded logo.
+                                                                width: "160px",
+                                                                height: "auto",
+                                                                maxHeight: "72px",
                                                                 objectFit: "contain",
                                                             }}
                                                             className="mobile-logo"
