@@ -40,6 +40,13 @@ const WebsitePages = lazy(() => import("../pages/Website/WebsitePages"));
 const WebsiteAdverts = lazy(() => import("../pages/Website/WebsiteAdverts"));
 const WebsiteLeads = lazy(() => import("../pages/Website/WebsiteLeads"));
 const SeoManager = lazy(() => import("../pages/Website/SeoManager"));
+// Insights. These three menuUrls are seeded by Gym-Server/scripts/seedInsightsMenus.js
+// and must stay character-identical to the paths below: checkPermission (server)
+// and PermissionProtected (client) both join on menuUrl, so a mismatch 403s a
+// screen that still appears in the sidebar.
+const AttendanceOverview = lazy(() => import("../pages/Insights/AttendanceOverview"));
+const Reports = lazy(() => import("../pages/Insights/Reports"));
+const AuditLog = lazy(() => import("../pages/Insights/AuditLog"));
 
 
 const authProtectedRoutes = [
@@ -75,6 +82,12 @@ const authProtectedRoutes = [
     { path: "/website-adverts", component: <WebsiteAdverts /> },
     { path: "/website-leads", component: <WebsiteLeads /> },
     { path: "/seo-manager", component: <SeoManager /> },
+    // Insights — read-only staff screens. /reports additionally gates its CSV
+    // export buttons on the `print` permission, which the export routes check
+    // instead of `read`.
+    { path: "/attendance-overview", component: <AttendanceOverview /> },
+    { path: "/reports", component: <Reports /> },
+    { path: "/audit-log", component: <AuditLog /> },
     { path: "/dashboard", component: <Dashboard /> },
     { path: "/menu-group", component: <MenuGroup /> },
     { path: "/menu-master", component: <MenuMaster /> },
