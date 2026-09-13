@@ -25,6 +25,7 @@ import {
   getNotCheckedIn,
 } from "../../api/attendanceStaff.api";
 import { listBranches } from "../../api/branches.api";
+import BranchQrPanel from "./components/BranchQrPanel";
 import FootfallPanel from "./components/FootfallPanel";
 import InGymNowPanel from "./components/InGymNowPanel";
 import NotCheckedInPanel from "./components/NotCheckedInPanel";
@@ -58,12 +59,44 @@ import { daysAgoInput, toInputDate } from "./insightsFormat";
  *
  * The live panel polls, because the API is a serverless function and cannot
  * hold a WebSocket open.
+ *
+ * ============================================================================
+ * WHO IS BEING COUNTED — THE `subjectType` FILTER
+ * ============================================================================
+ * Trainer shifts live in the same Attendance collection as member check-ins,
+ * behind a discriminator. Both the footfall and the live endpoints default to
+ * MEMBER and fall back to MEMBER for anything they do not recognise, so a
+ * screen that forgets to ask gets member figures — never a silent mixture.
+ * This filter is what lets staff ask the other two questions, and the answer
+ * carries its own `subjectType` back so the panels label what they actually
+ * received rather than what was requested.
+ *
+ * It is NOT applied to the "not checked in" call list: that list is a roster of
+ * active MEMBERS who have gone quiet, and a trainer has no membership to lapse.
+ *
+ * Refused scans are excluded from every figure on this screen, by the server.
+ * A lapsed member tapping the sticker five times is five refusals and zero
+ * arrivals; folding them into footfall would invent visits that did not happen.
+ * They surface in the check-in CSV export instead, which has an explicit
+ * "refused attempts" option.
  */
 
 /** Matches the server's own "is this session still plausible" window. */
 const LIVE_POLL_MS = 30000;
 
 const NOT_CHECKED_IN_PER_PAGE = 25;
+
+/**
+ * The three populations the attendance endpoints can count.
+ *
+ * The values are the server's own vocabulary and are sent verbatim. "ALL"
+ * deliberately has to be asked for by name — see the file header.
+ */
+const SUBJECT_TYPES = [
+  { value: "MEMBER", label: "Members" },
+  { value: "TRAINER", label: "Trainers" },
+  { value: "ALL", label: "Members and trainers" },
+];
 
 const AttendanceOverview = () => {
   const { adminData } = useContext(AuthContext);
@@ -81,6 +114,9 @@ const AttendanceOverview = () => {
   const [branch, setBranch] = useState("");
   const [fromDate, setFromDate] = useState(daysAgoInput(29));
   const [toDate, setToDate] = useState(toInputDate(new Date()));
+  // Members by default, matching the server's default — so the first thing the
+  // screen shows is the same number it has always shown.
+  const [subjectType, setSubjectType] = useState("MEMBER");
 
   const [footfall, setFootfall] = useState(null);
   const [footfallLoading, setFootfallLoading] = useState(true);
@@ -101,7 +137,7 @@ const AttendanceOverview = () => {
   const loadFootfall = useCallback(async () => {
     setFootfallLoading(true);
     try {
-      const res = await getFootfall({ fromDate, toDate, branch });
+      const res = await getFootfall({ fromDate, toDate, branch, subjectType });
       if (res.data?.isOk) setFootfall(res.data.data);
       else toast.error(res.data?.message || "Could not load check-in figures");
     } catch (err) {
@@ -111,14 +147,14 @@ const AttendanceOverview = () => {
     } finally {
       setFootfallLoading(false);
     }
-  }, [fromDate, toDate, branch]);
+  }, [fromDate, toDate, branch, subjectType]);
 
   const loadLive = useCallback(async (showSpinner = false) => {
     if (livePending.current) return;
     livePending.current = true;
     if (showSpinner) setLiveLoading(true);
     try {
-      const res = await getInGymNow({ branch });
+      const res = await getInGymNow({ branch, subjectType });
       if (res.data?.isOk) setLive(res.data.data);
     } catch {
       // A failed poll is not worth a toast every 30 seconds; the panel keeps
@@ -127,7 +163,7 @@ const AttendanceOverview = () => {
       livePending.current = false;
       setLiveLoading(false);
     }
-  }, [branch]);
+  }, [branch, subjectType]);
 
   const loadLapsed = useCallback(async () => {
     setLapsedLoading(true);
@@ -179,6 +215,7 @@ const AttendanceOverview = () => {
     setFromDate(daysAgoInput(29));
     setToDate(toInputDate(new Date()));
     setBranch("");
+    setSubjectType("MEMBER");
     setPage(0);
   };
 
@@ -204,12 +241,21 @@ const AttendanceOverview = () => {
   return (
     <div className="page-content">
       <Container fluid>
-        <BreadCrumb title="Attendance Overview" pageTitle="Insights" />
+        <div className="d-print-none">
+          <BreadCrumb title="Attendance Overview" pageTitle="Insights" />
+        </div>
 
-        <Card className="mb-3">
+        {/* Every filter and panel on this screen is `d-print-none`. Printing
+            from here means printing the branch QR sheets - a 30-day bar chart
+            and a paginated call list are not something anybody wants on paper,
+            and leaving them printable is how the sticker ends up on page four.
+            The sheets themselves are `d-none d-print-block`; Bootstrap emits
+            its print display utilities last, so that pair resolves correctly
+            without any !important of ours. */}
+        <Card className="mb-3 d-print-none">
           <CardBody>
             <Row className="g-2 align-items-end">
-              <Col xs={6} md={3}>
+              <Col xs={6} md={4} lg={2}>
                 <Label for="footfall-from" className="form-label mb-1 small">
                   From date
                 </Label>
@@ -222,7 +268,7 @@ const AttendanceOverview = () => {
                   onChange={(e) => setFromDate(e.target.value)}
                 />
               </Col>
-              <Col xs={6} md={3}>
+              <Col xs={6} md={4} lg={2}>
                 <Label for="footfall-to" className="form-label mb-1 small">
                   To date
                 </Label>
@@ -235,7 +281,7 @@ const AttendanceOverview = () => {
                   onChange={(e) => setToDate(e.target.value)}
                 />
               </Col>
-              <Col xs={12} md={3}>
+              <Col xs={12} md={4} lg={3}>
                 <Label for="footfall-branch" className="form-label mb-1 small">
                   Branch
                 </Label>
@@ -257,7 +303,25 @@ const AttendanceOverview = () => {
                   ))}
                 </Input>
               </Col>
-              <Col xs={12} md={3} className="d-flex gap-2">
+              <Col xs={12} md={6} lg={3}>
+                <Label for="footfall-subject" className="form-label mb-1 small">
+                  Count
+                </Label>
+                <Input
+                  id="footfall-subject"
+                  type="select"
+                  bsSize="sm"
+                  value={subjectType}
+                  onChange={(e) => setSubjectType(e.target.value)}
+                >
+                  {SUBJECT_TYPES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </Input>
+              </Col>
+              <Col xs={12} md={6} lg={2} className="d-flex gap-2">
                 <Button color="light" size="sm" onClick={resetRange}>
                   Reset
                 </Button>
@@ -272,10 +336,17 @@ const AttendanceOverview = () => {
                 </Button>
               </Col>
             </Row>
+            {subjectType !== "MEMBER" ? (
+              <p className="text-muted small mb-0 mt-2">
+                <i className="ri-information-line align-bottom me-1" aria-hidden="true" />
+                The call list below always covers members only - a trainer has no
+                membership to lapse.
+              </p>
+            ) : null}
           </CardBody>
         </Card>
 
-        <Row className="g-3">
+        <Row className="g-3 d-print-none">
           <Col xl={8}>
             <FootfallPanel data={footfall} loading={footfallLoading} />
           </Col>
@@ -284,7 +355,7 @@ const AttendanceOverview = () => {
           </Col>
         </Row>
 
-        <Row className="g-3 mt-1">
+        <Row className="g-3 mt-1 d-print-none">
           <Col xs={12}>
             <NotCheckedInPanel
               data={lapsed}
@@ -297,6 +368,15 @@ const AttendanceOverview = () => {
               page={page}
               perPage={NOT_CHECKED_IN_PER_PAGE}
               onPageChange={setPage}
+            />
+          </Col>
+        </Row>
+
+        <Row className="g-3 mt-1">
+          <Col xs={12}>
+            <BranchQrPanel
+              branches={branches}
+              orgName={adminData?.companyName || ""}
             />
           </Col>
         </Row>

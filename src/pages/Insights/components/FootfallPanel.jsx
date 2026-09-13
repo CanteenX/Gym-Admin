@@ -17,6 +17,7 @@ import {
   chartTokens,
   formatDayShort,
   minutesLabel,
+  subjectWords,
 } from "../insightsFormat";
 
 /**
@@ -29,6 +30,18 @@ import {
  * behaviour. The server says as much in `data.basis` and that string is
  * rendered rather than paraphrased, so the caveat cannot drift away from the
  * numbers it applies to.
+ *
+ * ============================================================================
+ * WHO IS IN THESE BARS: READ `data.subjectType`, NOT THE FILTER
+ * ============================================================================
+ * Trainer shifts live in the same collection behind a discriminator. The
+ * endpoint defaults to MEMBER and falls back to MEMBER for anything it does not
+ * recognise, so the population counted is whatever the RESPONSE says it is. A
+ * panel that captioned itself from the screen's dropdown would print "Trainers"
+ * over member numbers the moment the two disagreed - and the whole reason the
+ * server sends the field back is that this disagreement is possible.
+ *
+ * Denied scans are never in here. A refusal is a row, not an arrival.
  */
 
 /**
@@ -52,6 +65,7 @@ const pivot = (days) => {
 
 const FootfallPanel = ({ data, loading }) => {
   const days = data?.days || [];
+  const words = subjectWords(data?.subjectType);
   const branches = useMemo(
     () => [...new Set(days.map((d) => d.branch))].sort(),
     [days],
@@ -70,8 +84,8 @@ const FootfallPanel = ({ data, loading }) => {
    * then the full table below it; without both, an SVG of bars is silence.
    */
   const chartSummary =
-    `Bar chart of logged check-ins per day across ${branches.length || 0} ` +
-    `${branches.length === 1 ? "branch" : "branches"}. ` +
+    `Bar chart of logged check-ins by ${words.many} per day across ` +
+    `${branches.length || 0} ${branches.length === 1 ? "branch" : "branches"}. ` +
     `${totalCheckIns.toLocaleString("en-IN")} check-ins in total over ` +
     `${rows.length} ${rows.length === 1 ? "day" : "days"}` +
     (busiest ? `, busiest on ${busiest.label} with ${busiest.total}.` : ".");
@@ -93,9 +107,7 @@ const FootfallPanel = ({ data, loading }) => {
     <Card className="h-100">
       <CardHeader>
         <h5 className="card-title mb-1">Check-ins per day</h5>
-        <small className="text-muted">
-          Sessions members logged themselves, by branch
-        </small>
+        <small className="text-muted">{words.sentence}</small>
       </CardHeader>
       <CardBody>
         {loading ? (
@@ -108,7 +120,10 @@ const FootfallPanel = ({ data, loading }) => {
             <Row className="g-2 mb-3">
               <Col xs={6} md={3}>
                 <div className="border rounded p-2">
-                  <p className="text-muted mb-1 small">Check-ins logged</p>
+                  <p className="text-muted mb-1 small">
+                    Check-ins logged
+                    <span className="d-block">{words.title}</span>
+                  </p>
                   <h5 className="mb-0">
                     {totalCheckIns.toLocaleString("en-IN")}
                   </h5>
@@ -155,11 +170,11 @@ const FootfallPanel = ({ data, loading }) => {
             </div>
 
             <ChartDataTable
-              caption="Logged check-ins per day and branch"
+              caption={`Logged check-ins by ${words.many}, per day and branch`}
               columns={tableColumns}
               rows={rows}
               summaryLabel="Show check-ins as a table"
-              emptyText="No check-ins were logged in this period."
+              emptyText={`No check-ins were logged by ${words.many} in this period.`}
             />
 
             {data?.basis ? (

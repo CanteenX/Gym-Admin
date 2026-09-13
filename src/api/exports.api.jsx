@@ -67,12 +67,31 @@ export const exportMembers = async (params = {}) =>
   api.get(`${ENDPOINTS.EXPORTS.MEMBERS}${qs(params)}`);
 
 /**
- * Logged check-ins — sessions members recorded, not verified visits. Defaults
- * to the last 30 days server-side when no range is given.
+ * Logged check-ins — sessions recorded, not verified visits. Defaults to the
+ * last 30 days server-side when no range is given.
  *
- * @param {{ fromDate?: string, toDate?: string, branch?: string }} params
- * @returns data: Array<{ Date, Branch, Member, Mobile, "Checked In At",
- *   "Checked Out At", Minutes, "Auto Closed" }>
+ * TWO PHASE 3 SWITCHES, BOTH OFF BY DEFAULT, BOTH DELIBERATE:
+ *
+ * `subjectType` — trainer shifts share this collection behind a discriminator.
+ * The server defaults to MEMBER and treats anything it does not recognise as
+ * MEMBER, so "TRAINER" and "ALL" must be asked for by name. Without that, a
+ * file labelled "member check-ins" quietly contains trainer shifts.
+ *
+ * `includeDenied` — a refused scan is a real row (a lapsed member tapped the
+ * sticker; the desk needs to know) but it is NOT a visit, so it is excluded
+ * from every count and from this file unless asked for. Ask for it when the
+ * question is "who was turned away", never when the question is "how busy were
+ * we": adding refusals to a footfall file inflates it with arrivals that did
+ * not happen.
+ *
+ * Nothing here refuses entry. Nobody is at the door — a DENY tells the member
+ * why and leaves a row for staff to follow up.
+ *
+ * @param {{ fromDate?: string, toDate?: string, branch?: string,
+ *           subjectType?: "MEMBER"|"TRAINER"|"ALL",
+ *           includeDenied?: boolean|"true" }} params
+ * @returns data: Array<{ Date, Branch, Type, Member, Mobile, "Checked In At",
+ *   "Checked Out At", Minutes, "Auto Closed", Source, "Denied Reason" }>
  */
 export const exportAttendance = async (params = {}) =>
   api.get(`${ENDPOINTS.EXPORTS.ATTENDANCE}${qs(params)}`);

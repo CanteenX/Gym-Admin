@@ -115,6 +115,47 @@ export const chartTokens = () => {
   return { primary, success, danger, warning, info, grid };
 };
 
+/**
+ * How a screen should describe the population an attendance figure covers.
+ *
+ * ============================================================================
+ * READ THE `subjectType` THE SERVER RETURNED, NEVER THE ONE YOU ASKED FOR.
+ * ============================================================================
+ * Trainer shifts share the Attendance collection with member check-ins behind a
+ * discriminator. The endpoints default to MEMBER and fall back to MEMBER for
+ * any value they do not recognise, so what came back is not always what was
+ * requested — and a panel that labels its numbers from its own filter state
+ * would caption member figures "Trainers" the moment the two disagree.
+ *
+ * Kept here rather than in each panel so the chart, the live list and their
+ * screen-reader summaries cannot end up describing the same rows three
+ * different ways.
+ */
+export const subjectWords = (subjectType) => {
+  switch (String(subjectType || "MEMBER").toUpperCase()) {
+    case "TRAINER":
+      return {
+        title: "Trainers",
+        many: "trainers",
+        // "logged themselves" is the same hedge the member wording uses, and
+        // for the same reason: a row is a button press, not a turnstile.
+        sentence: "Sessions trainers logged themselves, by branch",
+      };
+    case "ALL":
+      return {
+        title: "Members and trainers",
+        many: "members and trainers",
+        sentence: "Sessions members and trainers logged themselves, by branch",
+      };
+    default:
+      return {
+        title: "Members",
+        many: "members",
+        sentence: "Sessions members logged themselves, by branch",
+      };
+  }
+};
+
 /** Stable colour per branch, drawn from the theme palette in a fixed order. */
 export const branchColor = (index) => {
   const t = chartTokens();
@@ -132,6 +173,7 @@ export default {
   toInputDate,
   daysAgoInput,
   minutesLabel,
+  subjectWords,
   chartTokens,
   branchColor,
 };

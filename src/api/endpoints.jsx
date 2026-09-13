@@ -298,6 +298,12 @@ export const ENDPOINTS = {
         UNASSIGN_MEMBER: (id, memberId) =>
             `${V1}/trainers/${id}/members/${memberId}`,
         UNASSIGNED_MEMBERS: `${V1}/trainers-unassigned-members`,
+        // Portal credentials. These live in memberAuth.routes.js on the server,
+        // NOT in trainers.routes.js, because every handler that writes a
+        // password is kept in one file — but they act on a trainer, so the
+        // paths belong under this key rather than under a portal one.
+        SET_PASSWORD: (id) => `${V1}/trainers/${id}/set-password`,
+        REVOKE_PORTAL: (id) => `${V1}/trainers/${id}/portal-access`,
     },
 
     // ---------------------------------------------------------------- Insights
@@ -318,6 +324,12 @@ export const ENDPOINTS = {
         FOOTFALL: `${V1}/attendance/footfall`,
         LIVE: `${V1}/attendance/live`,
         NOT_CHECKED_IN: `${V1}/attendance/not-checked-in`,
+        // Returns the PAYLOAD for the printed branch sticker — a URL and some
+        // copy — never an image. The server has no QR encoder and is not
+        // getting one for a string this short; the panel encodes it client-side
+        // (src/utils/qrCode.js) because it has to lay the sheet out around the
+        // symbol anyway.
+        QR: (branch) => `${V1}/attendance/qr/${encodeURIComponent(branch)}`,
     },
 
     // Read-only reporting. Every money figure behind these comes from the

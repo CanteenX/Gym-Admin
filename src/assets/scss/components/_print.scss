@@ -40,3 +40,133 @@
         }
     }
 }
+
+//
+// ---------------------------------------------------------------------------
+// Branch check-in QR — the wall sheet (pages/Insights/components/BranchQrPanel)
+// ---------------------------------------------------------------------------
+//
+// The sheet is a SEPARATE, print-only rendering of the QR, not the on-screen
+// preview blown up. On screen the panel is a thumbnail grid for staff deciding
+// what to print; on paper it is a poster a member reads from a metre away.
+// Trying to make one layout serve both produces a screen full of posters or a
+// printed thumbnail, which is how this was first attempted.
+//
+// HOW THE PAGE IS CLEARED OF ADMIN CHROME
+//
+// Two mechanisms, both already in the framework, and deliberately no
+// `visibility: hidden` trick and no React portal:
+//
+//   1. The block above already hides the sidebar, header, footer and
+//      .page-title-box for every print in the panel.
+//   2. Everything else on the Attendance Overview screen carries Bootstrap's
+//      `.d-print-none`, and the sheet stack carries `.d-none .d-print-block`.
+//      Bootstrap emits its print display utilities LAST in the stylesheet, so
+//      `d-print-block` wins over `d-none` inside @media print without any
+//      specificity games.
+//
+// The `visibility: hidden` approach was rejected on purpose: hidden content
+// keeps its box, so a screen with a 30-day chart and a paginated table on it
+// emits several blank pages before the first sticker.
+//
+// ONE BRANCH PER PAGE
+//
+// `break-after: page` on every sheet but the last. Both the modern property and
+// the legacy `page-break-after` are set: print engines are not uniform about
+// which they honour, and the failure mode is two branches sharing one sheet -
+// discovered at the printer, with a wasted stack of paper.
+//
+// The QR itself is black on white by construction (see QrCodeSvg) and must stay
+// that way through print: `print-color-adjust: exact` stops a browser's
+// "economy" mode from lightening it into something a camera cannot threshold.
+
+.qr-sheet {
+    display: none;
+}
+
+@media print {
+    .qr-sheet {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+        // Not 100vh: a viewport unit in print is the PAGE box in some engines
+        // and the window in others, and getting it wrong pushes the last line
+        // onto a second sheet.
+        min-height: 0;
+        padding: 12mm 10mm 0;
+        break-after: page;
+        page-break-after: always;
+        break-inside: avoid;
+        page-break-inside: avoid;
+
+        &:last-child {
+            break-after: auto;
+            page-break-after: auto;
+        }
+    }
+
+    .qr-sheet-eyebrow {
+        margin: 0 0 2mm;
+        font-size: 12pt;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .qr-sheet-branch {
+        margin: 0 0 4mm;
+        font-size: 34pt;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .qr-sheet-lead {
+        margin: 0 0 6mm;
+        font-size: 20pt;
+        font-weight: 600;
+    }
+
+    // ~95mm square at A4. Large enough to scan from arm's length with a phone
+    // held at a normal angle; small enough to leave room for the steps below it
+    // without a second page.
+    .qr-sheet-code {
+        width: 95mm;
+        max-width: 100%;
+        margin: 0 auto 6mm;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+
+        svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .qr-sheet-steps {
+        max-width: 120mm;
+        margin: 0 auto 5mm;
+        padding-left: 6mm;
+        font-size: 13pt;
+        line-height: 1.5;
+        text-align: left;
+    }
+
+    .qr-sheet-alt,
+    .qr-sheet-help {
+        max-width: 130mm;
+        margin: 0 auto 3mm;
+        font-size: 11pt;
+    }
+
+    // The link in plain text, for a camera that will not focus and for anyone
+    // typing it in. Wrapped rather than clipped: a truncated URL is worse than
+    // no URL, because it looks complete.
+    .qr-sheet-url {
+        max-width: 140mm;
+        margin: 0 auto 3mm;
+        font-size: 9pt;
+        word-break: break-all;
+    }
+}

@@ -38,6 +38,8 @@ import {
   assignMembersToTrainer,
   unassignMemberFromTrainer,
   listUnassignedMembers,
+  setTrainerPassword,
+  revokeTrainerPortalAccess,
 } from "../../api/trainers.api";
 import { listBranches } from "../../api/branches.api";
 
@@ -64,13 +66,20 @@ const initialState = {
 
 const Trainers = () => {
   const { adminData } = useContext(AuthContext);
-  const { currentPagePermissions } = useContext(MenuContext);
-  const permissions = currentPagePermissions || {
-    read: true,
-    write: true,
-    edit: true,
-    delete: true,
-  };
+  const { currentPagePermissions, isAdmin } = useContext(MenuContext);
+  // Same reasoning as Website/WebsiteAdverts.jsx: a super admin short-circuits
+  // checkPermission on the server AND PermissionProtected on the client, so a
+  // UI that insists on a MenuMaster permission row hides controls the server
+  // would happily honour - and the owner is the one account guaranteed to hit
+  // it, because the gym menus are seeded without blanket role grants.
+  const permissions = isAdmin
+    ? { read: true, write: true, edit: true, delete: true }
+    : currentPagePermissions || {
+        read: true,
+        write: true,
+        edit: true,
+        delete: true,
+      };
 
   const [values, setValues] = useState(initialState);
   const [formErrors, setFormErrors] = useState({});
@@ -96,6 +105,22 @@ const Trainers = () => {
   const [sortDirection, setsortDirection] = useState("asc");
   const [branchFilter, setBranchFilter] = useState("");
   const [modal_delete, setmodal_delete] = useState(false);
+
+  /**
+   * Portal access (plan.md D4).
+   *
+   * Credentials go through their own two endpoints and are NEVER part of the
+   * trainer payload, exactly as on the member screen: a password must not be
+   * changeable by accident while somebody is fixing a phone number.
+   *
+   * `hasPortalAccess` is a real stored field on Trainer, not derived here -
+   * `passwordHash` is select:false, so anything computed client-side from the
+   * row would read "no access" for every trainer who can in fact log in.
+   */
+  const [portalPassword, setPortalPassword] = useState("");
+  const [portalLoginId, setPortalLoginId] = useState("");
+  const [portalBusy, setPortalBusy] = useState(false);
+  const [hasPortalAccess, setHasPortalAccess] = useState(false);
 
   // Roster panel state
   const [rosterModal, setRosterModal] = useState(false);
@@ -160,12 +185,20 @@ const Trainers = () => {
       .catch((err) => console.error("Error loading branches:", err));
   }, []);
 
+  /** Clearing the typed password on every exit: it must not survive the form. */
+  const resetPortalFields = () => {
+    setPortalPassword("");
+    setPortalLoginId("");
+    setHasPortalAccess(false);
+  };
+
   const tog_list = () => {
     setShowForm(false);
     setUpdateForm(false);
     setValues(initialState);
     setIsSubmit(false);
     setFormErrors({});
+    resetPortalFields();
   };
 
   const handleOpenAddForm = () => {
@@ -174,6 +207,7 @@ const Trainers = () => {
     setValues({ ...initialState, branch: branches[0]?.name || "" });
     setIsSubmit(false);
     setFormErrors({});
+    resetPortalFields();
   };
 
   const tog_delete = (id) => {
@@ -194,6 +228,59 @@ const Trainers = () => {
       notes: row.notes || "",
       isActive: row.isActive !== undefined ? row.isActive : true,
     });
+    setPortalPassword("");
+    setPortalLoginId(row.loginId || "");
+    setHasPortalAccess(Boolean(row.hasPortalAccess));
+  };
+
+  /** Grant or reset portal access for the trainer currently being edited. */
+  const handleSetPortalPassword = async () => {
+    if (!portalPassword || portalPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setPortalBusy(true);
+    try {
+      const res = await setTrainerPassword(
+        selectedId,
+        portalPassword,
+        portalLoginId.trim(),
+      );
+      if (res.data.isOk) {
+        // The server's message names the login ID it settled on, which may not
+        // be what was typed (a blank one falls back to the mobile number), so
+        // it is surfaced verbatim rather than replaced with a generic success.
+        toast.success(res.data.message);
+        setPortalPassword("");
+        setHasPortalAccess(true);
+        fetchTrainers();
+      } else {
+        toast.error(res.data.message || "Could not set password");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not set password");
+    } finally {
+      setPortalBusy(false);
+    }
+  };
+
+  const handleRevokePortal = async () => {
+    if (!window.confirm("Remove portal access for this trainer?")) return;
+    setPortalBusy(true);
+    try {
+      const res = await revokeTrainerPortalAccess(selectedId);
+      if (res.data.isOk) {
+        toast.success(res.data.message);
+        setHasPortalAccess(false);
+        fetchTrainers();
+      } else {
+        toast.error(res.data.message || "Could not remove access");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not remove access");
+    } finally {
+      setPortalBusy(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -435,6 +522,7 @@ const Trainers = () => {
               <button
                 className="btn btn-sm btn-success d-flex align-items-center gap-1"
                 onClick={() => handleTog_edit(row)}
+                aria-label={`Edit ${row.fullName}`}
                 title="Edit trainer"
               >
                 <i className="ri-pencil-line"></i>
@@ -444,6 +532,7 @@ const Trainers = () => {
               <button
                 className="btn btn-sm btn-danger d-flex align-items-center gap-1"
                 onClick={() => tog_delete(row._id)}
+                aria-label={`Delete ${row.fullName}`}
                 title="Delete trainer"
               >
                 <i className="ri-delete-bin-line"></i>
@@ -566,6 +655,115 @@ const Trainers = () => {
             </FormGroup>
           </Col>
         </Row>
+
+        {/* ------------------------------------------------------------------
+            Portal access - edit mode only, because a trainer has to exist
+            before credentials can be attached to an _id.
+
+            WHAT THE LOGIN IS FOR: a trainer signs in to the same member portal
+            and records their own shift, which is what `subjectType: "TRAINER"`
+            on an Attendance row attaches to. It is a PORTAL login, signed with
+            the portal key - it is not a staff account and gives no access to
+            this admin panel. Staff sign in with an express-session cookie and a
+            different key set entirely; the two must never converge.
+
+            Gated on `permissions.edit` (which includes isAdmin above): these
+            two endpoints require a staff session server-side, so a role without
+            edit would be shown a button that 403s.
+           ------------------------------------------------------------------ */}
+        {updateForm && permissions.edit && (
+          <>
+            <hr className="my-4" />
+            <h6
+              className="text-uppercase text-muted fw-bold mb-3"
+              style={{ letterSpacing: "0.5px" }}
+            >
+              Trainer Portal Access
+            </h6>
+            <Row className="bg-light rounded p-2 mx-0 mb-3">
+              <Col md={12} className="mb-2">
+                <span className="small">
+                  Portal status:
+                  {hasPortalAccess ? (
+                    <Badge color="success" className="ms-2">
+                      Access enabled
+                    </Badge>
+                  ) : (
+                    <Badge color="light" className="ms-2 text-body">
+                      No access yet
+                    </Badge>
+                  )}
+                </span>
+              </Col>
+              <Col md={4}>
+                <FormGroup className="mb-2">
+                  <Label htmlFor="trainer-portal-loginId" className="form-label small">
+                    Login ID
+                  </Label>
+                  <Input
+                    id="trainer-portal-loginId"
+                    type="text"
+                    value={portalLoginId}
+                    placeholder={values.mobileNumber || "mobile number"}
+                    onChange={(e) => setPortalLoginId(e.target.value)}
+                  />
+                  <small className="text-muted">
+                    Email or any ID. Leave blank to use the contact number.
+                  </small>
+                </FormGroup>
+              </Col>
+              <Col md={4}>
+                <FormGroup className="mb-2">
+                  <Label htmlFor="trainer-portal-password" className="form-label small">
+                    {hasPortalAccess ? "Reset password" : "Set password"}
+                  </Label>
+                  <Input
+                    id="trainer-portal-password"
+                    type="text"
+                    autoComplete="new-password"
+                    value={portalPassword}
+                    placeholder="minimum 6 characters"
+                    onChange={(e) => setPortalPassword(e.target.value)}
+                  />
+                </FormGroup>
+              </Col>
+              <Col md={7} className="d-flex align-items-end gap-2 mb-2">
+                <Button
+                  type="button"
+                  color="primary"
+                  size="sm"
+                  disabled={portalBusy}
+                  onClick={handleSetPortalPassword}
+                >
+                  {portalBusy
+                    ? "Saving..."
+                    : hasPortalAccess
+                      ? "Reset Password"
+                      : "Enable Portal Access"}
+                </Button>
+                {hasPortalAccess && (
+                  <Button
+                    type="button"
+                    color="danger"
+                    size="sm"
+                    outline
+                    disabled={portalBusy}
+                    onClick={handleRevokePortal}
+                  >
+                    Remove Access
+                  </Button>
+                )}
+              </Col>
+              <Col md={12}>
+                <small className="text-muted">
+                  The trainer is asked to change this password on first login.
+                  Removing access leaves the trainer and their roster untouched -
+                  it only stops them signing in to the portal.
+                </small>
+              </Col>
+            </Row>
+          </>
+        )}
 
         <div className="mt-3 d-flex justify-content-end gap-2">
           <Button type="button" color="light" onClick={tog_list}>
@@ -758,6 +956,7 @@ const Trainers = () => {
                       <button
                         className="btn btn-sm btn-soft-danger"
                         onClick={() => removeFromRoster(m._id)}
+                        aria-label={`Remove ${m.fullName} from this trainer`}
                         title="Remove from this trainer"
                       >
                         <i className="ri-close-line"></i>
@@ -775,6 +974,7 @@ const Trainers = () => {
                 bsSize="sm"
                 className="mb-2"
                 placeholder="Search members..."
+                aria-label="Search unassigned members by name or number"
                 value={candidateSearch}
                 onChange={(e) => {
                   setCandidateSearch(e.target.value);

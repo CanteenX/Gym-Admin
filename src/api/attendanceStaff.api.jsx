@@ -35,10 +35,31 @@ const qs = (params) => {
 };
 
 /**
+ * ============================================================================
+ * `subjectType` IS NOT OPTIONAL DECORATION — OMITTING IT IS A WRONG NUMBER.
+ * ============================================================================
+ * Phase 3 put trainer shifts in the same Attendance collection behind a
+ * discriminator. The server defaults every one of these endpoints to
+ * `MEMBER` and falls back to `MEMBER` for any value it does not recognise —
+ * deliberately, so a mistake reads as a number that is too SMALL and obviously
+ * so, rather than one that is too big and plausible. "TRAINER" and "ALL" have
+ * to be asked for by name.
+ *
+ * Whatever was counted comes back in `data.subjectType`, so a screen renders
+ * that rather than assuming what it asked for was honoured.
+ *
+ * Denied scans are excluded from every count here. A refused attempt is a real
+ * row — the desk needs to see it — but it is not a visit, and a lapsed member
+ * tapping the sticker five times must not read as five arrivals. The only place
+ * denials surface is the attendance CSV export, with `includeDenied=true`.
+ */
+
+/**
  * Check-ins per branch per day.
  *
- * @param {{ fromDate?: string, toDate?: string, branch?: string }} params
- * @returns data: { from, to, days[], byBranch[], totalCheckIns, basis }
+ * @param {{ fromDate?: string, toDate?: string, branch?: string,
+ *           subjectType?: "MEMBER"|"TRAINER"|"ALL" }} params
+ * @returns data: { from, to, days[], byBranch[], totalCheckIns, subjectType, basis }
  *   days[]    { branch, date, checkIns, uniqueMembers, autoClosedSessions, totalMinutes }
  *   byBranch[] { branch, checkIns, totalMinutes }
  */
@@ -53,9 +74,16 @@ export const getFootfall = async (params = {}) =>
  * waiting for the portal's lazy auto-close. A rising number means members are
  * not finding the check-out button, not that the gym is full.
  *
- * @param {{ branch?: string, since?: string }} params
- * @returns data: { serverTime, inGymNow, sessions[], staleOpenSessions, basis }
- *   sessions[] { _id, branch, checkInAt, minutesSoFar, member { _id, fullName, mobileNumber, photo } | null }
+ * `trainer` is a SEPARATE key from `member`, not a person squeezed into it:
+ * `member` keeps its exact former shape and is null on a trainer row, so a
+ * column headed "Member" can never end up showing a trainer.
+ *
+ * @param {{ branch?: string, since?: string,
+ *           subjectType?: "MEMBER"|"TRAINER"|"ALL" }} params
+ * @returns data: { serverTime, inGymNow, sessions[], staleOpenSessions, subjectType, basis }
+ *   sessions[] { _id, subjectType, branch, checkInAt, minutesSoFar,
+ *                member { _id, fullName, mobileNumber, photo } | null,
+ *                trainer { _id, fullName, mobileNumber } | null }
  */
 export const getInGymNow = async (params = {}) =>
   api.get(`${ENDPOINTS.ATTENDANCE_STAFF.LIVE}${qs(params)}`);
@@ -75,8 +103,30 @@ export const getInGymNow = async (params = {}) =>
 export const getNotCheckedIn = async (params = {}) =>
   api.get(`${ENDPOINTS.ATTENDANCE_STAFF.NOT_CHECKED_IN}${qs(params)}`);
 
+/**
+ * The payload for a branch's printed sticker. NOT an image.
+ *
+ * The server has no QR encoder and is not getting one for a string this short,
+ * so this returns the deep link and the copy around it; the panel encodes it
+ * (src/utils/qrCode.js). `configured` is the field that matters: it is false
+ * when PUBLIC_SITE_ORIGIN is unset, in which case `url` is a RELATIVE path and
+ * a QR made from it resolves to nothing on a phone. Say so rather than printing
+ * a dead sticker.
+ *
+ * A branch admin gets 403 for any branch but their own — not because the other
+ * branch's link is a secret (it is deliberately guessable; there is no token
+ * and nothing to rotate) but because that is how the wrong sticker ends up on
+ * the wrong wall and every scan through it is mis-attributed for good.
+ *
+ * @param {string} branch the Branch master's `name`, not its display name
+ * @returns data: { branch, displayName, url, path, configured, instructions, notice }
+ */
+export const getBranchQr = async (branch) =>
+  api.get(ENDPOINTS.ATTENDANCE_STAFF.QR(branch));
+
 export default {
   getFootfall,
   getInGymNow,
   getNotCheckedIn,
+  getBranchQr,
 };

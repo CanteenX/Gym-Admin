@@ -60,18 +60,70 @@ const DATASETS = {
     filename: () => `members-${stamp()}.csv`,
     fetch: (filters) => exportMembers({ branch: filters.branch }),
   },
+  /**
+   * ==========================================================================
+   * THREE ATTENDANCE FILES, NOT ONE WITH OPTIONS. WHY.
+   * ==========================================================================
+   * Trainer shifts share the Attendance collection with member check-ins, and
+   * a refused scan is a row in it too. Both are excluded by default, server
+   * side, and both have to be asked for by name.
+   *
+   * Putting them behind a dropdown on one button would produce three files with
+   * the same name and the same columns whose CONTENT differs - which is how
+   * somebody ends up comparing last month's member footfall against this
+   * month's members-plus-trainers and reporting growth that did not happen.
+   * Separate buttons and separate filenames make the difference survive the
+   * download.
+   */
   attendance: {
     label: "Check-in log",
     title: "Export the check-in log",
     description:
       "Sessions members logged themselves in the selected date range. These are " +
-      "self-reported check-ins, not verified visits.",
+      "self-reported check-ins, not verified visits. Trainer shifts and refused " +
+      "attempts are not in this file.",
     filename: () => `attendance-checkins-${stamp()}.csv`,
     fetch: (filters) =>
       exportAttendance({
         fromDate: filters.fromDate,
         toDate: filters.toDate,
         branch: filters.branch,
+      }),
+  },
+  attendanceTrainers: {
+    label: "Trainer shifts",
+    title: "Export trainer shifts",
+    description:
+      "Sessions trainers logged themselves in the selected date range. The same " +
+      "rows the check-in log deliberately leaves out, so that member footfall " +
+      "means members.",
+    filename: () => `attendance-trainer-shifts-${stamp()}.csv`,
+    fetch: (filters) =>
+      exportAttendance({
+        fromDate: filters.fromDate,
+        toDate: filters.toDate,
+        branch: filters.branch,
+        subjectType: "TRAINER",
+      }),
+  },
+  attendanceDenied: {
+    label: "Check-ins incl. refusals",
+    title: "Export check-ins including refused attempts",
+    description:
+      "Every check-in attempt by members and trainers in the range, INCLUDING " +
+      "the ones that were refused - read the “Denied Reason” column. A refusal " +
+      "is somebody who scanned and was told their membership had lapsed or a " +
+      "payment was due; nothing stopped them coming in, because the code is a " +
+      "printed sticker and nobody is at the door. Do not use this file to " +
+      "measure footfall: a refusal is not an arrival.",
+    filename: () => `attendance-with-refusals-${stamp()}.csv`,
+    fetch: (filters) =>
+      exportAttendance({
+        fromDate: filters.fromDate,
+        toDate: filters.toDate,
+        branch: filters.branch,
+        subjectType: "ALL",
+        includeDenied: true,
       }),
   },
 };
