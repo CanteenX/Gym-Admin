@@ -112,8 +112,19 @@ const MenuProvider = ({ children }) => {
                  * short-circuits for ADMIN, and requireSuperAdmin reads
                  * req.session.user.isSuperAdmin regardless of table.
                  */
-                const isFullAdmin =
-                    userData.role === "ADMIN" || userData.isSuperAdmin === true;
+                /**
+                 * The flag ONLY — not the role string.
+                 *
+                 * `role === "ADMIN"` means "logged in from the CompanyMaster
+                 * table", which is not the same as "may do anything". The
+                 * server's gates (checkPermission and cmsPermission) both key
+                 * on isSuperAdmin, so accepting the role here would hand a
+                 * branch-level company admin the full sidebar and let
+                 * PermissionProtected wave them through — and then every API
+                 * call would 403. A client that disagrees with the server about
+                 * who is privileged is worse than one that is merely strict.
+                 */
+                const isFullAdmin = userData.isSuperAdmin === true;
                 setIsAdmin(isFullAdmin);
                 /**
                  * Only write when the value actually CHANGES.
