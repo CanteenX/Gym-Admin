@@ -1329,11 +1329,10 @@ const Employee = () => {
         maxWidth: "200px",
       },
       {
-        name: "Department",
-        cell: DepartmentCell,
-        sortable: true,
-        sortField: "departmentId",
-        maxWidth: "200px",
+        name: "Level",
+        cell: LevelCell,
+        sortable: false,
+        maxWidth: "140px",
       },
       {
         name: "Branch",
@@ -1475,32 +1474,20 @@ const Employee = () => {
       </style>
       <div className="page-content">
         <Container fluid>
-          <BreadCrumb maintitle="Setup" title={activeTab === "admin" ? "Admin" : "Employee"} pageTitle="Setup" />
+          <BreadCrumb maintitle="Setup" title="Employee" pageTitle="Setup" />
 
-          {/* Core Tab Header Selection (For Super Admin ONLY when grid is visible) */}
-          {adminData?.isSuperAdmin === true && !(showForm || updateForm) && (
-            <div className="mb-3 d-flex gap-2">
-              <button
-                className={`btn py-2 px-4 fw-semibold shadow-sm ${activeTab === "employee" ? "custom-tab-btn-active" : "custom-tab-btn"}`}
-                onClick={() => {
-                  setActiveTab("employee");
-                  setQuery("");
-                }}
-              >
-                <i className="ri-group-line align-middle me-1"></i> Employees
-              </button>
-              <button
-                className={`btn py-2 px-4 fw-semibold shadow-sm ${activeTab === "admin" ? "custom-tab-btn-active" : "custom-tab-btn"}`}
-                onClick={() => {
-                  setActiveTab("admin");
-                  setQuery("");
-                  fetchAdminsList();
-                }}
-              >
-                <i className="ri-shield-user-line align-middle me-1"></i> Admins
-              </button>
-            </div>
-          )}
+          {/*
+            THE ADMINS TAB IS GONE, DELIBERATELY.
+            It listed CompanyMaster rows while the tab beside it listed
+            Employee rows, so "Admin" meant two different things on one
+            screen: the branch Admins the owner was looking for sat under
+            "Employees", and this tab held the developer agency's company
+            login. Once that account was retired the tab rendered an empty
+            list next to a table visibly containing two admins.
+            Staff now live in one list with a Level column, and the super
+            admin's own company record stays where it belongs, under
+            Company Details.
+          */}
 
           <Row>
             <Col lg={12}>
@@ -1678,12 +1665,36 @@ EmployeeNameCell.propTypes = {
   row: PropTypes.object,
 };
 
-const DepartmentCell = (props) => {
+/**
+ * What this person IS, in the owner's vocabulary: Super Admin, Admin, or
+ * Employee.
+ *
+ * This column replaced Department, which rendered blank on every row because
+ * no staff member was assigned to one and the only two departments that
+ * existed were named "SuperAdmin" and "Gym Admin" - role names duplicating
+ * what the Roles screen already owns.
+ *
+ * Level is read from the ROLE, not from `row.role` the session field: the API
+ * response's `role` is the joined RoleMaster document, whose name is what an
+ * administrator actually assigned. The session's own `role` means something
+ * else entirely - which table the login came from - and printing that is what
+ * made a branch admin's header say "EMPLOYEE".
+ */
+const LevelCell = (props) => {
   const row = props.row || props;
-  return <p className="text-wrap">{row.department?.departmentName || ""}</p>;
+  if (row.isSuperAdmin) {
+    return <span className="badge bg-danger-subtle text-danger">Super Admin</span>;
+  }
+  const roleName = row.role?.roleName || "";
+  const isAdmin = /admin/i.test(roleName);
+  return (
+    <span className={isAdmin ? "badge bg-success-subtle text-success" : "badge bg-light text-dark border"}>
+      {isAdmin ? "Admin" : "Employee"}
+    </span>
+  );
 };
 
-DepartmentCell.propTypes = {
+LevelCell.propTypes = {
   row: PropTypes.object,
 };
 
