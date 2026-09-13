@@ -364,6 +364,7 @@ const EmailFor = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="ef-email-for"
                 type="text"
                 placeholder="Enter Email For"
                 required
@@ -371,7 +372,7 @@ const EmailFor = () => {
                 value={values.emailFor}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="ef-email-for">
                 Email For <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -380,13 +381,14 @@ const EmailFor = () => {
             </div>
             <div className=" mb-3">
               <Input
+                id="ef-is-active"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 value={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="ef-is-active" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -420,6 +422,7 @@ const EmailFor = () => {
         <ModalBody>
         <div className="form-floating mb-3">
               <Input
+                id="ef-email-for-edit"
                 type="text"
                 placeholder="Enter Email For"
                 required
@@ -427,7 +430,7 @@ const EmailFor = () => {
                 value={values.emailFor}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="ef-email-for-edit">
                 Email For <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -436,6 +439,7 @@ const EmailFor = () => {
             </div>
             <div className=" mb-3">
               <Input
+                id="ef-is-active-edit"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -443,7 +447,7 @@ const EmailFor = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="ef-is-active-edit" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 

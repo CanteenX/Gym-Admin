@@ -428,6 +428,7 @@ const State = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <select
+                aria-label="Country"
                 className="form-select"
                 name="countryId"
                 value={values.countryId}
@@ -522,6 +523,7 @@ const State = () => {
           <ModalBody>
           <div className="form-floating mb-3">
               <select
+                aria-label="Country"
                 className="form-select"
                 name="countryId"
                 value={values.countryId}

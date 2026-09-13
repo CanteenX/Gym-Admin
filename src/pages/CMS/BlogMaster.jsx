@@ -622,10 +622,11 @@ const BlogMaster = () => {
           {/* Main Form Area */}
           <Col lg={8}>
             <div className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="blog-title" className="form-label fw-bold">
                 Title <span className="text-danger">*</span>
               </Label>
               <Input
+                id="blog-title"
                 type="text"
                 name="title"
                 placeholder="Enter blog title"
@@ -638,10 +639,11 @@ const BlogMaster = () => {
             </div>
 
             <div className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="blog-slug" className="form-label fw-bold">
                 Slug (URL Friendly Name) <small className="text-muted fw-normal">(Leave blank to auto-generate)</small>
               </Label>
               <Input
+                id="blog-slug"
                 type="text"
                 name="slug"
                 placeholder="e.g. why-pure-silver-wedding-cards"
@@ -666,10 +668,11 @@ const BlogMaster = () => {
             </div>
 
             <div className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="blog-excerpt" className="form-label fw-bold">
                 Short Description / Excerpt <span className="text-danger">*</span>
               </Label>
               <Input
+                id="blog-excerpt"
                 type="textarea"
                 rows="3"
                 name="excerpt"
@@ -690,8 +693,9 @@ const BlogMaster = () => {
                 </AccordionHeader>
                 <AccordionBody accordionId="seo-1">
                   <FormGroup>
-                    <Label className="form-label">Meta Title</Label>
+                    <Label htmlFor="blog-meta-title" className="form-label">Meta Title</Label>
                     <Input
+                      id="blog-meta-title"
                       type="text"
                       name="metaTitle"
                       placeholder="Meta title for Google search"
@@ -701,8 +705,9 @@ const BlogMaster = () => {
                   </FormGroup>
 
                   <FormGroup>
-                    <Label className="form-label">Meta Description</Label>
+                    <Label htmlFor="blog-meta-description" className="form-label">Meta Description</Label>
                     <Input
+                      id="blog-meta-description"
                       type="textarea"
                       rows="2"
                       name="metaDescription"
@@ -713,8 +718,9 @@ const BlogMaster = () => {
                   </FormGroup>
 
                   <FormGroup>
-                    <Label className="form-label">Meta Keywords</Label>
+                    <Label htmlFor="blog-meta-keywords" className="form-label">Meta Keywords</Label>
                     <Input
+                      id="blog-meta-keywords"
                       type="text"
                       name="metaKeywords"
                       placeholder="Comma-separated keywords (e.g. blog, news, update)"
@@ -724,8 +730,9 @@ const BlogMaster = () => {
                   </FormGroup>
 
                   <FormGroup>
-                    <Label className="form-label">Canonical URL</Label>
+                    <Label htmlFor="blog-canonical-url" className="form-label">Canonical URL</Label>
                     <Input
+                      id="blog-canonical-url"
                       type="text"
                       name="canonicalUrl"
                       placeholder="https://example.com/blog/my-post"
@@ -737,8 +744,9 @@ const BlogMaster = () => {
                   <Row>
                     <Col md={6}>
                       <FormGroup>
-                        <Label className="form-label">OG Share Title</Label>
+                        <Label htmlFor="blog-og-title" className="form-label">OG Share Title</Label>
                         <Input
+                          id="blog-og-title"
                           type="text"
                           name="ogTitle"
                           placeholder="Title for Facebook/LinkedIn"
@@ -749,8 +757,9 @@ const BlogMaster = () => {
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label className="form-label">OG Share Description</Label>
+                        <Label htmlFor="blog-og-description" className="form-label">OG Share Description</Label>
                         <Input
+                          id="blog-og-description"
                           type="text"
                           name="ogDescription"
                           placeholder="Description for social preview"
@@ -771,8 +780,9 @@ const BlogMaster = () => {
               <h6 className="fw-bold mb-3 text-uppercase text-secondary">Publish Settings</h6>
 
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">Status</Label>
+                <Label htmlFor="blog-status" className="form-label fw-bold">Status</Label>
                 <Input
+                  id="blog-status"
                   type="select"
                   name="status"
                   value={formValues.status}
@@ -786,8 +796,9 @@ const BlogMaster = () => {
               </FormGroup>
 
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">Publish Date</Label>
+                <Label htmlFor="blog-publish-date" className="form-label fw-bold">Publish Date</Label>
                 <Input
+                  id="blog-publish-date"
                   type="date"
                   name="publishDate"
                   value={formValues.publishDate}
@@ -796,8 +807,9 @@ const BlogMaster = () => {
               </FormGroup>
 
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">Category</Label>
+                <Label htmlFor="blog-category" className="form-label fw-bold">Category</Label>
                 <Input
+                  id="blog-category"
                   type="text"
                   name="category"
                   placeholder="e.g. Wedding Trends"
@@ -807,8 +819,9 @@ const BlogMaster = () => {
               </FormGroup>
 
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">Author</Label>
+                <Label htmlFor="blog-author" className="form-label fw-bold">Author</Label>
                 <Input
+                  id="blog-author"
                   type="text"
                   name="author"
                   placeholder="Author name"
@@ -818,8 +831,9 @@ const BlogMaster = () => {
               </FormGroup>
 
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">Tags (comma separated)</Label>
+                <Label htmlFor="blog-tags" className="form-label fw-bold">Tags (comma separated)</Label>
                 <Input
+                  id="blog-tags"
                   type="text"
                   name="tags"
                   placeholder="silver, wedding, luxury"
@@ -831,8 +845,9 @@ const BlogMaster = () => {
               <hr />
 
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">Featured Banner Image</Label>
+                <Label htmlFor="blog-featured-image" className="form-label fw-bold">Featured Banner Image</Label>
                 <Input
+                  id="blog-featured-image"
                   type="file"
                   accept="image/*"
                   innerRef={fileInputRef}
@@ -872,8 +887,9 @@ const BlogMaster = () => {
               </FormGroup>
 
               <FormGroup className="mb-3">
-                <Label className="form-label">Image Alt Text (SEO)</Label>
+                <Label htmlFor="blog-featured-image-alt" className="form-label">Image Alt Text (SEO)</Label>
                 <Input
+                  id="blog-featured-image-alt"
                   type="text"
                   name="featuredImageAlt"
                   placeholder="Image alt description"
@@ -1003,6 +1019,8 @@ const BlogMaster = () => {
                     <Row className="g-2 mb-3">
                       <Col md={4}>
                         <Input
+                          id="blog-list-search"
+                          aria-label="Search blog posts by title or excerpt"
                           type="text"
                           className="form-control"
                           placeholder="Search title, excerpt..."
@@ -1012,6 +1030,8 @@ const BlogMaster = () => {
                       </Col>
                       <Col md={4}>
                         <Input
+                          id="blog-list-status-filter"
+                          aria-label="Filter blog posts by status"
                           type="select"
                           value={filterStatus}
                           onChange={(e) => setFilterStatus(e.target.value)}

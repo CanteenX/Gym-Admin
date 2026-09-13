@@ -167,6 +167,7 @@ const GuidesGallery = () => {
             <Col md={4} sm={12} className="mb-3 mb-md-0">
               <div className="search-box" style={{ position: "relative" }}>
                 <Input
+                  aria-label="Search guides by title"
                   type="text"
                   placeholder="Search for guides..."
                   value={query}

@@ -506,10 +506,11 @@ const ManageGuides = () => {
         <Row>
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="g-guide-title" className="form-label fw-bold">
                 Guide Title <span className="text-danger">*</span>
               </Label>
               <Input
+                id="g-guide-title"
                 type="text"
                 name="title"
                 placeholder="Enter Guide Title"
@@ -524,10 +525,11 @@ const ManageGuides = () => {
 
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="g-guide-type" className="form-label fw-bold">
                 Guide Type <span className="text-danger">*</span>
               </Label>
               <Input
+                id="g-guide-type"
                 type="select"
                 name="type"
                 className="form-select"
@@ -547,10 +549,11 @@ const ManageGuides = () => {
           <Col md={12}>
             {values.type === "YouTube" ? (
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">
+                <Label htmlFor="g-youtube-url" className="form-label fw-bold">
                   YouTube URL <span className="text-danger">*</span>
                 </Label>
                 <Input
+                  id="g-youtube-url"
                   type="url"
                   name="youtubeUrl"
                   placeholder="https://www.youtube.com/watch?v=..."
@@ -563,11 +566,12 @@ const ManageGuides = () => {
               </FormGroup>
             ) : (
               <FormGroup className="mb-3">
-                <Label className="form-label fw-bold">
+                <Label htmlFor="g-upload-file" className="form-label fw-bold">
                   Upload File <span className="text-danger">{(!existingFilePath && !selectedFile) ? "*" : ""}</span>
                 </Label>
                 <div className="d-flex align-items-center gap-2">
                   <Input
+                    id="g-upload-file"
                     type="file"
                     innerRef={fileInputRef}
                     className="form-control"
@@ -646,8 +650,9 @@ const ManageGuides = () => {
 
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Sequence</Label>
+              <Label htmlFor="g-sequence" className="form-label fw-bold">Sequence</Label>
               <Input
+                id="g-sequence"
                 type="number"
                 name="sequence"
                 value={values.sequence}
@@ -719,6 +724,7 @@ const ManageGuides = () => {
                         {/* Guide Type Filter Dropdown */}
                         <div style={{ minWidth: "180px" }}>
                           <Input
+                            aria-label="Filter guides by type"
                             type="select"
                             className="form-select form-select-sm"
                             value={filterType}
@@ -734,6 +740,7 @@ const ManageGuides = () => {
                         {/* Search Input Box */}
                         <div className="search-box mb-0" style={{ position: "relative", minWidth: "200px" }}>
                           <Input
+                            aria-label="Search guides by title"
                             type="text"
                             className="form-control form-control-sm search"
                             placeholder="Search guides..."

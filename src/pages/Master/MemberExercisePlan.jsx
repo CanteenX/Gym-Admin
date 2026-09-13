@@ -468,8 +468,9 @@ const MemberExercisePlan = () => {
           <Row className="mb-3">
             <Col md={6}>
               <FormGroup className="mb-0">
-                <Label className="form-label fw-bold">Day Focus</Label>
+                <Label htmlFor="mep-day-focus" className="form-label fw-bold">Day Focus</Label>
                 <Input
+                  id="mep-day-focus"
                   placeholder="e.g. Chest & Triceps"
                   value={day.label}
                   onChange={(e) => handleDayLabel(dayIndex, e.target.value)}
@@ -498,6 +499,7 @@ const MemberExercisePlan = () => {
                     <tr key={`${accordionId}-ex-${exIndex}`}>
                       <td>
                         <Input
+                          aria-label={`Exercise ${exIndex + 1} name`}
                           bsSize="sm"
                           placeholder="e.g. Bench Press"
                           value={ex.name}
@@ -518,6 +520,7 @@ const MemberExercisePlan = () => {
                       </td>
                       <td>
                         <Input
+                          aria-label={`Exercise ${exIndex + 1} target sets`}
                           bsSize="sm"
                           type="number"
                           min="0"
@@ -534,6 +537,7 @@ const MemberExercisePlan = () => {
                       </td>
                       <td>
                         <Input
+                          aria-label={`Exercise ${exIndex + 1} target reps`}
                           bsSize="sm"
                           placeholder="e.g. 10 or 8-12"
                           value={ex.targetReps}
@@ -549,6 +553,7 @@ const MemberExercisePlan = () => {
                       </td>
                       <td>
                         <Input
+                          aria-label={`Exercise ${exIndex + 1} note`}
                           bsSize="sm"
                           placeholder="optional"
                           value={ex.notes}
@@ -622,6 +627,7 @@ const MemberExercisePlan = () => {
                           style={{ position: "relative", minWidth: "200px" }}
                         >
                           <Input
+                            aria-label="Search workout plans by name"
                             type="text"
                             className="form-control form-control-sm search"
                             placeholder="Search plans..."
@@ -668,10 +674,11 @@ const MemberExercisePlan = () => {
                       <Row>
                         <Col md={6}>
                           <FormGroup className="mb-3">
-                            <Label className="form-label fw-bold">
+                            <Label htmlFor="mep-plan-name" className="form-label fw-bold">
                               Plan Name <span className="text-danger">*</span>
                             </Label>
                             <Input
+                              id="mep-plan-name"
                               name="name"
                               placeholder="e.g. Beginner 6 Day Split"
                               value={values.name}

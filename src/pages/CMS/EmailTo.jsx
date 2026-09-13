@@ -379,6 +379,7 @@ const EmailTo = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="et-name"
                 type="text"
                 placeholder="Enter Name"
                 required
@@ -386,7 +387,7 @@ const EmailTo = () => {
                 value={values.name}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="et-name">
                 Name <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -395,6 +396,7 @@ const EmailTo = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="et-email"
                 type="email"
                 placeholder="Enter Email"
                 required
@@ -402,7 +404,7 @@ const EmailTo = () => {
                 value={values.email}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="et-email">
                 Email <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -411,13 +413,14 @@ const EmailTo = () => {
             </div>
             <div className=" mb-3">
               <Input
+                id="et-is-active"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="et-is-active" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -451,6 +454,7 @@ const EmailTo = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="et-name-edit"
                 type="text"
                 placeholder="Enter Name"
                 required
@@ -458,7 +462,7 @@ const EmailTo = () => {
                 value={values.name}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="et-name-edit">
                 Name <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -467,6 +471,7 @@ const EmailTo = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="et-email-edit"
                 type="email"
                 placeholder="Enter Email"
                 required
@@ -474,7 +479,7 @@ const EmailTo = () => {
                 value={values.email}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="et-email-edit">
                 Email <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -483,13 +488,14 @@ const EmailTo = () => {
             </div>
             <div className=" mb-3">
               <Input
+                id="et-is-active-edit"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="et-is-active-edit" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>

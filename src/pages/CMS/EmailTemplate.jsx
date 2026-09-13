@@ -733,13 +733,14 @@ const EmailTemplate = () => {
                       <Col lg={2}>
                         <div className="form-check mb-2">
                           <Input
+                            id="etpl-is-active"
                             type="checkbox"
                             name="isActive"
                             value={values.isActive}
                             onChange={handlecheck}
                             checked={values.isActive}
                           />
-                          <Label className="form-check-label">
+                          <Label htmlFor="etpl-is-active" className="form-check-label">
                             Is Active
                           </Label>
                         </div>
@@ -747,13 +748,14 @@ const EmailTemplate = () => {
                       <Col lg={2}>
                         <div className="form-check mb-2">
                           <Input
+                            id="etpl-admin-template"
                             type="checkbox"
                             name="isAdmin"
                             value={values.isAdmin}
                             onChange={handlecheck}
                             checked={values.isAdmin}
                           />
-                          <Label className="form-check-label">
+                          <Label htmlFor="etpl-admin-template" className="form-check-label">
                             Admin Template
                           </Label>
                         </div>

@@ -1180,6 +1180,8 @@ const Employee = () => {
                                     onChange={handlePasswordResetChange}
                                   />
                                   <button
+                                    aria-label="Show or hide the new password"
+                                    title="Show or hide the new password"
                                     type="button"
                                     className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
                                     onClick={() => setShowNewPassword(!showNewPassword)}
@@ -1206,6 +1208,8 @@ const Employee = () => {
                                     onChange={handlePasswordResetChange}
                                   />
                                   <button
+                                    aria-label="Show or hide the confirmed password"
+                                    title="Show or hide the confirmed password"
                                     type="button"
                                     className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -1617,6 +1621,8 @@ const Employee = () => {
                       invalid={!!adminErrors.password}
                     />
                     <button
+                      aria-label="Show or hide the password"
+                      title="Show or hide the password"
                       type="button"
                       className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
                       onClick={() => setShowAdminPassword(!showAdminPassword)}

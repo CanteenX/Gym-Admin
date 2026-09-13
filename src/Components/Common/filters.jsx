@@ -26,6 +26,7 @@ export const DefaultColumnFilter = ({
 }) => {
   return (
     <Input
+      aria-label="Search this column"
       value={filterValue || ''}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
@@ -58,6 +59,7 @@ export const SelectColumnFilter = ({
 
   return (
     <select
+      aria-label="Filter this column"
       id='custom-select'
       className="form-select"
       value={filterValue}

@@ -326,10 +326,11 @@ const BlogTag = () => {
         <form onSubmit={handleClick}>
           <ModalBody>
             <div className="mb-3">
-              <Label className="form-label">
+              <Label htmlFor="bt-tag-name" className="form-label">
                 Tag Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="bt-tag-name"
                 type="text"
                 name="tagName"
                 placeholder="Enter Tag Name (e.g. Technology)"
@@ -373,10 +374,11 @@ const BlogTag = () => {
         <form onSubmit={handleUpdate}>
           <ModalBody>
             <div className="mb-3">
-              <Label className="form-label">
+              <Label htmlFor="bt-tag-name-edit" className="form-label">
                 Tag Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="bt-tag-name-edit"
                 type="text"
                 name="tagName"
                 placeholder="Enter Tag Name"

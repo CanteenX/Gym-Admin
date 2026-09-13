@@ -349,10 +349,11 @@ const BlogCategory = () => {
         <form onSubmit={handleClick}>
           <ModalBody>
             <div className="mb-3">
-              <Label className="form-label">
+              <Label htmlFor="bc-category-name" className="form-label">
                 Category Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="bc-category-name"
                 type="text"
                 name="categoryName"
                 placeholder="Enter Category Name"
@@ -365,8 +366,9 @@ const BlogCategory = () => {
             </div>
 
             <div className="mb-3">
-              <Label className="form-label">Description</Label>
+              <Label htmlFor="bc-description" className="form-label">Description</Label>
               <Input
+                id="bc-description"
                 type="textarea"
                 rows="3"
                 name="description"
@@ -377,8 +379,9 @@ const BlogCategory = () => {
             </div>
 
             <div className="mb-3">
-              <Label className="form-label">Sequence</Label>
+              <Label htmlFor="bc-sequence" className="form-label">Sequence</Label>
               <Input
+                id="bc-sequence"
                 type="number"
                 name="sequence"
                 value={values.sequence}
@@ -418,10 +421,11 @@ const BlogCategory = () => {
         <form onSubmit={handleUpdate}>
           <ModalBody>
             <div className="mb-3">
-              <Label className="form-label">
+              <Label htmlFor="bc-category-name-edit" className="form-label">
                 Category Name <span className="text-danger">*</span>
               </Label>
               <Input
+                id="bc-category-name-edit"
                 type="text"
                 name="categoryName"
                 placeholder="Enter Category Name"
@@ -434,8 +438,9 @@ const BlogCategory = () => {
             </div>
 
             <div className="mb-3">
-              <Label className="form-label">Description</Label>
+              <Label htmlFor="bc-description-edit" className="form-label">Description</Label>
               <Input
+                id="bc-description-edit"
                 type="textarea"
                 rows="3"
                 name="description"
@@ -446,8 +451,9 @@ const BlogCategory = () => {
             </div>
 
             <div className="mb-3">
-              <Label className="form-label">Sequence</Label>
+              <Label htmlFor="bc-sequence-edit" className="form-label">Sequence</Label>
               <Input
+                id="bc-sequence-edit"
                 type="number"
                 name="sequence"
                 value={values.sequence}

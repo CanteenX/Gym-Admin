@@ -830,6 +830,7 @@ const EmployeeRoles = () => {
             </td>
             <td className="text-center permission-cell">
               <Input
+                aria-label={`Read permission for ${menu.name}`}
                 type="checkbox"
                 checked={hasPermission(menu.id, false, "read")}
                 onChange={(e) => handlePermissionChange(menu.id, false, "read", e.target.checked)}
@@ -838,6 +839,7 @@ const EmployeeRoles = () => {
             </td>
             <td className="text-center permission-cell">
               <Input
+                aria-label={`Write permission for ${menu.name}`}
                 type="checkbox"
                 checked={hasPermission(menu.id, false, "write")}
                 onChange={(e) => handlePermissionChange(menu.id, false, "write", e.target.checked)}
@@ -846,6 +848,7 @@ const EmployeeRoles = () => {
             </td>
             <td className="text-center permission-cell">
               <Input
+                aria-label={`Delete permission for ${menu.name}`}
                 type="checkbox"
                 checked={hasPermission(menu.id, false, "delete")}
                 onChange={(e) => handlePermissionChange(menu.id, false, "delete", e.target.checked)}
@@ -854,6 +857,7 @@ const EmployeeRoles = () => {
             </td>
             <td className="text-center permission-cell">
               <Input
+                aria-label={`Edit permission for ${menu.name}`}
                 type="checkbox"
                 checked={hasPermission(menu.id, false, "edit")}
                 onChange={(e) => handlePermissionChange(menu.id, false, "edit", e.target.checked)}
@@ -862,6 +866,7 @@ const EmployeeRoles = () => {
             </td>
             <td className="text-center permission-cell">
               <Input
+                aria-label={`Print permission for ${menu.name}`}
                 type="checkbox"
                 checked={hasPermission(menu.id, false, "print")}
                 onChange={(e) => handlePermissionChange(menu.id, false, "print", e.target.checked)}
@@ -870,6 +875,7 @@ const EmployeeRoles = () => {
             </td>
             <td className="text-center permission-cell">
               <Input
+                aria-label={`Mail permission for ${menu.name}`}
                 type="checkbox"
                 checked={hasPermission(menu.id, false, "mail")}
                 onChange={(e) => handlePermissionChange(menu.id, false, "mail", e.target.checked)}
@@ -1029,6 +1035,7 @@ const EmployeeRoles = () => {
                             <div className="d-flex flex-column align-items-center">
                               <span>Read</span>
                               <Input
+                                aria-label="Grant read permission on every menu"
                                 type="checkbox"
                                 checked={hasColumnAllPermissions("read")}
                                 onChange={(e) => handleColumnPermissionChange("read", e.target.checked)}
@@ -1041,6 +1048,7 @@ const EmployeeRoles = () => {
                             <div className="d-flex flex-column align-items-center">
                               <span>Write</span>
                               <Input
+                                aria-label="Grant write permission on every menu"
                                 type="checkbox"
                                 checked={hasColumnAllPermissions("write")}
                                 onChange={(e) => handleColumnPermissionChange("write", e.target.checked)}
@@ -1053,6 +1061,7 @@ const EmployeeRoles = () => {
                             <div className="d-flex flex-column align-items-center">
                               <span>Delete</span>
                               <Input
+                                aria-label="Grant delete permission on every menu"
                                 type="checkbox"
                                 checked={hasColumnAllPermissions("delete")}
                                 onChange={(e) => handleColumnPermissionChange("delete", e.target.checked)}
@@ -1065,6 +1074,7 @@ const EmployeeRoles = () => {
                             <div className="d-flex flex-column align-items-center">
                               <span>Edit</span>
                               <Input
+                                aria-label="Grant edit permission on every menu"
                                 type="checkbox"
                                 checked={hasColumnAllPermissions("edit")}
                                 onChange={(e) => handleColumnPermissionChange("edit", e.target.checked)}
@@ -1077,6 +1087,7 @@ const EmployeeRoles = () => {
                             <div className="d-flex flex-column align-items-center">
                               <span>Print</span>
                               <Input
+                                aria-label="Grant print permission on every menu"
                                 type="checkbox"
                                 checked={hasColumnAllPermissions("print")}
                                 onChange={(e) => handleColumnPermissionChange("print", e.target.checked)}
@@ -1089,6 +1100,7 @@ const EmployeeRoles = () => {
                             <div className="d-flex flex-column align-items-center">
                               <span>Mail</span>
                               <Input
+                                aria-label="Grant mail permission on every menu"
                                 type="checkbox"
                                 checked={hasColumnAllPermissions("mail")}
                                 onChange={(e) => handleColumnPermissionChange("mail", e.target.checked)}
@@ -1114,6 +1126,7 @@ const EmployeeRoles = () => {
                                     <div className="d-flex align-items-center justify-content-between">
                                       <div className="d-flex align-items-center">
                                         <Input
+                                          aria-label={`Grant every permission in ${group.groupName}`}
                                           type="checkbox"
                                           checked={hasGroupAllPermissions(group.groupId)}
                                           onChange={(e) => handleAllGroupPermissions(group.groupId, e.target.checked)}
@@ -1175,6 +1188,7 @@ const EmployeeRoles = () => {
                                     </td>
                                     <td className="text-center permission-cell">
                                       <Input
+                                        aria-label={`Read permission for ${group.groupName}`}
                                         type="checkbox"
                                         checked={hasPermission(group.groupId, true, "read")}
                                         onChange={(e) =>
@@ -1185,6 +1199,7 @@ const EmployeeRoles = () => {
                                     </td>
                                     <td className="text-center permission-cell">
                                       <Input
+                                        aria-label={`Write permission for ${group.groupName}`}
                                         type="checkbox"
                                         checked={hasPermission(group.groupId, true, "write")}
                                         onChange={(e) =>
@@ -1195,6 +1210,7 @@ const EmployeeRoles = () => {
                                     </td>
                                     <td className="text-center permission-cell">
                                       <Input
+                                        aria-label={`Delete permission for ${group.groupName}`}
                                         type="checkbox"
                                         checked={hasPermission(group.groupId, true, "delete")}
                                         onChange={(e) =>
@@ -1205,6 +1221,7 @@ const EmployeeRoles = () => {
                                     </td>
                                     <td className="text-center permission-cell">
                                       <Input
+                                        aria-label={`Edit permission for ${group.groupName}`}
                                         type="checkbox"
                                         checked={hasPermission(group.groupId, true, "edit")}
                                         onChange={(e) =>
@@ -1215,6 +1232,7 @@ const EmployeeRoles = () => {
                                     </td>
                                     <td className="text-center permission-cell">
                                       <Input
+                                        aria-label={`Print permission for ${group.groupName}`}
                                         type="checkbox"
                                         checked={hasPermission(group.groupId, true, "print")}
                                         onChange={(e) =>
@@ -1225,6 +1243,7 @@ const EmployeeRoles = () => {
                                     </td>
                                     <td className="text-center permission-cell">
                                       <Input
+                                        aria-label={`Mail permission for ${group.groupName}`}
                                         type="checkbox"
                                         checked={hasPermission(group.groupId, true, "mail")}
                                         onChange={(e) =>

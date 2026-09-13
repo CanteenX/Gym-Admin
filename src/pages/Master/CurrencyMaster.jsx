@@ -415,6 +415,7 @@ const CurrencyMaster = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="cur-currency"
                 type="text"
                 placeholder="Enter Currency Name"
                 required
@@ -422,7 +423,7 @@ const CurrencyMaster = () => {
                 value={values.currencyName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="cur-currency">
                 Currency <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -431,6 +432,7 @@ const CurrencyMaster = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="cur-currency-code"
                 type="text"
                 placeholder="Enter Country Code"
                 required
@@ -438,7 +440,7 @@ const CurrencyMaster = () => {
                 value={values.currencyCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="cur-currency-code">
                 Currency Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -447,6 +449,7 @@ const CurrencyMaster = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="cur-currency-symbol"
                 type="text"
                 placeholder="Enter Currency Symbol"
                 required
@@ -454,7 +457,7 @@ const CurrencyMaster = () => {
                 value={values.currencySymbol}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="cur-currency-symbol">
                 Currency Symbol <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -464,13 +467,14 @@ const CurrencyMaster = () => {
 
             <div className=" mb-3">
               <Input
+                id="cur-is-active"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 value={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="cur-is-active" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -504,6 +508,7 @@ const CurrencyMaster = () => {
           <ModalBody>
           <div className="form-floating mb-3">
               <Input
+                id="cur-currency-edit"
                 type="text"
                 placeholder="Enter Currency Name"
                 required
@@ -511,7 +516,7 @@ const CurrencyMaster = () => {
                 value={values.currencyName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="cur-currency-edit">
                 Currency <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -520,6 +525,7 @@ const CurrencyMaster = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="cur-currency-code-edit"
                 type="text"
                 placeholder="Enter Currency Code"
                 required
@@ -527,7 +533,7 @@ const CurrencyMaster = () => {
                 value={values.currencyCode}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="cur-currency-code-edit">
                 Currency Code <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -536,6 +542,7 @@ const CurrencyMaster = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="cur-currency-symbol-edit"
                 type="text"
                 placeholder="Enter Currency Symbol"
                 required
@@ -543,7 +550,7 @@ const CurrencyMaster = () => {
                 value={values.currencySymbol}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="cur-currency-symbol-edit">
                 Currency Symbol <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -553,6 +560,7 @@ const CurrencyMaster = () => {
 
             <div className=" mb-3">
               <Input
+                id="cur-is-active-edit"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
@@ -560,7 +568,7 @@ const CurrencyMaster = () => {
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="cur-is-active-edit" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 

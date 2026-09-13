@@ -88,7 +88,9 @@ const BasicPasswCreate = () => {
                                                     {validation.errors.password && validation.touched.password ? (
                                                         <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
                                                     ) : null}
-                                                    <Button color="link" onClick={() => setPasswordShow(!passwordShow)} className="position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button"
+                                                    <Button
+                                                      aria-label="Show or hide the password"
+                                                      title="Show or hide the password" color="link" onClick={() => setPasswordShow(!passwordShow)} className="position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button"
                                                         id="password-addon"><i className="ri-eye-fill align-middle"></i></Button>
                                                 </div>
                                                 <div id="passwordInput" className="form-text">Must be at least 8 characters.</div>
@@ -111,7 +113,7 @@ const BasicPasswCreate = () => {
                                                     {validation.errors.confrim_password && validation.touched.confrim_password ? (
                                                         <FormFeedback type="invalid">{validation.errors.confrim_password}</FormFeedback>
                                                     ) : null}
-                                                    <Button color="link" onClick={() => setConfrimPasswordShow(!confrimPasswordShow)} className="position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button">
+                                                    <Button aria-label="Show or hide the confirmed password" title="Show or hide the confirmed password" color="link" onClick={() => setConfrimPasswordShow(!confrimPasswordShow)} className="position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button">
                                                         <i className="ri-eye-fill align-middle"></i></Button>
                                                 </div>
                                             </div>

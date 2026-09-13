@@ -66,7 +66,7 @@ const BasicPasswReset = () => {
                                     <div className="p-2">
                                         <Form onSubmit={validation.handleSubmit}>
                                             <div className="mb-4">
-                                                <Label className="form-label">Email</Label>
+                                                <Label htmlFor="email" className="form-label">Email</Label>
                                                 <Input 
                                                 type="email" 
                                                 className="form-control" 

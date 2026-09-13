@@ -410,13 +410,14 @@ const MenuGroup = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="mg-menu-group-name"
                 type="text"
                 required
                 name="menuGroupName"
                 value={values.menuGroupName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="mg-menu-group-name">
                 Menu Group Name <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -425,6 +426,7 @@ const MenuGroup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="mg-sequence"
                 type="number"
                 required
                 name="sequence"
@@ -433,7 +435,7 @@ const MenuGroup = () => {
                 min={1}
                 onWheel={(e) => e.target.blur()}
               />
-              <Label>
+              <Label htmlFor="mg-sequence">
                 Sequence<span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -461,13 +463,14 @@ const MenuGroup = () => {
             {values.isLink && (
               <div className="form-floating mb-3">
                 <Input
+                  id="mg-menu-url"
                   type="text"
                   required
                   name="menuUrl"
                   value={values.menuUrl}
                   onChange={handleChange}
                 />
-                <Label>
+                <Label htmlFor="mg-menu-url">
                   Menu URL <span className="text-danger">*</span>{" "}
                 </Label>
                 {isSubmit && (
@@ -477,13 +480,14 @@ const MenuGroup = () => {
             )}
             <div className=" mb-3">
               <Input
+                id="mg-is-active"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 value={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="mg-is-active" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -517,13 +521,14 @@ const MenuGroup = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <Input
+                id="mg-menu-group-name-edit"
                 type="text"
                 required
                 name="menuGroupName"
                 value={values.menuGroupName}
                 onChange={handleChange}
               />
-              <Label>
+              <Label htmlFor="mg-menu-group-name-edit">
                 Menu Group Name <span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -532,6 +537,7 @@ const MenuGroup = () => {
             </div>
             <div className="form-floating mb-3">
               <Input
+                id="mg-sequence-edit"
                 type="number"
                 required
                 name="sequence"
@@ -540,7 +546,7 @@ const MenuGroup = () => {
                 min={1}
                 onWheel={(e) => e.target.blur()}
               />
-              <Label>
+              <Label htmlFor="mg-sequence-edit">
                 Sequence<span className="text-danger">*</span>{" "}
               </Label>
               {isSubmit && (
@@ -568,13 +574,14 @@ const MenuGroup = () => {
             {values.isLink && (
               <div className="form-floating mb-3">
                 <Input
+                  id="mg-menu-url-edit"
                   type="text"
                   required
                   name="menuUrl"
                   value={values.menuUrl}
                   onChange={handleChange}
                 />
-                <Label>
+                <Label htmlFor="mg-menu-url-edit">
                   Menu URL <span className="text-danger">*</span>{" "}
                 </Label>
                 {isSubmit && (
@@ -584,13 +591,14 @@ const MenuGroup = () => {
             )}
             <div className=" mb-3">
               <Input
+                id="mg-is-active-edit"
                 type="checkbox"
                 className="form-check-input"
                 name="isActive"
                 checked={values.isActive}
                 onChange={handleCheck}
               />
-              <Label className="form-check-label ms-1">Is Active</Label>
+              <Label htmlFor="mg-is-active-edit" className="form-check-label ms-1">Is Active</Label>
             </div>
           </ModalBody>
 

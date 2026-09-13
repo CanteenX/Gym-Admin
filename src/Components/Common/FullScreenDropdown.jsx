@@ -54,6 +54,8 @@ const FullScreenDropdown = () => {
     return (
         <div className="ms-1 header-item d-none d-sm-flex">
             <button
+              aria-label="Toggle full screen"
+              title="Toggle full screen"
                 onClick={toggleFullscreen}
                 type="button"
                 className="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"

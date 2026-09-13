@@ -451,6 +451,7 @@ const AdminUser = () => {
                     <ModalBody>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-first-name"
                                 type="text"
                                 className={validClassFN}
                                 placeholder="Enter first Name"
@@ -459,7 +460,7 @@ const AdminUser = () => {
                                 value={firstName}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-first-name">
                                 First Name{" "}
                                 <span className="text-danger">*</span>
                             </Label>
@@ -471,6 +472,7 @@ const AdminUser = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-last-name"
                                 type="text"
                                 className={validClassLN}
                                 placeholder="Enter last Name"
@@ -479,7 +481,7 @@ const AdminUser = () => {
                                 value={lastName}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-last-name">
                                 Last Name <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -490,6 +492,7 @@ const AdminUser = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-email"
                                 type="text"
                                 className={validClassEM}
                                 placeholder="Enter email "
@@ -498,7 +501,7 @@ const AdminUser = () => {
                                 value={email}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-email">
                                 Email <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -509,6 +512,7 @@ const AdminUser = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-password"
                                 type="text"
                                 className={validClassPA}
                                 placeholder="Enter password"
@@ -517,7 +521,7 @@ const AdminUser = () => {
                                 value={password}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-password">
                                 Password <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -529,13 +533,14 @@ const AdminUser = () => {
 
                         <div className="form-check mb-2">
                             <Input
+                              id="au-is-active"
                                 type="checkbox"
                                 className="form-check-input"
                                 name="IsActive"
                                 value={IsActive}
                                 onChange={handleCheck}
                             />
-                            <Label className="form-check-label">
+                            <Label htmlFor="au-is-active" className="form-check-label">
                                 Is Active
                             </Label>
                         </div>
@@ -570,6 +575,7 @@ const AdminUser = () => {
                     <ModalBody>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-first-name-edit"
                                 type="text"
                                 className={validClassFN}
                                 placeholder="Enter first Name"
@@ -578,7 +584,7 @@ const AdminUser = () => {
                                 value={firstName}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-first-name-edit">
                                 First Name<span className="text-danger">*</span>{" "}
                             </Label>
                             {isSubmit && (
@@ -589,6 +595,7 @@ const AdminUser = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-last-name-edit"
                                 type="text"
                                 className={validClassLN}
                                 placeholder="Enter last Name"
@@ -597,7 +604,7 @@ const AdminUser = () => {
                                 value={lastName}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-last-name-edit">
                                 Last Name<span className="text-danger">*</span>{" "}
                             </Label>
                             {isSubmit && (
@@ -608,6 +615,7 @@ const AdminUser = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-email-edit"
                                 type="text"
                                 className={validClassEM}
                                 placeholder="Enter email "
@@ -616,7 +624,7 @@ const AdminUser = () => {
                                 value={email}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-email-edit">
                                 Email <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -627,6 +635,7 @@ const AdminUser = () => {
                         </div>
                         <div className="form-floating mb-3">
                             <Input
+                              id="au-password-edit"
                                 type="text"
                                 className={validClassPA}
                                 placeholder="Enter password"
@@ -635,7 +644,7 @@ const AdminUser = () => {
                                 value={password}
                                 onChange={handleChange}
                             />
-                            <Label>
+                            <Label htmlFor="au-password-edit">
                                 Password <span className="text-danger">*</span>
                             </Label>
                             {isSubmit && (
@@ -647,6 +656,7 @@ const AdminUser = () => {
 
                         <div className="form-check mb-2">
                             <Input
+                              id="au-is-active-edit"
                                 type="checkbox"
                                 className="form-check-input"
                                 name="IsActive"
@@ -654,7 +664,7 @@ const AdminUser = () => {
                                 checked={IsActive}
                                 onChange={handleCheck}
                             />
-                            <Label className="form-check-label">
+                            <Label htmlFor="au-is-active-edit" className="form-check-label">
                                 Is Active
                             </Label>
                         </div>

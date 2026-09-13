@@ -265,6 +265,7 @@ const LoginAttemptLogs = () => {
                                         <div className="d-flex gap-3 align-items-center">
                                             <div className="search-box">
                                                 <input
+                                                  aria-label="Search login attempts by email, IP or location"
                                                     type="text"
                                                     className="form-control"
                                                     placeholder="Search by email, IP, location..."

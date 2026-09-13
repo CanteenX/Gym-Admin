@@ -60,7 +60,8 @@ const SearchOption = () => {
     return (
         <form className="app-search d-none d-md-block">
             <div className="position-relative">
-                <Input type="text" className="form-control" placeholder="Search..."
+                <Input
+                  aria-label="Search the admin panel" type="text" className="form-control" placeholder="Search..."
                     id="search-options"
                     value={value}
                     onChange={e => {

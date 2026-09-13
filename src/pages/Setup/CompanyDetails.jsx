@@ -748,6 +748,7 @@ const CompanyDetails = () => {
                     )}
                     
                     <input
+                      aria-label="Upload company logo"
                       id="logo"
                       type="file"
                       name="logo"
@@ -811,6 +812,7 @@ const CompanyDetails = () => {
                       )}
 
                       <input
+                        aria-label="Upload favicon"
                         id="favicon"
                         type="file"
                         name="favicon"
@@ -869,6 +871,7 @@ const CompanyDetails = () => {
                       )}
 
                       <input
+                        aria-label="Upload login page banner"
                         id="loginBanner"
                         type="file"
                         name="loginBanner"

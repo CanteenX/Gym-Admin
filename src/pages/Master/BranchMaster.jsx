@@ -560,6 +560,7 @@ const BranchMaster = () => {
                           style={{ position: "relative", minWidth: "200px" }}
                         >
                           <Input
+                            aria-label="Search branches by name"
                             type="text"
                             className="form-control form-control-sm search"
                             placeholder="Search branches..."

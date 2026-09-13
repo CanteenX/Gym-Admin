@@ -242,6 +242,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                                     style={{ width: "42px", height: "32px", cursor: "pointer", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)" }}
                                 >
                                     <input
+                                      aria-label="Sidebar color picker"
                                         type="color"
                                         value={sidebarBgColor}
                                         onChange={(e) => setSidebarBgColor(e.target.value)}
@@ -267,6 +268,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                             <div className="d-flex align-items-center gap-1">
                                 <span className="fs-12 text-muted fw-bold">#</span>
                                 <input
+                                  aria-label="Sidebar color hex value"
                                     type="text"
                                     value={sidebarBgColor.replace("#", "").toUpperCase()}
                                     onChange={(e) => {
@@ -289,6 +291,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                                     style={{ width: "42px", height: "32px", cursor: "pointer", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)" }}
                                 >
                                     <input
+                                      aria-label="Add and save button color picker"
                                         type="color"
                                         value={addButtonColor}
                                         onChange={(e) => {
@@ -316,6 +319,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                             <div className="d-flex align-items-center gap-1">
                                 <span className="fs-12 text-muted fw-bold">#</span>
                                 <input
+                                  aria-label="Add and save button color hex value"
                                     type="text"
                                     value={addButtonColor.replace("#", "").toUpperCase()}
                                     onChange={(e) => {
@@ -338,6 +342,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                                     style={{ width: "42px", height: "32px", cursor: "pointer", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)" }}
                                 >
                                     <input
+                                      aria-label="Add button text color picker"
                                         type="color"
                                         value={addButtonTextColor}
                                         onChange={(e) => {
@@ -365,6 +370,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                             <div className="d-flex align-items-center gap-1">
                                 <span className="fs-12 text-muted fw-bold">#</span>
                                 <input
+                                  aria-label="Add button text color hex value"
                                     type="text"
                                     value={addButtonTextColor.replace("#", "").toUpperCase()}
                                     onChange={(e) => {
@@ -387,6 +393,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                                     style={{ width: "42px", height: "32px", cursor: "pointer", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)" }}
                                 >
                                     <input
+                                      aria-label="Delete and remove button color picker"
                                         type="color"
                                         value={removeButtonColor}
                                         onChange={(e) => {
@@ -414,6 +421,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                             <div className="d-flex align-items-center gap-1">
                                 <span className="fs-12 text-muted fw-bold">#</span>
                                 <input
+                                  aria-label="Delete and remove button color hex value"
                                     type="text"
                                     value={removeButtonColor.replace("#", "").toUpperCase()}
                                     onChange={(e) => {
@@ -436,6 +444,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                                     style={{ width: "42px", height: "32px", cursor: "pointer", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)" }}
                                 >
                                     <input
+                                      aria-label="Remove button text color picker"
                                         type="color"
                                         value={removeButtonTextColor}
                                         onChange={(e) => {
@@ -463,6 +472,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                             <div className="d-flex align-items-center gap-1">
                                 <span className="fs-12 text-muted fw-bold">#</span>
                                 <input
+                                  aria-label="Remove button text color hex value"
                                     type="text"
                                     value={removeButtonTextColor.replace("#", "").toUpperCase()}
                                     onChange={(e) => {
@@ -614,6 +624,7 @@ const ThemeCustomizer = ({ show, onClose, onThemeChange }) => {
                         </div>
                         <div className="form-check form-switch form-switch-md">
                             <input
+                              aria-label="Show the universal search bar"
                                 type="checkbox"
                                 className="form-check-input"
                                 role="switch"

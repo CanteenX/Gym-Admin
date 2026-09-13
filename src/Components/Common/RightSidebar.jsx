@@ -132,6 +132,8 @@ const RightSidebar = (props) => {
     return (
         <React.Fragment>
             <button
+              aria-label="Back to top"
+              title="Back to top"
                 onClick={() => toTop()}
                 className="btn btn-danger btn-icon" id="back-to-top">
                 <i className="ri-arrow-up-line"></i>
@@ -147,7 +149,7 @@ const RightSidebar = (props) => {
 
             <div>
                 <div className="customizer-setting d-none d-md-block">
-                    <button type="button" onClick={toggleLeftCanvas} className="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2 border-0">
+                    <button aria-label="Open theme settings" title="Open theme settings" type="button" onClick={toggleLeftCanvas} className="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2 border-0">
                         <i className='mdi mdi-spin mdi-cog-outline fs-22'></i>
                     </button>
                 </div>
@@ -896,6 +898,8 @@ const RightSidebar = (props) => {
 
                                                 <div className="col-4">
                                                     <button
+                                                      aria-label="Gradient background"
+                                                      title="Gradient background"
                                                         className={classnames(
                                                             "btn btn-link avatar-md w-100 p-0 overflow-hidden border ",
                                                             { collapsed: !show, active: show === true }

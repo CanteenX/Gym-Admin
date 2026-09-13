@@ -284,6 +284,7 @@ const ExpenseCategories = () => {
                     {!showForm && !updateForm ? (
                       <>
                         <Input
+                          aria-label="Search expense categories by name"
                           type="text"
                           bsSize="sm"
                           style={{ minWidth: "200px" }}
@@ -319,11 +320,12 @@ const ExpenseCategories = () => {
                       <Row>
                         <Col md={4}>
                           <FormGroup className="mb-3">
-                            <Label className="form-label fw-bold">
+                            <Label htmlFor="exp-category-name" className="form-label fw-bold">
                               Category Name{" "}
                               <span className="text-danger">*</span>
                             </Label>
                             <Input
+                              id="exp-category-name"
                               name="name"
                               placeholder="e.g. Equipment Repair"
                               value={values.name}
@@ -338,10 +340,11 @@ const ExpenseCategories = () => {
                         </Col>
                         <Col md={5}>
                           <FormGroup className="mb-3">
-                            <Label className="form-label fw-bold">
+                            <Label htmlFor="exp-description" className="form-label fw-bold">
                               Description
                             </Label>
                             <Input
+                              id="exp-description"
                               name="description"
                               placeholder="optional"
                               value={values.description}
@@ -351,10 +354,11 @@ const ExpenseCategories = () => {
                         </Col>
                         <Col md={3}>
                           <FormGroup className="mb-3">
-                            <Label className="form-label fw-bold">
+                            <Label htmlFor="exp-display-order" className="form-label fw-bold">
                               Display Order
                             </Label>
                             <Input
+                              id="exp-display-order"
                               type="number"
                               name="sequence"
                               value={values.sequence}

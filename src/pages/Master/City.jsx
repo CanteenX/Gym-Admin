@@ -447,6 +447,7 @@ const City = () => {
           <ModalBody>
             <div className="form-floating mb-3">
               <select
+                aria-label="Country"
                 className="form-select"
                 name="countryId"
                 value={values.countryId}
@@ -465,6 +466,7 @@ const City = () => {
             </div>
             <div className="form-floating mb-3">
               <select
+                aria-label="State"
                 className="form-select"
                 name="stateId"
                 value={values.stateId}
@@ -559,6 +561,7 @@ const City = () => {
           <ModalBody>
           <div className="form-floating mb-3">
               <select
+                aria-label="Country"
                 className="form-select"
                 name="countryId"
                 value={values.countryId}
@@ -577,6 +580,7 @@ const City = () => {
             </div>
             <div className="form-floating mb-3">
               <select
+                aria-label="State"
                 className="form-select"
                 name="stateId"
                 value={values.stateId}

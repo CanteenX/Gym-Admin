@@ -39,7 +39,7 @@ document.title="Cover SignIn | Velzon - React Admin & Dashboard Template";
                                                         <Label className="form-label" htmlFor="password-input">Password</Label>
                                                         <div className="position-relative auth-pass-inputgroup mb-3">
                                                             <Input type="password" className="form-control pe-5 password-input" placeholder="Enter password" id="password-input" />
-                                                            <button className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i className="ri-eye-fill align-middle"></i></button>
+                                                            <button aria-label="Show or hide the password" title="Show or hide the password" className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i className="ri-eye-fill align-middle"></i></button>
                                                         </div>
                                                     </div>
 
@@ -58,10 +58,10 @@ document.title="Cover SignIn | Velzon - React Admin & Dashboard Template";
                                                         </div>
 
                                                         <div>
-                                                            <Button color="primary" className="btn-icon me-1"><i className="ri-facebook-fill fs-16"></i></Button>
-                                                            <Button color="danger" className="btn-icon me-1"><i className="ri-google-fill fs-16"></i></Button>
-                                                            <Button color="dark" className="btn-icon me-1"><i className="ri-github-fill fs-16"></i></Button>
-                                                            <Button color="info" className="btn-icon"><i className="ri-twitter-fill fs-16"></i></Button>
+                                                            <Button aria-label="Sign in with Facebook" title="Sign in with Facebook" color="primary" className="btn-icon me-1"><i className="ri-facebook-fill fs-16"></i></Button>
+                                                            <Button aria-label="Sign in with Google" title="Sign in with Google" color="danger" className="btn-icon me-1"><i className="ri-google-fill fs-16"></i></Button>
+                                                            <Button aria-label="Sign in with GitHub" title="Sign in with GitHub" color="dark" className="btn-icon me-1"><i className="ri-github-fill fs-16"></i></Button>
+                                                            <Button aria-label="Sign in with Twitter" title="Sign in with Twitter" color="info" className="btn-icon"><i className="ri-twitter-fill fs-16"></i></Button>
                                                         </div>
                                                     </div>
 

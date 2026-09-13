@@ -50,6 +50,7 @@ const CustomersGlobalFilter = () => {
                 <Col sm={4}>
                     <div className="">
                         <Flatpickr
+                          aria-label="Filter by date"
                             className="form-control"
                             id="datepicker-publish-input"
                             placeholder="Select a date"
@@ -66,6 +67,7 @@ const CustomersGlobalFilter = () => {
                 <Col sm={4}>
                     <div>
                         <Select
+                          aria-label="Filter by customer status"
                             value={customerStatus}
                             onChange={(e) => {
                                 handlecustomerStatus(e.value);
@@ -136,6 +138,7 @@ const OrderGlobalFilter = () => {
             <Col sm={6} className="col-xxl-2">
                 <div>
                     <Flatpickr
+                      aria-label="Filter by date"
                         className="form-control"
                         id="datepicker-publish-input"
                         placeholder="Select a date"
@@ -152,6 +155,7 @@ const OrderGlobalFilter = () => {
             <Col sm={4} className="col-xxl-2">
                 <div>
                     <Select
+                      aria-label="Filter by order status"
                         value={orderStatus}
                         onChange={(e) => {
                             handleorderStatus(e);
@@ -166,6 +170,7 @@ const OrderGlobalFilter = () => {
             <Col sm={4} className="col-xxl-2">
                 <div>
                     <Select
+                      aria-label="Filter by payment method"
                         value={orderPayement}
                         onChange={() => {
                             handleorderPayement();
@@ -209,6 +214,7 @@ const ContactsGlobalFilter = () => {
             <div className="d-flex align-items-center gap-2">
                 <span className="text-muted">Sort by: </span>
                 <Select
+                  aria-label="Sort by"
                     className="mb-0"
                     value={sortBy}
                     onChange={() => {
@@ -244,6 +250,7 @@ const CompaniesGlobalFilter = () => {
             <div className="d-flex align-items-center gap-2">
                 <span className="text-muted">Sort by: </span>
                 <Select
+                  aria-label="Sort by"
                     className="mb-0"
                     value={sortBy}
                     onChange={() => {
@@ -264,6 +271,7 @@ const CryptoOrdersGlobalFilter = () => {
                 <div className="input-group">
                     <span className="input-group-text" id="basic-addon1"><i className="ri-calendar-2-line"></i></span>
                     <Flatpickr
+                      aria-label="Filter by date range"
                         placeholder="Select date"
                         className="form-control"
                         options={{
@@ -274,7 +282,8 @@ const CryptoOrdersGlobalFilter = () => {
                 </div>
             </Col>
             <Col xl={2} md={4}>
-                <select className="form-control" data-choices data-choices-search-false name="choices-single-default"
+                <select
+                  aria-label="Filter by type" className="form-control" data-choices data-choices-search-false name="choices-single-default"
                     id="choices-single-default">
                     <option defaultValue="all">Select Type</option>
                     <option value="Buy">Sell</option>
@@ -282,7 +291,8 @@ const CryptoOrdersGlobalFilter = () => {
                 </select>
             </Col>
             <Col xl={2} md={4}>
-                <select className="form-control" data-choices data-choices-search-false name="choices-single-default2"
+                <select
+                  aria-label="Filter by type" className="form-control" data-choices data-choices-search-false name="choices-single-default2"
                     id="choices-single-default2">
                     <option defaultValue="all">Select Status</option>
                     <option value="Successful">Successful</option>
@@ -321,6 +331,7 @@ const InvoiceListGlobalSearch = () => {
         <React.Fragment>
             <Col sm={4} xxl={3}>
                 <Flatpickr
+                  aria-label="Filter by date"
                     className="form-control bg-light border-light"
                     id="datepicker-publish-input"
                     placeholder="Select a date"
@@ -336,6 +347,7 @@ const InvoiceListGlobalSearch = () => {
             <Col sm={4} xxl={3}>
                 <div className="input-light">
                     <Select
+                      aria-label="Filter by status"
                         value={isStatus}
                         onChange={() => {
                             handleisStatus();
@@ -362,6 +374,7 @@ const TicketsListGlobalFilter = () => {
         <React.Fragment>
             <Col xxl={3} sm={4}>
                 <Flatpickr
+                  aria-label="Filter by date range"
                     className="form-control"
                     placeholder="Select date range"
                     options={{
@@ -372,7 +385,7 @@ const TicketsListGlobalFilter = () => {
             </Col>
             <Col xxl={3} sm={4}>
                 <div className="input-light">
-                    <select className="form-control" data-choices data-choices-search-false name="choices-single-default" id="idStatus">
+                    <select aria-label="Filter by status" className="form-control" data-choices data-choices-search-false name="choices-single-default" id="idStatus">
                         <option value="">Status</option>
                         <option defaultValue="all">All</option>
                         <option value="Open">Open</option>
@@ -395,7 +408,7 @@ const NFTRankingGlobalFilter = () => {
     return (
         <Col xxl={2} sm={4} className="ms-auto">
             <div>
-                <select className="form-control" data-choices data-choices-search-false name="choices-single-default" id="idStatus">
+                <select aria-label="Filter by time period" className="form-control" data-choices data-choices-search-false name="choices-single-default" id="idStatus">
                     <option value="All Time" defaultValue>All Time</option>
                     <option value="1 Day">1 Day</option>
                     <option value="7 Days">7 Days</option>
@@ -413,6 +426,7 @@ const TaskListGlobalFilter = () => {
         <React.Fragment>
             <div className="col-xxl-3 col-sm-4">
                 <Flatpickr
+                  aria-label="Filter by date range"
                     placeholder="Select date range"
                     className="form-control bg-light border-light"
                     options={{
@@ -424,7 +438,7 @@ const TaskListGlobalFilter = () => {
 
             <div className="col-xxl-3 col-sm-4">
                 <div className="input-light">
-                    <select className="form-control" data-choices data-choices-search-false name="status" id="idStatus">
+                    <select aria-label="Filter by status" className="form-control" data-choices data-choices-search-false name="status" id="idStatus">
                         <option value="">Status</option>
                         <option defaultValue="all"  >All</option>
                         <option value="New">New</option>
@@ -448,7 +462,9 @@ const LeadsGlobalFilter = ({ onClickDelete }) => {
     return (
         <div className="col-sm-auto ms-auto">
             <div className="hstack gap-2">
-                <button className="btn btn-soft-danger" onClick={onClickDelete}
+                <button
+                  aria-label="Delete the selected leads"
+                  title="Delete the selected leads" className="btn btn-soft-danger" onClick={onClickDelete}
                 ><i className="ri-delete-bin-2-line"></i></button>
                 <button type="button" className="btn btn-info"
                 
@@ -465,6 +481,8 @@ const LeadsGlobalFilter = ({ onClickDelete }) => {
                 </button>
                 <UncontrolledDropdown>
                     <DropdownToggle
+                      aria-label="More actions"
+                      title="More actions"
                         className="btn btn-soft-info btn-icon fs-14"
                         type="button"
                         id="dropdownMenuButton1"

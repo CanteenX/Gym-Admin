@@ -97,7 +97,7 @@ const MyCartDropdown = () => {
                                     <h5 className="m-0 fw-normal">$<span className="cart-item-price">{item.quantity * item.price}</span></h5>
                                 </div>
                                 <div className="ps-2">
-                                    <button type="button" className="btn btn-icon btn-sm btn-ghost-secondary remove-item-btn" onClick={(e) => { removeItem(e.target); }}><i
+                                    <button aria-label="Remove this item from the cart" title="Remove this item from the cart" type="button" className="btn btn-icon btn-sm btn-ghost-secondary remove-item-btn" onClick={(e) => { removeItem(e.target); }}><i
                                         className="ri-close-fill fs-16"></i></button>
                                 </div>
                             </div>

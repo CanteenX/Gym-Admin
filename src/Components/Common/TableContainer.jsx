@@ -56,6 +56,7 @@ function GlobalFilter({
           <Col sm={5}>
             <div className={(isProductsFilter || isContactsFilter || isCompaniesFilter || isNFTRankingFilter) ? "search-box me-2 mb-2 d-inline-block" : "search-box me-2 mb-2 d-inline-block col-12"}>
               <input
+                aria-label="Search this table"
                 onChange={(e) => {
                   setValue(e.target.value);
                   onChange(e.target.value);
@@ -216,6 +217,7 @@ const TableContainer = ({
         {isGlobalSearch && (
           <Col md={1}>
             <select
+              aria-label="Rows per page"
               className="form-select"
               value={pageSize}
               onChange={onChangeInSelect}
@@ -352,6 +354,7 @@ const TableContainer = ({
         </Col>
         <Col className="col-md-auto">
           <Input
+            aria-label="Go to page number"
             type="number"
             min={1}
             style={{ width: 70 }}

@@ -185,7 +185,7 @@ const ImageUploader = forwardRef(({ onSave, initialLogo ,ASPECT_RATIO}, ref) => 
                 <ModalBody>
                     <Col>
                         <Label className="form-label">Gallery Image</Label>
-                        <input type="file" accept="image/*" onChange={onSelectFile} />
+                        <input aria-label="Choose an image to upload" type="file" accept="image/*" onChange={onSelectFile} />
                         {imgSrc && (
                             <div>
                                 <ReactCrop

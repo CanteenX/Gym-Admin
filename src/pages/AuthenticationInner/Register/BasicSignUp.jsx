@@ -96,7 +96,9 @@ const BasicSignUp = () => {
                                                         {validation.errors.password && validation.touched.password ? (
                                                             <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
                                                         ) : null}
-                                                        <Button color="link" onClick={() => setPasswordShow(!passwordShow)} className="position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button"
+                                                        <Button
+                                                          aria-label="Show or hide the password"
+                                                          title="Show or hide the password" color="link" onClick={() => setPasswordShow(!passwordShow)} className="position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button"
                                                             id="password-addon"><i className="ri-eye-fill align-middle"></i></Button>
                                                     </div>
                                                 </div>
@@ -124,10 +126,10 @@ const BasicSignUp = () => {
                                                     </div>
 
                                                     <div>
-                                                        <button type="button" className="btn btn-primary btn-icon waves-effect waves-light"><i className="ri-facebook-fill fs-16"></i></button>{" "}
-                                                        <button type="button" className="btn btn-danger btn-icon waves-effect waves-light"><i className="ri-google-fill fs-16"></i></button>{" "}
-                                                        <button type="button" className="btn btn-dark btn-icon waves-effect waves-light"><i className="ri-github-fill fs-16"></i></button>{" "}
-                                                        <button type="button" className="btn btn-info btn-icon waves-effect waves-light"><i className="ri-twitter-fill fs-16"></i></button>
+                                                        <button aria-label="Sign up with Facebook" title="Sign up with Facebook" type="button" className="btn btn-primary btn-icon waves-effect waves-light"><i className="ri-facebook-fill fs-16"></i></button>{" "}
+                                                        <button aria-label="Sign up with Google" title="Sign up with Google" type="button" className="btn btn-danger btn-icon waves-effect waves-light"><i className="ri-google-fill fs-16"></i></button>{" "}
+                                                        <button aria-label="Sign up with GitHub" title="Sign up with GitHub" type="button" className="btn btn-dark btn-icon waves-effect waves-light"><i className="ri-github-fill fs-16"></i></button>{" "}
+                                                        <button aria-label="Sign up with Twitter" title="Sign up with Twitter" type="button" className="btn btn-info btn-icon waves-effect waves-light"><i className="ri-twitter-fill fs-16"></i></button>
                                                     </div>
                                                 </div>
                                             </Form>

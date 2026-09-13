@@ -332,10 +332,11 @@ const Faq = () => {
         <Row>
           <Col md={12}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="faq-faq-category" className="form-label fw-bold">
                 FAQ Category <span className="text-danger">*</span>
               </Label>
               <Input
+                id="faq-faq-category"
                 type="select"
                 name="category"
                 className="form-select"
@@ -357,10 +358,11 @@ const Faq = () => {
 
           <Col md={12}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="faq-question" className="form-label fw-bold">
                 Question <span className="text-danger">*</span>
               </Label>
               <Input
+                id="faq-question"
                 type="textarea"
                 rows="2"
                 name="question"
@@ -376,10 +378,11 @@ const Faq = () => {
 
           <Col md={12}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">
+              <Label htmlFor="faq-answer" className="form-label fw-bold">
                 Answer <span className="text-danger">*</span>
               </Label>
               <Input
+                id="faq-answer"
                 type="textarea"
                 rows="6"
                 name="answer"
@@ -395,8 +398,9 @@ const Faq = () => {
 
           <Col md={6}>
             <FormGroup className="mb-3">
-              <Label className="form-label fw-bold">Sequence</Label>
+              <Label htmlFor="faq-sequence" className="form-label fw-bold">Sequence</Label>
               <Input
+                id="faq-sequence"
                 type="number"
                 name="sequence"
                 value={values.sequence}
@@ -468,6 +472,7 @@ const Faq = () => {
                         {/* Category Filter Select */}
                         <div style={{ minWidth: "200px" }}>
                           <Input
+                            aria-label="Filter FAQs by category"
                             type="select"
                             className="form-select form-select-sm"
                             value={filterCategory}
@@ -485,6 +490,7 @@ const Faq = () => {
                         {/* Search Field */}
                         <div className="search-box mb-0" style={{ position: "relative", minWidth: "200px" }}>
                           <Input
+                            aria-label="Search FAQs by question"
                             type="text"
                             className="form-control form-control-sm search"
                             placeholder="Search questions..."
