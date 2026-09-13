@@ -23,9 +23,11 @@ import {
   getFootfall,
   getInGymNow,
   getNotCheckedIn,
+  markAttendanceAllowed,
 } from "../../api/attendanceStaff.api";
 import { listBranches } from "../../api/branches.api";
 import BranchQrPanel from "./components/BranchQrPanel";
+import DenialsPanel from "./components/DenialsPanel";
 import FootfallPanel from "./components/FootfallPanel";
 import InGymNowPanel from "./components/InGymNowPanel";
 import NotCheckedInPanel from "./components/NotCheckedInPanel";
@@ -74,11 +76,36 @@ import { daysAgoInput, toInputDate } from "./insightsFormat";
  * It is NOT applied to the "not checked in" call list: that list is a roster of
  * active MEMBERS who have gone quiet, and a trainer has no membership to lapse.
  *
- * Refused scans are excluded from every figure on this screen, by the server.
+ * Refused scans are excluded from every FIGURE on this screen, by the server.
  * A lapsed member tapping the sticker five times is five refusals and zero
  * arrivals; folding them into footfall would invent visits that did not happen.
- * They surface in the check-in CSV export instead, which has an explicit
- * "refused attempts" option.
+ *
+ * ============================================================================
+ * BUT THEY ARE NOT HIDDEN — THEY ARE THE FIRST THING ON THE PAGE.
+ * ============================================================================
+ * Excluded from the counts is not the same as out of sight. A refusal is the
+ * only row on this screen that somebody has to act on: nobody is at the door,
+ * so a member whose record says expired was simply told on their own phone that
+ * their membership had lapsed, with nobody there to help. DenialsPanel is
+ * therefore rendered above the in-gym list, not beside it, and it carries the
+ * one write this screen can perform.
+ *
+ * ============================================================================
+ * WHY `since` IS STILL NOT SENT, AND WHAT THAT COSTS.
+ * ============================================================================
+ * /attendance/live accepts a `since` cursor that would keep each poll's payload
+ * near-empty. It is deliberately not used, because the SAME parameter also
+ * narrows `sessions` to arrivals after that instant — the in-gym list would
+ * empty out thirty seconds after the screen loaded, which is the opposite of
+ * what that panel is for.
+ *
+ * The cost is that the server's `deniedNew` is not usable here: with no cursor
+ * it is simply the length of the list, which equals `deniedToday` on every
+ * poll. So "what is new since you last looked" is worked out below by diffing
+ * each poll against the previous one, on `_id` AND `lastAttemptAt` — the second
+ * half matters because a member refused again at 07:31 updates today's existing
+ * row rather than creating a second one, so a diff on ids alone would miss
+ * every repeat attempt.
  */
 
 /** Matches the server's own "is this session still plausible" window. */
@@ -124,6 +151,23 @@ const AttendanceOverview = () => {
   const [live, setLive] = useState(null);
   const [liveLoading, setLiveLoading] = useState(true);
 
+  /**
+   * Which refusals are new since the previous poll, and whether there has been
+   * a previous poll at all.
+   *
+   * `hasBaseline` is false until the second reading, and the panel then says
+   * nothing about freshness rather than claiming zero: on the very first poll
+   * there is nothing to compare against, so every row is equally unseen and
+   * none of them can honestly be called new.
+   */
+  const [denialDelta, setDenialDelta] = useState({
+    hasBaseline: false,
+    freshIds: [],
+  });
+
+  /** The row currently being written by the override, or "". */
+  const [overridingId, setOverridingId] = useState("");
+
   const [lapsed, setLapsed] = useState(null);
   const [lapsedLoading, setLapsedLoading] = useState(true);
   const [days, setDays] = useState(14);
@@ -133,6 +177,18 @@ const AttendanceOverview = () => {
   // background stacks requests behind a slow one and then applies them out of
   // order, so the count jumps backwards.
   const livePending = useRef(false);
+
+  /**
+   * The previous poll's refusals, as `_id -> lastAttemptAt`. A ref rather than
+   * state because nothing renders from it directly and writing it must not
+   * schedule a render of its own every thirty seconds.
+   *
+   * `null` means "no baseline" — the first poll, or the moment the branch or
+   * subject filter changed and the list now describes a different population.
+   * Keeping a stale baseline across a filter change would light up every row
+   * as new because the previous map simply does not contain any of them.
+   */
+  const seenDenials = useRef(null);
 
   const loadFootfall = useCallback(async () => {
     setFootfallLoading(true);
@@ -155,7 +211,37 @@ const AttendanceOverview = () => {
     if (showSpinner) setLiveLoading(true);
     try {
       const res = await getInGymNow({ branch, subjectType });
-      if (res.data?.isOk) setLive(res.data.data);
+      if (res.data?.isOk) {
+        const next = res.data.data || {};
+        const rows = next.denials || [];
+        const previous = seenDenials.current;
+
+        /**
+         * The fingerprint is the LAST ATTEMPT, not the id. A repeat refusal
+         * cannot create a second row — the unique { memberId, date } index
+         * forbids it — so the server updates today's row in place and leaves
+         * `deniedAt` at the first refusal of the day. A member refused at
+         * 07:00 who tries again at 07:31 would therefore be invisible to a
+         * diff on ids alone, and the second attempt would pass unnoticed
+         * between polls.
+         */
+        const attempt = (d) => String(d.lastAttemptAt || d.deniedAt || "");
+        setDenialDelta({
+          hasBaseline: Boolean(previous),
+          freshIds: previous
+            ? rows
+                .filter((d) => previous.get(String(d._id)) !== attempt(d))
+                .map((d) => String(d._id))
+            : [],
+        });
+        // A new Map, never an edit of the old one: the comparison above still
+        // holds a reference to it while this line runs.
+        seenDenials.current = new Map(
+          rows.map((d) => [String(d._id), attempt(d)]),
+        );
+
+        setLive(next);
+      }
     } catch {
       // A failed poll is not worth a toast every 30 seconds; the panel keeps
       // showing the last good reading rather than flashing an error.
@@ -200,10 +286,101 @@ const AttendanceOverview = () => {
   }, [loadLapsed]);
 
   useEffect(() => {
+    /**
+     * `loadLive` changes identity exactly when `branch` or `subjectType` does,
+     * which is exactly when the refusal list starts describing a different set
+     * of people — so this is the right place to drop the baseline. A manual
+     * Refresh deliberately does NOT come through here and therefore keeps it,
+     * which is what makes "new since the last refresh" honest for a person who
+     * pressed the button rather than waited.
+     */
+    seenDenials.current = null;
+    setDenialDelta({ hasBaseline: false, freshIds: [] });
+
     loadLive(true);
     const timer = setInterval(() => loadLive(false), LIVE_POLL_MS);
     return () => clearInterval(timer);
   }, [loadLive]);
+
+  /**
+   * Clear one refusal — the only write on this screen.
+   *
+   * ============================================================================
+   * `alreadyOverridden` IS A SUCCESS. TWO PEOPLE AT THE DESK IS THE NORMAL CASE.
+   * ============================================================================
+   * The server is idempotent by checking "is this still a refusal", not "have I
+   * seen this before", so a second press writes nothing at all: no second audit
+   * row, no double-counted visit. It answers 200 with the same body plus the
+   * flag. Toasted as information, never as an error — a red banner would teach
+   * the desk that working alongside a colleague is a mistake.
+   *
+   * ============================================================================
+   * THE OUTCOME SENTENCES COME BACK FROM THE SERVER AND ARE PASSED THROUGH.
+   * ============================================================================
+   * Whether the row became a live session or was only cleared depends on
+   * whether the refusal is from today, and the server owns that comparison
+   * against the row's normalised `date`. It returns `sessionOpened` alongside
+   * plain-English `message` and `effect` strings. They are handed to the panel
+   * as-is: re-deriving the wording here from a timestamp is how the desk ends
+   * up being told a member is in the gym when no session was opened.
+   */
+  const markAllowed = useCallback(
+    async (denial, note) => {
+      const id = String(denial?._id || "");
+      if (!id) return null;
+
+      setOverridingId(id);
+      try {
+        const res = await markAttendanceAllowed(id, {
+          note,
+          /**
+           * The same population that produced the row. Every query over the
+           * Attendance collection defaults to MEMBER, so a trainer's refused
+           * shift has to be asked for by name or the lookup 404s — and a 404
+           * here is indistinguishable from "another branch's row", which is
+           * deliberate on the server and would be baffling on screen.
+           */
+          subjectType,
+        });
+
+        const body = res.data || {};
+        if (!body.isOk) {
+          const message =
+            body.message || "Could not clear this refused check-in";
+          toast.error(message);
+          return { ok: false, message };
+        }
+
+        const payload = body.data || {};
+        const outcome = {
+          ok: true,
+          alreadyOverridden: Boolean(payload.alreadyOverridden),
+          sessionOpened: Boolean(payload.sessionOpened),
+          message: body.message || "",
+          effect: payload.effect || "",
+        };
+
+        if (outcome.alreadyOverridden) toast.info(outcome.message);
+        else toast.success(outcome.message);
+
+        // Pull the feed forward rather than waiting out the rest of the 30s:
+        // the row has stopped being a refusal and should leave the list while
+        // the person who cleared it is still looking at it.
+        loadLive(false);
+
+        return outcome;
+      } catch (err) {
+        const message =
+          err.response?.data?.message ||
+          "Could not clear this refused check-in";
+        toast.error(message);
+        return { ok: false, message };
+      } finally {
+        setOverridingId("");
+      }
+    },
+    [subjectType, loadLive],
+  );
 
   const refreshAll = () => {
     loadFootfall();
@@ -346,7 +523,28 @@ const AttendanceOverview = () => {
           </CardBody>
         </Card>
 
+        {/* FIRST on the page, and full width, because these are the only rows
+            here that somebody has to act on. Everything below is a person
+            happily training or a number to glance at. */}
         <Row className="g-3 d-print-none">
+          <Col xs={12}>
+            <DenialsPanel
+              data={live}
+              loading={liveLoading}
+              freshIds={denialDelta.freshIds}
+              hasBaseline={denialDelta.hasBaseline}
+              /* The override needs `edit`; the rest of this screen needs only
+                 `read`. `edit` is granted to nobody by default, so until a
+                 MenuMaster row says otherwise this button belongs to the super
+                 admin alone — expected, not a bug. */
+              canOverride={Boolean(permissions.edit)}
+              busyId={overridingId}
+              onMarkAllowed={markAllowed}
+            />
+          </Col>
+        </Row>
+
+        <Row className="g-3 mt-1 d-print-none">
           <Col xl={8}>
             <FootfallPanel data={footfall} loading={footfallLoading} />
           </Col>

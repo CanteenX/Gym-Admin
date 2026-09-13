@@ -156,6 +156,61 @@ export const subjectWords = (subjectType) => {
   }
 };
 
+/**
+ * How the front desk should read a refusal code.
+ *
+ * ============================================================================
+ * THESE ARE NOT THE MEMBER-FACING MESSAGES, AND MUST NOT BECOME THEM.
+ * ============================================================================
+ * services/attendanceEligibility.js already owns the copy the member sees on
+ * their own phone, and every one of those sentences ends by pointing at
+ * reception. This is the other half of the same conversation: what the person
+ * at the desk has to DO before the next scan goes through. Duplicating the
+ * member wording here would give staff a screen that tells them to see
+ * reception, which is where they already are.
+ *
+ * ============================================================================
+ * WORDING. A REFUSAL IS NOT A LOCKED DOOR.
+ * ============================================================================
+ * Check-in is unattended and the branch QR is a printed sticker — there is no
+ * barrier and nobody is standing at it. A refusal therefore stopped nobody: it
+ * told a member something was wrong and flagged it here. Nothing in this file
+ * says "refused entry" or "turned away", and nothing should be changed to.
+ *
+ * An unrecognised code is shown as itself rather than mapped to a friendly
+ * guess: a reason added on the server and not here must read as unfamiliar, not
+ * as one of the four we already know about.
+ */
+export const denialReasonWords = (code) => {
+  switch (String(code || "").toUpperCase()) {
+    case "EXPIRED":
+      return {
+        label: "Membership ended",
+        action: "Renew at the desk and the next check-in goes through.",
+      };
+    case "PAYMENT_DUE":
+      return {
+        label: "Balance outstanding",
+        action: "Take the pending payment, then the flag clears itself.",
+      };
+    case "INACTIVE":
+      return {
+        label: "Membership set to inactive",
+        action: "Someone switched this account off — check the member record.",
+      };
+    case "NOT_A_MEMBER":
+      return {
+        label: "No active membership found",
+        action: "Nothing on this account matches a running membership.",
+      };
+    default:
+      return {
+        label: code ? String(code) : "Reason not recorded",
+        action: "",
+      };
+  }
+};
+
 /** Stable colour per branch, drawn from the theme palette in a fixed order. */
 export const branchColor = (index) => {
   const t = chartTokens();
@@ -174,6 +229,7 @@ export default {
   daysAgoInput,
   minutesLabel,
   subjectWords,
+  denialReasonWords,
   chartTokens,
   branchColor,
 };

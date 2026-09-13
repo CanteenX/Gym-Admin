@@ -363,6 +363,19 @@ export const ENDPOINTS = {
         // (src/utils/qrCode.js) because it has to lay the sheet out around the
         // symbol anyway.
         QR: (branch) => `${V1}/attendance/qr/${encodeURIComponent(branch)}`,
+        // The ONE write on the staff side of attendance, and the only path in
+        // this block that is not read-only.
+        //
+        // It clears a refusal that reception has since sorted out: the member
+        // was told on their own phone that their membership needed attention,
+        // walked to the desk, and paid or had the record corrected. Nobody was
+        // stopped on the way in — there is no barrier — so this is not
+        // "granting entry", it is closing off a flag that is no longer true.
+        //
+        // Guarded by `edit` on /attendance-overview rather than `read`, which
+        // is why it sits beside the reads instead of in a separate block: same
+        // menu row, different permission flag.
+        MARK_ALLOWED: (id) => `${V1}/attendance/${id}/mark-allowed`,
     },
 
     // Read-only reporting. Every money figure behind these comes from the
