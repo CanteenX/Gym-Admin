@@ -15,7 +15,7 @@ import {
 } from "reactstrap";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import axios from "axios";
-import DataTable from "react-data-table-component";
+import DataTable from "@/Components/Common/DataTableBase";
 
 import {
     createAdminUser,

@@ -16,8 +16,9 @@ import {
   Input,
   Label,
   Row,
+  Spinner,
 } from "reactstrap";
-import DataTable from "react-data-table-component";
+import DataTable from "@/Components/Common/DataTableBase";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import DeleteModal from "../../Components/Common/DeleteModal";
 import { toast } from "react-toastify";
@@ -735,9 +736,13 @@ const MemberExercisePlan = () => {
                         <Label className="form-label fw-bold mb-0">
                           Weekly Schedule
                         </Label>
-                        {isLoadingPlan && (
-                          <small className="text-muted">Loading plan…</small>
-                        )}
+                        {/* An inline indicator beside a heading, not a content
+                            placeholder - the schedule below keeps its shape
+                            while this resolves, so a spinner is right here and
+                            a skeleton would be noise. reactstrap's Spinner
+                            renders its children into a .visually-hidden span,
+                            so this is named for a screen reader by default. */}
+                        {isLoadingPlan && <Spinner size="sm" color="primary" />}
                       </div>
 
                       <Accordion open={accordionOpen} toggle={toggleAccordion}>

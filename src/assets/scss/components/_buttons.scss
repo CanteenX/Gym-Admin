@@ -4,14 +4,73 @@
 
 button,
 a {
+    // Kept, because it is what suppresses the browser's default outline on a
+    // plain mouse click. It is NOT safe on its own: with $input-btn-focus-width
+    // also set to 0, this left the panel with no keyboard focus indicator
+    // anywhere. The :focus-visible rule below is the other half of the fix and
+    // must not be deleted without deleting this too.
     outline: none !important;
     position: relative;
 }
 
+// Keyboard focus, put back.
+//
+// :focus-visible only matches when the browser decides the user is navigating
+// by keyboard, so this restores the indicator for the people who need it
+// without bringing back the outline-on-click that the rule above removes.
+//
+// `outline` rather than a box-shadow on purpose: outline is painted outside the
+// element and does not share the box-shadow property, so it survives on every
+// control whose shadow is already doing something else - the .btn elevation
+// below, dropdown toggles, and the icon buttons inside table rows. !important
+// is required only to beat the !important above.
+button:focus-visible,
+a:focus-visible {
+    outline: $input-btn-focus-width solid $component-active-bg !important;
+    outline-offset: 2px;
+}
+
 .btn {
     box-shadow: $element-shadow;
+    // box-shadow is already in $btn-transition; transform is added so the lift
+    // below eases instead of snapping.
+    transition: $btn-transition, transform .15s ease-in-out;
+
     &:hover, &.active, &:focus, &:active, &.show {
         border-color: transparent;
+    }
+
+    // Depth answers the pointer. Deliberately small - one pixel and a softer,
+    // wider shadow. On a dense admin table a button that visibly jumps is
+    // distracting, and the row beneath it starts to look like it moved too.
+    &:hover {
+        box-shadow: $element-shadow-hover;
+        transform: translateY(-1px);
+    }
+
+    // Pressed reads as pushed back into the page: the element returns to rest
+    // and the shadow inverts.
+    &:active, &.active, &.show {
+        box-shadow: $box-shadow-inset;
+        transform: translateY(0);
+    }
+
+    // A disabled control must not pretend to be pressable.
+    &:disabled, &.disabled {
+        box-shadow: none;
+        transform: none;
+    }
+}
+
+// Motion is the polish here, not the information - the shadow change alone
+// still communicates hover and press - so it is safe to drop entirely.
+@media (prefers-reduced-motion: reduce) {
+    .btn {
+        transition: none;
+
+        &:hover, &:active, &.active, &.show {
+            transform: none;
+        }
     }
 }
 

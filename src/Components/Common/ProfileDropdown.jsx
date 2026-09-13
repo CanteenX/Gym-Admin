@@ -30,6 +30,30 @@ const ProfileDropdown = () => {
 
     //Dropdown Toggle
     const [isProfileDropdown, setIsProfileDropdown] = useState(false);
+
+    /**
+     * The header used to print `role`, which is not a job title.
+     *
+     * `role` is only WHICH TABLE the session came from — CompanyMaster gives
+     * "ADMIN", Employee gives "EMPLOYEE". So the branch admin's own header
+     * called them "EMPLOYEE" while the front desk beside them, on a
+     * deliberately smaller permission set, said exactly the same thing. Two
+     * different jobs, one label, and it read as a bug because it looked like
+     * the account had the wrong level.
+     *
+     * Privilege actually lives on `isSuperAdmin`, and the useful facts about a
+     * branch login are the person's name and which branch they run. Those are
+     * shown instead. Admin-vs-staff is NOT inferred here: `/auth/me` returns a
+     * roleId but no role name, and guessing a seniority the response does not
+     * carry is how the old label got it wrong in the first place.
+     */
+    const displayName =
+        adminData?.employeeName || adminData?.companyName || adminData?.emailOffice || adminData?.email || "";
+    const displayRole = adminData?.isSuperAdmin
+        ? "Super Admin"
+        : adminData?.branch
+          ? `${adminData.branch} branch`
+          : role || "";
     const toggleProfileDropdown = () => {
         setIsProfileDropdown(!isProfileDropdown);
     };
@@ -50,11 +74,11 @@ const ProfileDropdown = () => {
                     />
                     <span className="text-start ms-xl-2">
                         <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-                            
-                            
-                            {role}
+                            {displayName}
                         </span>
-                        {/* <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">Founder</span> */}
+                        <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
+                            {displayRole}
+                        </span>
                     </span>
                 </span>
             </DropdownToggle>

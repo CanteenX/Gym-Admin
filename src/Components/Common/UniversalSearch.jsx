@@ -190,7 +190,13 @@ const UniversalSearch = () => {
         }),
         placeholder: (provided) => ({
             ...provided,
-            color: "#999",
+            // Was #999, which is 2.85:1 on the white control - well under the
+            // 4.5:1 AA floor. --vz-gray-600 is the same token the SCSS gives
+            // every other placeholder (4.83:1 in light mode) and it is defined
+            // per theme, so this also stops being wrong in dark mode. A CSS
+            // variable rather than a hex keeps the palette the one source of
+            // colour; the repo already carries too many literals in JSX.
+            color: "var(--vz-gray-600)",
             fontSize: "13px",
         }),
         input: (provided) => ({

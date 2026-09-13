@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Button } from "reactstrap";
+import TableSkeleton from "@/Components/Common/TableSkeleton";
 import {
   bookingStatusMeta,
   bookingSubject,
@@ -144,7 +145,12 @@ const RosterPanel = ({
       </div>
 
       {loading ? (
-        <div className="text-center py-4 text-muted">Loading roster…</div>
+        /* A grey line of text where the roster goes reads as "nobody booked",
+           which is the opposite of what it means. Placeholder rows of roughly
+           booking-row shape read as "still fetching" and stop the panel from
+           resizing when the real rows arrive. No header bar: these are stacked
+           cards, not columns. */
+        <TableSkeleton rows={3} columns={3} header={false} label="Loading roster" />
       ) : visible.length === 0 ? (
         <div className="text-center py-4 text-muted">
           {bookings.length === 0

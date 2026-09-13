@@ -19,7 +19,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import DataTable from "react-data-table-component";
+import DataTable from "@/Components/Common/DataTableBase";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import DeleteModal from "../../Components/Common/DeleteModal";
 import { toast } from "react-toastify";

@@ -21,7 +21,7 @@ import {
   ModalBody,
   ModalHeader,
 } from "reactstrap";
-import DataTable from "react-data-table-component";
+import DataTable from "@/Components/Common/DataTableBase";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthContext";

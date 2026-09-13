@@ -1,0 +1,49 @@
+//
+// React Select
+//
+// react-select styles itself from JavaScript (emotion), so its colours do not
+// come from this palette unless something here overrides them. Two of its
+// defaults are wrong for this panel:
+//
+// 1. CONTRAST. The placeholder default is hsl(0, 0%, 50%) - #808080 - which
+//    measures 3.95:1 against the white control. That is under the 4.5:1 WCAG
+//    AA floor for body-size text, and it is exactly what the browser gate
+//    reports on the employee-roles screen for "Select a role..." and
+//    "View employee roles...". $input-placeholder-color is $gray-600
+//    (#6b7280, 4.83:1 on white), which is the same token every native input
+//    placeholder in the app already uses - so the two kinds of control finally
+//    agree, and the failure is fixed for all 15 react-selects rather than the
+//    two that happened to be reported.
+//
+// 2. FOCUS. The control's focused state is a border colour change only, which
+//    is easy to miss and does not match the ring every other control now has.
+//
+// Both are fixed here rather than in each component's `styles` prop, so the
+// colour stays in the palette instead of becoming another hex literal in JSX.
+//
+// These selectors depend on `classNamePrefix="select"`, which every page-level
+// <Select> passes. The descendant selector is not decoration: emotion's own
+// generated class is a single class (0,1,0) injected into <head> at runtime,
+// so a bare `.select__placeholder` would tie on specificity and lose on source
+// order. `.select__control .select__placeholder` is (0,2,0) and wins cleanly,
+// which is why this needs no !important.
+
+.select__control {
+    .select__placeholder {
+        color: $input-placeholder-color;
+    }
+
+    // The chosen value and the typed text should read as input text, not as
+    // react-select's near-black default.
+    .select__single-value,
+    .select__input {
+        color: $input-color;
+    }
+}
+
+// Match the focus ring the rest of the form controls use, so tabbing through a
+// form does not lose the indicator when it reaches a react-select.
+.select__control--is-focused {
+    border-color: $input-focus-border-color !important;
+    box-shadow: $input-btn-focus-box-shadow !important;
+}

@@ -12,7 +12,7 @@ import {
   Row,
 } from "reactstrap";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
-import DataTable from "react-data-table-component";
+import DataTable from "@/Components/Common/DataTableBase";
 import DeleteModal from "../../Components/Common/DeleteModal";
 import FormsHeader from "../../Components/Common/FormsHeader";
 import FormsFooter from "../../Components/Common/FormAddFooter";

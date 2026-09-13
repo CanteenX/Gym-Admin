@@ -9,9 +9,9 @@ import {
   CardHeader,
   Badge,
   Button,
-  Spinner,
 } from "reactstrap";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
+import TableSkeleton from "@/Components/Common/TableSkeleton";
 import { AuthContext } from "../../context/AuthContext";
 import { getMemberDashboardStats } from "../../api/members.api";
 
@@ -148,6 +148,66 @@ const EmptyState = ({ icon, text }) => (
   </div>
 );
 
+/**
+ * The dashboard's own layout, drawn in placeholder bars, shown on first load.
+ *
+ * This replaced a single centred spinner with a "Loading member data..."
+ * caption under it. The spinner was honest but it sat alone in an otherwise
+ * empty page, so the whole screen snapped into existence at once when the
+ * stats landed. Echoing the real shape - four stat tiles over two list cards -
+ * means nothing moves when the data arrives, and it tells the reader what is
+ * about to appear rather than only that something is happening.
+ *
+ * Accessibility: every bar is decoration, so the whole block is `aria-hidden`
+ * and a screen reader hears only the one visually-hidden status line. That
+ * also keeps the browser gate's contrast sampler out of these deliberately
+ * low-opacity bars, which are not text and have no contrast requirement.
+ */
+const DashboardSkeleton = () => (
+  <div className="placeholder-glow">
+    <span className="visually-hidden" role="status">
+      Loading member data
+    </span>
+
+    <div aria-hidden="true">
+      {/* Four headline metric tiles. */}
+      <Row className="g-3 mb-2">
+        {[0, 1, 2, 3].map((tile) => (
+          <Col xl={3} md={6} key={`tile-${tile}`}>
+            <Card className="h-100 mb-0">
+              <CardBody>
+                <div className="mb-3">
+                  <span className="placeholder col-7 rounded" />
+                </div>
+                <div className="mb-2">
+                  <span className="placeholder col-4 rounded" />
+                </div>
+                <span className="placeholder col-9 rounded" />
+              </CardBody>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* The two reminder lists. */}
+      <Row className="g-3">
+        {[0, 1].map((list) => (
+          <Col lg={6} key={`list-${list}`}>
+            <Card className="h-100 mb-0">
+              <CardHeader>
+                <span className="placeholder col-6 rounded" />
+              </CardHeader>
+              <CardBody className="p-0">
+                <TableSkeleton rows={4} columns={2} header={false} />
+              </CardBody>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </div>
+  </div>
+);
+
 const Dashboard = () => {
   const { adminData } = useContext(AuthContext);
   const [stats, setStats] = useState(null);
@@ -236,10 +296,7 @@ const Dashboard = () => {
         )}
 
         {loading && !stats ? (
-          <div className="text-center py-5">
-            <Spinner color="primary" />
-            <p className="text-muted mt-2 mb-0">Loading member data...</p>
-          </div>
+          <DashboardSkeleton />
         ) : (
           <>
             {/* Headline metrics */}

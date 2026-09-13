@@ -649,11 +649,31 @@ $border-radius-pill:          50rem;
 // scss-docs-end border-radius-variables
 
 // scss-docs-start box-shadow-variables
-$box-shadow:                  0 1px 2px rgba(0, 0, 0, 0.06);
+//
+// Depth, not decoration.
+//
+// The panel read as flat because every value here was either `none` or a
+// single 1px hairline: cards, buttons, dropdowns and the page behind them all
+// sat on one visual plane, so nothing told the eye which surface was on top of
+// which. These are now layered by how far a thing floats above the page -
+// resting surfaces take `$box-shadow`, things that overlay the page (dropdown,
+// popover, toast) take `$box-shadow-lg`, and small controls take
+// `$element-shadow`. Two-part shadows (a tight contact shadow plus a wider,
+// softer one) are what make the difference read as depth rather than as a grey
+// smudge under the edge.
+//
+// Every value is built from `$black` rather than a raw hex, so the palette
+// stays the single source of colour and dark mode keeps working.
 $box-shadow-sm:               0 1px 2px rgba($black, .05);
-$box-shadow-lg:               0 8px 24px rgba(0, 0, 0, 0.10);
+$box-shadow:                  0 1px 2px rgba($black, .06), 0 2px 6px rgba($black, .06);
+$box-shadow-lg:               0 2px 6px rgba($black, .06), 0 8px 24px rgba($black, .12);
 $box-shadow-inset:            inset 0 1px 2px rgba($black, .075);
-$element-shadow:              none;
+// Buttons, pagination, nav pills, and the plugin controls that echo them.
+// This was `none`, which is the single biggest reason buttons looked like
+// flat rectangles of colour rather than like something pressable.
+$element-shadow:              0 1px 2px rgba($black, .08);
+// One step higher, so a control visibly answers the pointer.
+$element-shadow-hover:        0 3px 8px rgba($black, .12);
 // scss-docs-end box-shadow-variables
 
 $component-active-color:      $white;
@@ -869,7 +889,18 @@ $input-btn-font-family:       null;
 $input-btn-font-size:         $font-size-base;
 $input-btn-line-height:       $line-height-base;
 
-$input-btn-focus-width:         0;
+// The focus ring, and why this is not 0.
+//
+// This was `$input-btn-focus-width: 0`, which makes Bootstrap's focus ring
+// `0 0 0 0` - i.e. nothing. Together with the `outline: none !important` that
+// _buttons.scss puts on every button and anchor, a keyboard user had NO
+// visible focus indicator anywhere in the panel. That is a WCAG 2.4.7 failure
+// and it also makes the app close to unusable without a mouse.
+//
+// .2rem is wide enough to see against both the new button shadows and the card
+// surfaces. The colour is still derived from `$component-active-bg` (the brand
+// primary), so the ring follows the palette and no literal is introduced.
+$input-btn-focus-width:         .2rem;
 $input-btn-focus-color-opacity: .25;
 $input-btn-focus-color:         rgba($component-active-bg, $input-btn-focus-color-opacity);
 $input-btn-focus-blur:          0;
@@ -909,7 +940,10 @@ $btn-font-size-lg:            $input-btn-font-size-lg;
 
 $btn-border-width:            $input-btn-border-width;
 
-$btn-font-weight:             $font-weight-normal;
+// 400 made button labels read as body copy sitting on a coloured rectangle.
+// 500 gives the label enough weight to read as the button's own voice without
+// tipping into the shouty 600/700 the headings use.
+$btn-font-weight:             $font-weight-medium;
 $btn-box-shadow:              inset 0 1px 0 rgba($white, .15), 0 1px 1px rgba($black, .075);
 $btn-focus-width:             $input-btn-focus-width;
 $btn-focus-box-shadow:        $input-btn-focus-box-shadow;
