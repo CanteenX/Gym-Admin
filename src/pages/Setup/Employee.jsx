@@ -17,7 +17,7 @@ import {
   ModalFooter,
 } from "reactstrap";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
-import DataTable from "react-data-table-component";
+import DataTable from "@/Components/Common/DataTableBase";
 import DeleteModal from "../../Components/Common/DeleteModal";
 import FormsHeader from "../../Components/Common/FormsHeader";
 import FormsFooter from "../../Components/Common/FormAddFooter";
@@ -228,7 +228,15 @@ const Employee = () => {
         sortdir: sortDirection,
         match: query,
         isActive: filter,
-        branchId: adminData.branchId ? adminData.branchId._id : null,
+        // NO branch/branchId is sent, deliberately. Staff are scoped by the
+        // branch STRING on the session, resolved server-side in
+        // employee.controller.js -> staffScopeFilter(); there is no branchId
+        // on an Employee at all. This used to send
+        // `branchId: adminData.branchId?._id`, which was null on every
+        // request (getCurrentUser returns `branch`, not `branchId`) and which
+        // the server ignored regardless. Sending a branch from here would be
+        // worse than useless even if the field name were right: the client
+        // does not get a say in whose data it may see.
       });
       if (response.data.data.length > 0) {
         let res = response.data.data[0];
@@ -241,7 +249,7 @@ const Employee = () => {
       console.log(err);
     }
     setLoading(false);
-  }, [pageNo, perPage, column, sortDirection, query, filter, adminData.branchId]);
+  }, [pageNo, perPage, column, sortDirection, query, filter]);
 
   const fetchAdminsList = async () => {
     setLoading(true);
