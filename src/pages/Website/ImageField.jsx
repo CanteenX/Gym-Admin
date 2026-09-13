@@ -52,6 +52,32 @@ export const validateImageFile = (file) => {
 };
 
 /**
+ * Extensions a `<img>` cannot draw.
+ *
+ * The `media` list stores a VIDEO url in a field the server types as `image`
+ * (models/SiteItem.js: `media.video`), because `image` is that spec's word for
+ * "an opaque storage reference", not for "a raster". Rendering one in an
+ * `<img>` paints a broken-image icon next to an input that is correctly filled
+ * in, which reads as "this value is wrong" — so the preview is skipped instead.
+ */
+const NON_IMAGE_EXTENSIONS = [".mp4", ".webm", ".mov", ".m4v", ".ogv", ".avi"];
+
+/**
+ * Conservative: anything whose extension is not KNOWN to be undrawable is still
+ * previewed, because plenty of valid references (Supabase urls, CDN links) carry
+ * no extension at all and hiding those previews would be the bigger regression.
+ *
+ * @param {string} value stored reference
+ * @returns {boolean}
+ */
+export const isPreviewableImage = (value) => {
+  const path = String(value || "")
+    .split(/[?#]/)[0]
+    .toLowerCase();
+  return !NON_IMAGE_EXTENSIONS.some((ext) => path.endsWith(ext));
+};
+
+/**
  * One photo: the stored reference (typed or uploaded) plus a file picker.
  *
  * The preview URL is derived ONCE per file and revoked on change. Calling
@@ -81,7 +107,9 @@ const ImageField = ({
     return () => URL.revokeObjectURL(preview);
   }, [preview]);
 
-  const shown = preview || fileUrl(value);
+  // A picked file is always an image (validateImageFile gated it); a typed
+  // reference may not be.
+  const shown = preview || (isPreviewableImage(value) ? fileUrl(value) : "");
 
   return (
     <FormGroup className="mb-3">

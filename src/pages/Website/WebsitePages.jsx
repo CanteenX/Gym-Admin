@@ -54,6 +54,12 @@ const PAGE_KEYS = [
   { key: "header", label: "Header" },
   { key: "footer", label: "Footer" },
   { key: "social", label: "Social & Media" },
+  // The brand facts themselves — name, tagline, bio, city, region, country —
+  // which /cms/site locks to. Listed here only so the page reads "Site
+  // Identity" rather than the raw key in the breadcrumb, the tab strip and the
+  // disabled Page select; the rows render either way, because the tab strip is
+  // built from the data as well as this list.
+  { key: "site", label: "Site Identity" },
 ];
 
 const pageLabel = (key) =>

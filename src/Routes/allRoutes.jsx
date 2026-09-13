@@ -85,6 +85,32 @@ const CmsFooter = lazy(() =>
 const CmsSocial = lazy(() =>
   import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsSocial })),
 );
+// ---- SITE CHROME ----
+// Five SiteItem lists and one SiteContent form, seeded by
+// Gym-Server/scripts/seedCmsMenus.js. Same byte-identical rule as every /cms/*
+// path above.
+const CmsStats = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsStats })),
+);
+const CmsMarquee = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsMarquee })),
+);
+const CmsNavlinks = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({
+    default: m.CmsNavlinks,
+  })),
+);
+const CmsBranches = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({
+    default: m.CmsBranches,
+  })),
+);
+const CmsMedia = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsMedia })),
+);
+const CmsSite = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsSite })),
+);
 // Insights. These three menuUrls are seeded by Gym-Server/scripts/seedInsightsMenus.js
 // and must stay character-identical to the paths below: checkPermission (server)
 // and PermissionProtected (client) both join on menuUrl, so a mismatch 403s a
@@ -152,6 +178,18 @@ const authProtectedRoutes = [
     { path: "/cms/header", component: <CmsHeader /> },
     { path: "/cms/footer", component: <CmsFooter /> },
     { path: "/cms/social", component: <CmsSocial /> },
+    // Site chrome. Byte-identical to CMS_COLLECTION_MENUS (stats, marquee,
+    // navlinks, branches, media) and CMS_PAGE_MENUS.site in
+    // Gym-Server/config/cmsMenus.js. The sidebar labels differ from the URLs on
+    // purpose there — "Navigation" is /cms/navlinks, "Branch Cards" is
+    // /cms/branches, "Background Media" is /cms/media — so match the URL, never
+    // the label.
+    { path: "/cms/stats", component: <CmsStats /> },
+    { path: "/cms/marquee", component: <CmsMarquee /> },
+    { path: "/cms/navlinks", component: <CmsNavlinks /> },
+    { path: "/cms/branches", component: <CmsBranches /> },
+    { path: "/cms/media", component: <CmsMedia /> },
+    { path: "/cms/site", component: <CmsSite /> },
     // Insights — read-only staff screens. /reports additionally gates its CSV
     // export buttons on the `print` permission, which the export routes check
     // instead of `read`.

@@ -216,6 +216,7 @@ const SiteItemForm = ({
                     />
                     <small className="text-muted">
                       One per line. A line may contain commas.
+                      {def.hint ? ` ${def.hint}` : ""}
                     </small>
                     {error ? (
                       <p className="text-danger small mt-1 mb-0">{error}</p>
@@ -245,9 +246,13 @@ const SiteItemForm = ({
                     disabled={disabled}
                     onChange={(e) => onFieldValue(def.key, e.target.value)}
                   />
-                  {def.type === "number" ? (
+                  {def.type === "number" || def.hint ? (
                     <small className="text-muted">
-                      Leave it empty to remove it — an empty box is not zero.
+                      {def.hint}
+                      {def.hint && def.type === "number" ? " " : ""}
+                      {def.type === "number"
+                        ? "Leave it empty to remove it — an empty box is not zero."
+                        : ""}
                     </small>
                   ) : null}
                   {error ? (
@@ -291,6 +296,7 @@ const SiteItemForm = ({
             <ImageField
               id={`itemField_${slot.key}`}
               label={slot.label}
+              hint={slot.hint}
               value={fieldValues[slot.key] || ""}
               file={pendingFiles[slot.key]}
               error={fileErrors[slot.key]}
