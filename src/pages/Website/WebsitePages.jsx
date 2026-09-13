@@ -21,7 +21,6 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
-import DataTable from "react-data-table-component";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import DeleteModal from "../../Components/Common/DeleteModal";
 import { toast } from "react-toastify";
@@ -35,6 +34,8 @@ import {
 } from "../../api/siteContent.api";
 import { unwrapList } from "@/utils/listResponse";
 import { fileUrl } from "@/utils/fileUrl";
+import SiteContentTable from "./pages/SiteContentTable";
+import SiteItemsManager from "./items/SiteItemsManager";
 
 /**
  * The pages the marketing site renders. A row whose pageKey is not in this list
@@ -61,6 +62,26 @@ const pageLabel = (key) =>
  * that the by-params contract does not define.
  */
 const FETCH_LIMIT = 500;
+
+/**
+ * The two halves of "the website's content", behind ONE menu permission row.
+ *
+ * SECTIONS are the named prose blocks of a page (SiteContent: one row per
+ * pageKey/sectionKey). LISTS are the repeating records the same pages render
+ * (SiteItem: programme cards, plans, FAQs, trainers, the timetable,
+ * testimonials, transformations).
+ *
+ * They share this screen rather than getting a route each because RBAC resolves
+ * a screen's permissions by looking its URL up in MenuMaster
+ * (Routes/PermissionProtected.jsx): a sibling route with no menu row is denied
+ * outright for every EMPLOYEE and reachable only by a super admin. The server
+ * agrees - every /site/items write is checkPermission("/website-pages", …) -
+ * so one screen is also the honest picture of the permission.
+ */
+const MODES = [
+  { key: "sections", label: "Page Sections" },
+  { key: "items", label: "Content Lists" },
+];
 
 const initialState = {
   pageKey: "home",
@@ -94,6 +115,7 @@ const WebsitePages = () => {
         delete: true,
       };
 
+  const [mode, setMode] = useState("sections");
   const [values, setValues] = useState(initialState);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
@@ -135,8 +157,11 @@ const WebsitePages = () => {
   }, [query]);
 
   useEffect(() => {
+    // The lists half has its own fetch; loading both on every visit would be
+    // two requests to show one of them.
+    if (mode !== "sections") return;
     fetchSections();
-  }, [fetchSections]);
+  }, [fetchSections, mode]);
 
   /** Tabs = the known pages plus whatever pageKeys the data actually contains. */
   const tabs = useMemo(() => {
@@ -316,108 +341,6 @@ const WebsitePages = () => {
       setmodal_delete(false);
     }
   };
-
-  const col = useMemo(
-    () => [
-      {
-        name: "Order",
-        selector: (row) => row.sortOrder ?? 0,
-        width: "90px",
-      },
-      {
-        name: "Section",
-        cell: (row) => (
-          <span className="fw-semibold text-wrap">{row.sectionKey}</span>
-        ),
-        minWidth: "150px",
-      },
-      {
-        name: "Title",
-        cell: (row) => (
-          <div className="py-1">
-            <p className="mb-0 text-wrap">{row.title || "—"}</p>
-            {row.subtitle ? (
-              <small className="text-muted text-wrap">{row.subtitle}</small>
-            ) : null}
-          </div>
-        ),
-        minWidth: "220px",
-      },
-      {
-        name: "Body",
-        cell: (row) => (
-          <span className="text-muted small text-wrap">
-            {row.body ? `${String(row.body).slice(0, 80)}${String(row.body).length > 80 ? "…" : ""}` : "—"}
-          </span>
-        ),
-        minWidth: "220px",
-      },
-      {
-        name: "Image",
-        cell: (row) =>
-          row.imageUrl ? (
-            <img
-              src={fileUrl(row.imageUrl)}
-              alt={`${row.sectionKey} section`}
-              style={{
-                width: 56,
-                height: 36,
-                objectFit: "cover",
-                borderRadius: 4,
-              }}
-            />
-          ) : (
-            <span className="text-muted small">—</span>
-          ),
-        width: "100px",
-      },
-      {
-        name: "Button",
-        cell: (row) =>
-          row.ctaLabel ? (
-            <span className="badge bg-info text-wrap">{row.ctaLabel}</span>
-          ) : (
-            <span className="text-muted small">—</span>
-          ),
-        minWidth: "130px",
-      },
-      {
-        name: "Status",
-        cell: (row) => (
-          <span className={`badge ${row.isActive ? "bg-success" : "bg-danger"}`}>
-            {row.isActive ? "Published" : "Hidden"}
-          </span>
-        ),
-        width: "120px",
-      },
-      {
-        name: "Action",
-        cell: (row) => (
-          <div className="d-flex align-items-center gap-1 py-1">
-            {permissions.edit && (
-              <button
-                className="btn btn-sm btn-success edit-item-btn d-flex align-items-center gap-1"
-                onClick={() => handleTog_edit(row)}
-              >
-                <i className="ri-pencil-line"></i> Edit
-              </button>
-            )}
-            {permissions.delete && (
-              <button
-                className="btn btn-sm btn-danger remove-item-btn d-flex align-items-center gap-1"
-                onClick={() => tog_delete(row._id)}
-              >
-                <i className="ri-delete-bin-line"></i> Delete
-              </button>
-            )}
-          </div>
-        ),
-        minWidth: "180px",
-      },
-    ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [permissions],
-  );
 
   const renderForm = () => (
     <CardBody>
@@ -652,132 +575,154 @@ const WebsitePages = () => {
             title="Website Pages"
             pageTitle="Website Pages"
           />
+
+          <Nav pills className="nav-custom-light mb-3 flex-wrap gap-1">
+            {MODES.map((m) => (
+              <NavItem key={m.key}>
+                <NavLink
+                  href="#"
+                  active={mode === m.key}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // Leaving a half-finished section form behind would quietly
+                    // resurface it on the way back.
+                    tog_list();
+                    setMode(m.key);
+                  }}
+                >
+                  {m.label}
+                </NavLink>
+              </NavItem>
+            ))}
+          </Nav>
+
           <Row>
             <Col lg={12}>
-              <Card>
-                <CardHeader className="d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
-                  <h5 className="card-title mb-0 flex-grow-1">
-                    {showForm
-                      ? "Add Page Section"
-                      : updateForm
-                        ? "Edit Page Section"
-                        : "Website Pages"}
-                  </h5>
-                  <div className="d-flex align-items-center gap-2 flex-wrap">
-                    {!showForm && !updateForm ? (
-                      <>
-                        <div
-                          className="search-box mb-0"
-                          style={{ position: "relative", minWidth: "200px" }}
-                        >
-                          <Label
-                            htmlFor="contentSearch"
-                            className="visually-hidden"
+              {mode === "items" ? (
+                <SiteItemsManager permissions={permissions} />
+              ) : (
+                <Card>
+                  <CardHeader className="d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
+                    <h5 className="card-title mb-0 flex-grow-1">
+                      {showForm
+                        ? "Add Page Section"
+                        : updateForm
+                          ? "Edit Page Section"
+                          : "Website Pages"}
+                    </h5>
+                    <div className="d-flex align-items-center gap-2 flex-wrap">
+                      {!showForm && !updateForm ? (
+                        <>
+                          <div
+                            className="search-box mb-0"
+                            style={{ position: "relative", minWidth: "200px" }}
                           >
-                            Search website content
-                          </Label>
-                          <Input
-                            id="contentSearch"
-                            type="text"
-                            className="form-control form-control-sm search"
-                            placeholder="Search sections..."
-                            style={{ paddingLeft: "30px", height: "30px" }}
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                          />
-                          <i
-                            className="ri-search-line search-icon text-muted"
-                            aria-hidden="true"
-                            style={{
-                              position: "absolute",
-                              left: "10px",
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                              fontSize: "12px",
-                            }}
-                          ></i>
-                        </div>
+                            <Label
+                              htmlFor="contentSearch"
+                              className="visually-hidden"
+                            >
+                              Search website content
+                            </Label>
+                            <Input
+                              id="contentSearch"
+                              type="text"
+                              className="form-control form-control-sm search"
+                              placeholder="Search sections..."
+                              style={{ paddingLeft: "30px", height: "30px" }}
+                              value={query}
+                              onChange={(e) => setQuery(e.target.value)}
+                            />
+                            <i
+                              className="ri-search-line search-icon text-muted"
+                              aria-hidden="true"
+                              style={{
+                                position: "absolute",
+                                left: "10px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                fontSize: "12px",
+                              }}
+                            ></i>
+                          </div>
 
-                        <Button
-                          color="light"
-                          size="sm"
-                          className="d-flex align-items-center gap-1"
-                          style={{ height: "30px" }}
-                          onClick={fetchSections}
-                          title="Reload sections"
-                          aria-label="Reload sections"
-                        >
-                          <i className="ri-refresh-line" aria-hidden="true"></i>
-                        </Button>
-
-                        {permissions.write && (
                           <Button
-                            color="success"
+                            color="light"
                             size="sm"
                             className="d-flex align-items-center gap-1"
                             style={{ height: "30px" }}
-                            onClick={handleOpenAddForm}
+                            onClick={fetchSections}
+                            title="Reload sections"
+                            aria-label="Reload sections"
                           >
                             <i
-                              className="ri-add-line align-bottom"
+                              className="ri-refresh-line"
                               aria-hidden="true"
-                            ></i>{" "}
-                            Add Section
+                            ></i>
                           </Button>
-                        )}
-                      </>
-                    ) : (
-                      <Button color="dark" size="sm" onClick={tog_list}>
-                        ≡ List
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
 
-                {showForm || updateForm ? (
-                  renderForm()
-                ) : (
-                  <CardBody>
-                    <Nav pills className="nav-custom-light mb-3 flex-wrap gap-1">
-                      {tabs.map((tab) => (
-                        <NavItem key={tab.key}>
-                          <NavLink
-                            href="#"
-                            active={activePage === tab.key}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setActivePage(tab.key);
-                            }}
-                          >
-                            {tab.label}{" "}
-                            <span className="badge bg-light text-body ms-1">
-                              {tab.count}
-                            </span>
-                          </NavLink>
-                        </NavItem>
-                      ))}
-                    </Nav>
-
-                    <div className="table-responsive table-card mt-1 mb-1">
-                      <DataTable
-                        columns={col}
-                        data={visibleSections}
-                        progressPending={loading}
-                        pagination
-                        paginationPerPage={10}
-                        paginationRowsPerPageOptions={[10, 25, 50, 100]}
-                        noDataComponent={
-                          <div className="text-center py-4 text-muted">
-                            No sections on the{" "}
-                            <strong>{pageLabel(activePage)}</strong> page yet.
-                            Click <strong>Add Section</strong> to create one.
-                          </div>
-                        }
-                      />
+                          {permissions.write && (
+                            <Button
+                              color="success"
+                              size="sm"
+                              className="d-flex align-items-center gap-1"
+                              style={{ height: "30px" }}
+                              onClick={handleOpenAddForm}
+                            >
+                              <i
+                                className="ri-add-line align-bottom"
+                                aria-hidden="true"
+                              ></i>{" "}
+                              Add Section
+                            </Button>
+                          )}
+                        </>
+                      ) : (
+                        <Button color="dark" size="sm" onClick={tog_list}>
+                          ≡ List
+                        </Button>
+                      )}
                     </div>
-                  </CardBody>
-                )}
-              </Card>
+                  </CardHeader>
+
+                  {showForm || updateForm ? (
+                    renderForm()
+                  ) : (
+                    <CardBody>
+                      <Nav
+                        pills
+                        className="nav-custom-light mb-3 flex-wrap gap-1"
+                      >
+                        {tabs.map((tab) => (
+                          <NavItem key={tab.key}>
+                            <NavLink
+                              href="#"
+                              active={activePage === tab.key}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setActivePage(tab.key);
+                              }}
+                            >
+                              {tab.label}{" "}
+                              <span className="badge bg-light text-body ms-1">
+                                {tab.count}
+                              </span>
+                            </NavLink>
+                          </NavItem>
+                        ))}
+                      </Nav>
+
+                      <SiteContentTable
+                        rows={visibleSections}
+                        loading={loading}
+                        permissions={permissions}
+                        pageLabel={pageLabel(activePage)}
+                        onEdit={handleTog_edit}
+                        onDelete={tog_delete}
+                      />
+                    </CardBody>
+                  )}
+                </Card>
+              )}
             </Col>
           </Row>
         </Container>

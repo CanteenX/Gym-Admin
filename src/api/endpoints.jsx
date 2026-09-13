@@ -252,6 +252,19 @@ export const ENDPOINTS = {
         SEARCH: `${V1}/site/content-by-params`,
     },
 
+    // Repeating structured records for the marketing site - programme cards,
+    // pricing plans, FAQs, trainers, the class timetable, testimonials and
+    // transformations. One collection, keyed by `collectionKey`, rather than a
+    // route per list. IMAGE is a separate multipart POST because the row itself
+    // is JSON (its `fields` bag is a nested object, which multipart cannot
+    // carry), and `?slot=` targets a declared image field inside that bag.
+    SITE_ITEMS: {
+        BASE: `${V1}/site/items`,
+        BY_ID: (id) => `${V1}/site/items/${id}`,
+        SEARCH: `${V1}/site/items-by-params`,
+        IMAGE: (id) => `${V1}/site/items/${id}/image`,
+    },
+
     SITE_ADS: {
         BASE: `${V1}/site/ads`,
         BY_ID: (id) => `${V1}/site/ads/${id}`,
@@ -285,6 +298,61 @@ export const ENDPOINTS = {
         UNASSIGN_MEMBER: (id, memberId) =>
             `${V1}/trainers/${id}/members/${memberId}`,
         UNASSIGNED_MEMBERS: `${V1}/trainers-unassigned-members`,
+    },
+
+    // ---------------------------------------------------------------- Insights
+    //
+    // The three read-only staff screens seeded under the "Insights" menu group:
+    // /attendance-overview, /reports and /audit-log. These menuUrls are the join
+    // key checkPermission and PermissionProtected both match on, so the route
+    // paths in Routes/allRoutes.jsx must stay identical to them.
+
+    // Staff-facing attendance reads. Nothing here writes.
+    //
+    // WORDING: the third path is "not-checked-in", never "not-visited".
+    // Check-in is self-reported and unattended (a printed branch QR can be
+    // photographed, and the portal button needs no QR at all), so a missing row
+    // means "did not log a session", not "did not come in". The server repeats
+    // that caveat in a `basis` string on every response; the screens must too.
+    ATTENDANCE_STAFF: {
+        FOOTFALL: `${V1}/attendance/footfall`,
+        LIVE: `${V1}/attendance/live`,
+        NOT_CHECKED_IN: `${V1}/attendance/not-checked-in`,
+    },
+
+    // Read-only reporting. Every money figure behind these comes from the
+    // Transaction ledger, never from Member.payments[] (which is cleared on
+    // renewal), so nothing here should ever be recomputed client-side from a
+    // member record.
+    REPORTS: {
+        COLLECTIONS: `${V1}/reports/collections`,
+        PROFIT_LOSS: `${V1}/reports/profit-loss`,
+        EXPIRY_PIPELINE: `${V1}/reports/expiry-pipeline`,
+        MEMBER_AGEING: `${V1}/reports/member-ageing`,
+    },
+
+    // CSV exports. These sit behind the /reports menu row but check the PRINT
+    // flag, not read — a file that leaves the building is a separate decision
+    // from being allowed to look at the numbers on screen. `?format=json`
+    // returns a capped in-memory array instead of a stream, which is the shape
+    // Components/Common/ExportCSVModal renders and downloads.
+    EXPORTS: {
+        TRANSACTIONS: `${V1}/exports/transactions`,
+        MEMBERS: `${V1}/exports/members`,
+        ATTENDANCE: `${V1}/exports/attendance`,
+    },
+
+    // Audit trail viewer. Read-only by design — there is deliberately no
+    // create/update/delete endpoint, because a trail an operator can edit is
+    // not a trail.
+    //
+    // FILTERS is spelled "/audit-logs-filters", not "/audit-logs/filters": the
+    // server keeps it a different path SHAPE from /audit-logs/:id so it cannot
+    // be swallowed as an id.
+    AUDIT_LOGS: {
+        SEARCH: `${V1}/audit-logs-by-params`,
+        FILTERS: `${V1}/audit-logs-filters`,
+        BY_ID: (id) => `${V1}/audit-logs/${id}`,
     },
 };
 
