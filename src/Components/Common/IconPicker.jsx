@@ -201,6 +201,10 @@ const IconPicker = ({ value, onChange, label, error, required }) => {
                     >
                         <Input
                             type="text"
+                            // A placeholder is not an accessible name: it
+                            // disappears on the first keystroke and screen
+                            // readers are not required to announce it.
+                            aria-label="Search icons"
                             placeholder="Search icons..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}

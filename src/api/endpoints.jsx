@@ -258,6 +258,16 @@ export const ENDPOINTS = {
         SEARCH: `${V1}/site/ads-by-params`,
     },
 
+    // Page-wise SEO metadata. GET /site/seo is deliberately public (the Next.js
+    // app reads it from generateMetadata() with no staff session); the list,
+    // create, update and delete paths below are the permission-checked staff
+    // side of the same domain, which is why they share the /site prefix.
+    SITE_SEO: {
+        BASE: `${V1}/site/seo`,
+        BY_ID: (id) => `${V1}/site/seo/${id}`,
+        SEARCH: `${V1}/site/seo-by-params`,
+    },
+
     SITE_LEADS: {
         BASE: `${V1}/site/leads`,
         BY_ID: (id) => `${V1}/site/leads/${id}`,

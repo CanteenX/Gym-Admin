@@ -39,6 +39,7 @@ const MemberExercisePlan = lazy(() => import("../pages/Master/MemberExercisePlan
 const WebsitePages = lazy(() => import("../pages/Website/WebsitePages"));
 const WebsiteAdverts = lazy(() => import("../pages/Website/WebsiteAdverts"));
 const WebsiteLeads = lazy(() => import("../pages/Website/WebsiteLeads"));
+const SeoManager = lazy(() => import("../pages/Website/SeoManager"));
 
 
 const authProtectedRoutes = [
@@ -73,6 +74,7 @@ const authProtectedRoutes = [
     { path: "/website-pages", component: <WebsitePages /> },
     { path: "/website-adverts", component: <WebsiteAdverts /> },
     { path: "/website-leads", component: <WebsiteLeads /> },
+    { path: "/seo-manager", component: <SeoManager /> },
     { path: "/dashboard", component: <Dashboard /> },
     { path: "/menu-group", component: <MenuGroup /> },
     { path: "/menu-master", component: <MenuMaster /> },
