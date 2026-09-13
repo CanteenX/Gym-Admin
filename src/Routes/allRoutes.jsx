@@ -36,6 +36,7 @@ const ExpenseCategories = lazy(() => import("../pages/Accounts/ExpenseCategories
 const MembershipPlans = lazy(() => import("../pages/Master/MembershipPlans"));
 const BranchMaster = lazy(() => import("../pages/Master/BranchMaster"));
 const MemberExercisePlan = lazy(() => import("../pages/Master/MemberExercisePlan"));
+const ClassSessions = lazy(() => import("../pages/Classes/ClassSessions"));
 const WebsitePages = lazy(() => import("../pages/Website/WebsitePages"));
 const WebsiteAdverts = lazy(() => import("../pages/Website/WebsiteAdverts"));
 const WebsiteLeads = lazy(() => import("../pages/Website/WebsiteLeads"));
@@ -76,6 +77,12 @@ const authProtectedRoutes = [
     { path: "/membership-plans", component: <MembershipPlans /> },
     { path: "/branch-master", component: <BranchMaster /> },
     { path: "/member-exercise-plan", component: <MemberExercisePlan /> },
+    // Bookable classes. The path must stay spelled "/class-sessions": it is the
+    // menuUrl checkPermission resolves on the server AND the key
+    // PermissionProtected matches against MenuContext, so the two only agree
+    // while the route, the MenuMaster row and the permission string are
+    // identical. Renaming it here silently 403s every non-super-admin.
+    { path: "/class-sessions", component: <ClassSessions /> },
     // Public-website CMS. These three menuUrls must exist in MenuMaster or
     // PermissionProtected denies them for every non-super-admin.
     { path: "/website-pages", component: <WebsitePages /> },

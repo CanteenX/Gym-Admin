@@ -228,6 +228,39 @@ export const ENDPOINTS = {
         BY_ID: (id) => `${V1}/workout-plans/${id}`,
     },
 
+    // ------------------------------------------------- Bookable class sessions
+    //
+    // The diary, not the brochure. SITE_ITEMS with collectionKey "classes" is
+    // the printed timetable the marketing site renders verbatim ("Mon — Sat",
+    // "6:00 AM"); these are real instants with a capacity and a booking count,
+    // which is what a booking needs. Pointing one at the other returns rows
+    // that look almost right and cannot be booked.
+    //
+    // Paths are flat under /api/v1 like everything else, and the LIST path is
+    // "/classes-by-params" while BASE is "/classes" — deliberately different
+    // shapes, matching members / trainers / branches.
+    //
+    // Every staff path here is permission-checked against the menuUrl
+    // "/class-sessions" (read for the two lists and the roster, write to
+    // create, edit to update a class or mark a booking, delete to remove a
+    // class), so the route path in Routes/allRoutes.jsx must stay spelled
+    // exactly that way or PermissionProtected and checkPermission disagree.
+    CLASS_SESSIONS: {
+        BASE: `${V1}/classes`,
+        BY_ID: (id) => `${V1}/classes/${id}`,
+        SEARCH: `${V1}/classes-by-params`,
+        ROSTER: (id) => `${V1}/classes/${id}/roster`,
+    },
+
+    // Bookings are read and marked, never created from the panel: a place is
+    // taken by the person attending (the website's free-trial form or the
+    // member portal), because the capacity counter is only ever moved by
+    // services/bookingCapacity.js through those paths.
+    CLASS_BOOKINGS: {
+        SEARCH: `${V1}/class-bookings-by-params`,
+        BY_ID: (id) => `${V1}/class-bookings/${id}`,
+    },
+
     // Branch master endpoints
     BRANCHES: {
         // POST /branches creates; the GET list lives at /branches-list, matching
