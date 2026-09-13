@@ -38,3 +38,7 @@ export const CmsPricing = () => items("plans");
 export const CmsTrainers = () => items("trainers");
 export const CmsTestimonials = () => items("testimonials");
 export const CmsClasses = () => items("classes");
+// The before/after gallery. Added after the original twelve routes — until it
+// had a screen it fell back to the /website-pages all-pages grant, so editing
+// it meant holding permission on every other CMS page too.
+export const CmsTransformations = () => items("transformations");

@@ -71,6 +71,11 @@ const CmsTestimonials = lazy(() =>
 const CmsClasses = lazy(() =>
   import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsClasses })),
 );
+const CmsTransformations = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({
+    default: m.CmsTransformations,
+  })),
+);
 const CmsHeader = lazy(() =>
   import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsHeader })),
 );
@@ -139,6 +144,11 @@ const authProtectedRoutes = [
     { path: "/cms/trainers", component: <CmsTrainers /> },
     { path: "/cms/testimonials", component: <CmsTestimonials /> },
     { path: "/cms/classes", component: <CmsClasses /> },
+    // Byte-identical to CMS_COLLECTION_MENUS.transformations / CMS_MENU_TREE in
+    // Gym-Server/config/cmsMenus.js. A mismatch here does not error — the menu
+    // simply fails to resolve, PermissionProtected denies the route, and the
+    // sidebar still shows the entry.
+    { path: "/cms/transformations", component: <CmsTransformations /> },
     { path: "/cms/header", component: <CmsHeader /> },
     { path: "/cms/footer", component: <CmsFooter /> },
     { path: "/cms/social", component: <CmsSocial /> },
