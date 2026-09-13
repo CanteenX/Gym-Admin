@@ -283,6 +283,13 @@ export const ENDPOINTS = {
         BASE: `${V1}/site/content`,
         BY_ID: (id) => `${V1}/site/content/${id}`,
         SEARCH: `${V1}/site/content-by-params`,
+        // IMAGE is ADDITIVE to the original contract, which gave content no
+        // upload route and left `imageUrl` as free text. The text field still
+        // works for an external CDN link or a legacy path - this is the second
+        // way to fill the same field, not a replacement. Multipart on its own
+        // route (rather than on BASE/BY_ID) because the row itself is JSON and
+        // the server pins the multer field name to `image`.
+        IMAGE: (id) => `${V1}/site/content/${id}/image`,
     },
 
     // Repeating structured records for the marketing site - programme cards,

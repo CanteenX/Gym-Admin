@@ -19,11 +19,8 @@ import {
   uploadSiteItemImage,
 } from "../../../api/siteItems.api";
 import { listBranches } from "../../../api/branches.api";
-import SiteItemForm, {
-  IMAGE_ACCEPT,
-  MAX_UPLOAD_BYTES,
-  humanSize,
-} from "./SiteItemForm";
+import SiteItemForm from "./SiteItemForm";
+import { validateImageFile } from "../ImageField";
 import SiteItemList from "./SiteItemList";
 import CollectionChips from "./CollectionChips";
 import ClassTimetable, { supportsGrid } from "./ClassTimetable";
@@ -306,23 +303,16 @@ const SiteItemsManager = ({ permissions, lockedCollectionKey = null }) => {
       return;
     }
 
-    const ext = `.${file.name.split(".").pop()?.toLowerCase()}`;
-    if (!IMAGE_ACCEPT.split(",").includes(ext)) {
+    // Same gate as the page-sections editor — one rule, one message, in
+    // ../ImageField. The server re-checks extension, MIME and magic bytes; this
+    // only spares the obvious mistakes a 5 MB round trip.
+    const message = validateImageFile(file);
+    if (message) {
+      // Clear the input too, or the browser keeps the rejected file's name on
+      // screen next to the error, which reads as "it will still be uploaded".
       if (event?.target) event.target.value = "";
       setPendingFiles((prev) => ({ ...prev, [slot]: null }));
-      setFileErrors((prev) => ({
-        ...prev,
-        [slot]: `Only ${IMAGE_ACCEPT.replaceAll(",", ", ")} files are allowed`,
-      }));
-      return;
-    }
-    if (file.size > MAX_UPLOAD_BYTES) {
-      if (event?.target) event.target.value = "";
-      setPendingFiles((prev) => ({ ...prev, [slot]: null }));
-      setFileErrors((prev) => ({
-        ...prev,
-        [slot]: `File is ${humanSize(file.size)} — the limit is 5 MB`,
-      }));
+      setFileErrors((prev) => ({ ...prev, [slot]: message }));
       return;
     }
 

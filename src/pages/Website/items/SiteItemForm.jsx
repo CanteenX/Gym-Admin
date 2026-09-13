@@ -1,105 +1,12 @@
-import { useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
-import { fileUrl } from "@/utils/fileUrl";
+import ImageField from "../ImageField";
 import {
   baseLabel,
   collectionLabel,
   hasSpec,
   imageSlots,
 } from "./itemSpecs";
-
-/** The server's uploader accepts images only, up to 5 MB. */
-export const IMAGE_ACCEPT = ".jpg,.jpeg,.png,.gif,.webp";
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
-
-export const humanSize = (bytes) => {
-  if (!bytes) return "";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
-
-/**
- * One photo: the stored reference (typed or uploaded) plus a file picker.
- *
- * The preview URL is derived ONCE per file and revoked on change. Calling
- * URL.createObjectURL() inline in JSX mints a new blob url on every render and
- * never releases the old one — the same leak that was fixed on the adverts
- * screen.
- */
-const ImageField = ({
-  id,
-  label,
-  hint,
-  value,
-  file,
-  error,
-  disabled,
-  onUrlChange,
-  onFileChange,
-}) => {
-  const preview = useMemo(() => (file ? URL.createObjectURL(file) : ""), [file]);
-  useEffect(() => {
-    if (!preview) return undefined;
-    return () => URL.revokeObjectURL(preview);
-  }, [preview]);
-
-  const shown = preview || fileUrl(value);
-
-  return (
-    <FormGroup className="mb-3">
-      <Label htmlFor={id} className="form-label fw-bold">
-        {label}
-      </Label>
-      <Input
-        id={id}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onUrlChange(e.target.value)}
-      />
-      <div className="mt-2">
-        <Label htmlFor={`${id}Upload`} className="form-label mb-1">
-          Upload a photo for {label.toLowerCase()}
-        </Label>
-        <Input
-          id={`${id}Upload`}
-          type="file"
-          accept={IMAGE_ACCEPT}
-          disabled={disabled}
-          onChange={(e) => onFileChange(e.target.files?.[0] || null, e)}
-        />
-        <small className="text-muted d-block mt-1">
-          {hint || "Paste a link, or upload a file to host it here."} JPG, PNG,
-          GIF or WebP · max 5 MB.
-        </small>
-        {error ? <p className="text-danger small mt-1 mb-0">{error}</p> : null}
-      </div>
-      {shown ? (
-        <div className="mt-2">
-          <img
-            src={shown}
-            alt={`${label} preview`}
-            className="img-thumbnail"
-            style={{ maxWidth: "100%", width: 160, height: "auto" }}
-          />
-        </div>
-      ) : null}
-    </FormGroup>
-  );
-};
-
-ImageField.propTypes = {
-  id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  hint: PropTypes.string,
-  value: PropTypes.string,
-  file: PropTypes.object,
-  error: PropTypes.string,
-  disabled: PropTypes.bool,
-  onUrlChange: PropTypes.func.isRequired,
-  onFileChange: PropTypes.func.isRequired,
-};
 
 /**
  * The editor for one row of one list.

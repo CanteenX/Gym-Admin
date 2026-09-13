@@ -33,8 +33,9 @@ import {
   deleteSiteContent,
 } from "../../api/siteContent.api";
 import { unwrapList } from "@/utils/listResponse";
-import { fileUrl } from "@/utils/fileUrl";
 import SiteContentTable from "./pages/SiteContentTable";
+import ImageField from "./ImageField";
+import useSectionImage from "./pages/useSectionImage";
 import SiteItemsManager from "./items/SiteItemsManager";
 
 /**
@@ -158,6 +159,12 @@ const WebsitePages = ({
   const [showForm, setShowForm] = useState(false);
   const [updateForm, setUpdateForm] = useState(false);
 
+  // The picked-but-not-yet-uploaded image. It is deliberately NOT part of
+  // `values`: `values` is the JSON payload of the row, and a File cannot travel
+  // in it — the image goes up on its own multipart request once the row has an
+  // id to be keyed by.
+  const sectionImage = useSectionImage();
+
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [isUpdateLoading, setIsUpdateLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
@@ -224,6 +231,7 @@ const WebsitePages = ({
     setValues(initialState);
     setIsSubmit(false);
     setFormErrors({});
+    sectionImage.reset();
   };
 
   const handleOpenAddForm = () => {
@@ -234,6 +242,7 @@ const WebsitePages = ({
     setValues({ ...initialState, pageKey: activePage });
     setIsSubmit(false);
     setFormErrors({});
+    sectionImage.reset();
   };
 
   const tog_delete = (id) => {
@@ -246,6 +255,9 @@ const WebsitePages = ({
     setShowForm(false);
     setIsSubmit(false);
     setFormErrors({});
+    // A file left over from the row edited before this one would otherwise be
+    // uploaded onto this row on the next save.
+    sectionImage.reset();
     setSelectedId(row._id);
     setValues({
       pageKey: row.pageKey || "home",
@@ -308,12 +320,17 @@ const WebsitePages = ({
 
     setIsSubmitLoading(true);
     createSiteContent(buildPayload())
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.isOk) {
+          // The image can only go up now: the endpoint is keyed by the row's
+          // id, which did not exist until this response. A failure here warns
+          // rather than throws — the section itself is saved either way.
+          await sectionImage.uploadIfPending(res.data.data?._id);
           toast.success("Section Added Successfully!");
           setActivePage(buildPayload().pageKey);
           setShowForm(false);
           setValues(initialState);
+          sectionImage.reset();
           fetchSections();
         } else {
           // The unique (pageKey, sectionKey) index is what rejects a duplicate.
@@ -338,10 +355,15 @@ const WebsitePages = ({
 
     setIsUpdateLoading(true);
     updateSiteContent(selectedId, buildPayload())
-      .then((res) => {
+      .then(async (res) => {
         if (res.data.isOk) {
+          // Order matters: the row is written first with whatever is in the
+          // text box, then the upload overwrites `imageUrl` with the stored
+          // reference. Uploading first would let the PUT put the old value back.
+          await sectionImage.uploadIfPending(selectedId);
           toast.success("Section Updated Successfully!");
           setUpdateForm(false);
+          sectionImage.reset();
           fetchSections();
         } else {
           toast.error(res.data.message || "Failed to update section");
@@ -482,32 +504,21 @@ const WebsitePages = ({
           </Col>
 
           <Col md={12}>
-            <FormGroup className="mb-3">
-              <Label htmlFor="contentImageUrl" className="form-label fw-bold">
-                Image URL
-              </Label>
-              <Input
-                id="contentImageUrl"
-                name="imageUrl"
-                placeholder="https://… or uploads/site/hero.webp"
-                value={values.imageUrl}
-                onChange={handleChange}
-              />
-              <small className="text-muted">
-                Paste a link. Upload a file on the Adverts screen if you need one
-                hosted here.
-              </small>
-              {values.imageUrl ? (
-                <div className="mt-2">
-                  <img
-                    src={fileUrl(values.imageUrl)}
-                    alt="Section preview"
-                    className="img-thumbnail"
-                    style={{ maxWidth: "100%", width: 180, height: "auto" }}
-                  />
-                </div>
-              ) : null}
-            </FormGroup>
+            {/* Both ways of filling one field: paste a link for an image hosted
+                elsewhere, or pick a file and have it hosted here. The same
+                control as the Content Lists editor, on purpose. */}
+            <ImageField
+              id="contentImageUrl"
+              label="Image"
+              placeholder="https://… or uploads/site/hero.webp"
+              hint="Paste a link, or upload a file to host it here. An uploaded file replaces the link above when the section is saved."
+              value={values.imageUrl}
+              file={sectionImage.file}
+              error={sectionImage.error}
+              disabled={isSubmitLoading || isUpdateLoading}
+              onUrlChange={(v) => setValues({ ...values, imageUrl: v })}
+              onFileChange={sectionImage.onFileChange}
+            />
           </Col>
 
           <Col md={6}>
