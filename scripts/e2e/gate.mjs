@@ -483,6 +483,55 @@ async function run(browser) {
     await ctx.close();
   }
 
+  // ---- 1b. The SEO surfaces must exist and be distinct -------------------
+  //
+  // Added after a deploy shipped with sitemap.xml and robots.txt 404ing and
+  // this gate stayed green: it checked that pages render, never that the
+  // machine-readable surfaces exist. Crawlers had neither.
+  //
+  // The distinctness check is here for the same reason. Production once served
+  // the HOME page for /programs and /contact - three 200s, three identical
+  // bodies - and every status-code check passed, because "it responded" and
+  // "it responded with the right page" are different questions.
+  {
+    const ctx = await browser.newContext({ viewport: DESKTOP });
+    const page = await ctx.newPage();
+    console.log(`\nSEO surfaces`);
+
+    for (const [path, must] of [
+      ["/sitemap.xml", "<loc>"],
+      ["/robots.txt", "isallow"],
+    ]) {
+      const res = await page.goto(`${BASE}${path}`, { timeout: 45000 }).catch(() => null);
+      const body = res ? await res.text().catch(() => "") : "";
+      if (!res || res.status() !== 200) {
+        fail(`${path}`, `HTTP ${res ? res.status() : "no response"} - crawlers get nothing`);
+      } else if (!body.includes(must)) {
+        fail(`${path}`, `served 200 but contains no ${must.trim()}`);
+      } else {
+        ok(`${path}`, `${body.length} bytes`);
+      }
+    }
+
+    const bodies = {};
+    for (const p of ["/", "/programs", "/contact"]) {
+      const r = await page.goto(`${BASE}${p}`, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => null);
+      bodies[p] = r ? await r.text().catch(() => "") : "";
+    }
+    const paths = Object.keys(bodies);
+    let identical = false;
+    for (let i = 0; i < paths.length; i++) {
+      for (let j = i + 1; j < paths.length; j++) {
+        if (bodies[paths[i]] && bodies[paths[i]] === bodies[paths[j]]) {
+          fail("marketing routing", `${paths[i]} and ${paths[j]} serve byte-identical HTML`);
+          identical = true;
+        }
+      }
+    }
+    if (!identical) ok("marketing routes serve distinct HTML");
+    await ctx.close();
+  }
+
   // ---- 2. /admin and /admin/ must BOTH mount the SPA ---------------------
   // Both forms are checked because the trailing-slash variant is served via a
   // redirect, and a basename mismatch has twice produced a blank screen on
