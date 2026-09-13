@@ -41,6 +41,45 @@ const WebsitePages = lazy(() => import("../pages/Website/WebsitePages"));
 const WebsiteAdverts = lazy(() => import("../pages/Website/WebsiteAdverts"));
 const WebsiteLeads = lazy(() => import("../pages/Website/WebsiteLeads"));
 const SeoManager = lazy(() => import("../pages/Website/SeoManager"));
+// Per-page CMS routes. Paths must stay byte-identical to cmsMenus.js.
+const CmsHome = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsHome })),
+);
+const CmsAbout = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsAbout })),
+);
+const CmsContact = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsContact })),
+);
+const CmsPrograms = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsPrograms })),
+);
+const CmsPricing = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsPricing })),
+);
+const CmsFaqs = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsFaqs })),
+);
+const CmsTrainers = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsTrainers })),
+);
+const CmsTestimonials = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({
+    default: m.CmsTestimonials,
+  })),
+);
+const CmsClasses = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsClasses })),
+);
+const CmsHeader = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsHeader })),
+);
+const CmsFooter = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsFooter })),
+);
+const CmsSocial = lazy(() =>
+  import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsSocial })),
+);
 // Insights. These three menuUrls are seeded by Gym-Server/scripts/seedInsightsMenus.js
 // and must stay character-identical to the paths below: checkPermission (server)
 // and PermissionProtected (client) both join on menuUrl, so a mismatch 403s a
@@ -89,6 +128,20 @@ const authProtectedRoutes = [
     { path: "/website-adverts", component: <WebsiteAdverts /> },
     { path: "/website-leads", component: <WebsiteLeads /> },
     { path: "/seo-manager", component: <SeoManager /> },
+    // Per-page CMS screens. Paths must match Gym-Server/config/cmsMenus.js
+    // exactly — that file is the join key for both sidebar and cmsPermission.
+    { path: "/cms/home", component: <CmsHome /> },
+    { path: "/cms/about", component: <CmsAbout /> },
+    { path: "/cms/contact", component: <CmsContact /> },
+    { path: "/cms/programs", component: <CmsPrograms /> },
+    { path: "/cms/pricing", component: <CmsPricing /> },
+    { path: "/cms/faqs", component: <CmsFaqs /> },
+    { path: "/cms/trainers", component: <CmsTrainers /> },
+    { path: "/cms/testimonials", component: <CmsTestimonials /> },
+    { path: "/cms/classes", component: <CmsClasses /> },
+    { path: "/cms/header", component: <CmsHeader /> },
+    { path: "/cms/footer", component: <CmsFooter /> },
+    { path: "/cms/social", component: <CmsSocial /> },
     // Insights — read-only staff screens. /reports additionally gates its CSV
     // export buttons on the `print` permission, which the export routes check
     // instead of `read`.

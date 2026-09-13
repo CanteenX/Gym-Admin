@@ -1,0 +1,1 @@
+import{o as a,E as n}from"./index-DLbxhN5b.js";const r=async()=>a.get(n.WORKOUT_PLANS.BASE),e=async t=>a.get(n.WORKOUT_PLANS.BY_ID(t)),u=async t=>a.post(n.WORKOUT_PLANS.BASE,t),c=async(t,o)=>a.put(n.WORKOUT_PLANS.BY_ID(t),o),O=async t=>a.delete(n.WORKOUT_PLANS.BY_ID(t));export{u as c,O as d,e as g,r as l,c as u};

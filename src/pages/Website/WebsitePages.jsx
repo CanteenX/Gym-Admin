@@ -47,7 +47,12 @@ const PAGE_KEYS = [
   { key: "home", label: "Home" },
   { key: "about", label: "About" },
   { key: "programs", label: "Programs" },
+  { key: "pricing", label: "Pricing" },
+  { key: "faqs", label: "FAQs" },
   { key: "contact", label: "Contact" },
+  { key: "header", label: "Header" },
+  { key: "footer", label: "Footer" },
+  { key: "social", label: "Social & Media" },
 ];
 
 const pageLabel = (key) =>
@@ -96,7 +101,25 @@ const initialState = {
   isActive: true,
 };
 
-const WebsitePages = () => {
+/**
+ * The two halves of "the website's content".
+ *
+ * On `/website-pages` both are available behind one menu permission (the
+ * all-pages fallback grant). The `/cms/*` routes lock to a single pageKey and/or
+ * collectionKey so MenuMaster URLs stay byte-identical to the React paths —
+ * query-string tabs cannot work (MenuContext strips `?` from the browser URL
+ * but not from `menu.url`).
+ *
+ * @param {object} [props]
+ * @param {string|null} [props.lockedPageKey]  Force sections to this pageKey
+ * @param {string|null} [props.lockedCollectionKey] Force items to this collection
+ * @param {"sections"|"items"|"both"} [props.modes="both"] Which editor halves to show
+ */
+const WebsitePages = ({
+  lockedPageKey = null,
+  lockedCollectionKey = null,
+  modes = "both",
+} = {}) => {
   const { adminData } = useContext(AuthContext);
   const { currentPagePermissions, isAdmin } = useContext(MenuContext);
   // A super admin has full access: checkPermission returns next() immediately
@@ -115,12 +138,17 @@ const WebsitePages = () => {
         delete: true,
       };
 
-  const [mode, setMode] = useState("sections");
-  const [values, setValues] = useState(initialState);
+  const showModeTabs = modes === "both";
+  const initialMode = modes === "items" ? "items" : "sections";
+  const [mode, setMode] = useState(initialMode);
+  const [values, setValues] = useState(() => ({
+    ...initialState,
+    pageKey: lockedPageKey || "home",
+  }));
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
   const [query, setQuery] = useState("");
-  const [activePage, setActivePage] = useState("home");
+  const [activePage, setActivePage] = useState(lockedPageKey || "home");
   const [selectedId, setSelectedId] = useState("");
   const [removeId, setRemoveId] = useState("");
 
@@ -134,6 +162,14 @@ const WebsitePages = () => {
   const [isUpdateLoading, setIsUpdateLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [modal_delete, setmodal_delete] = useState(false);
+
+  useEffect(() => {
+    if (lockedPageKey) setActivePage(lockedPageKey);
+  }, [lockedPageKey]);
+
+  useEffect(() => {
+    if (modes === "sections" || modes === "items") setMode(modes);
+  }, [modes]);
 
   const fetchSections = useCallback(async () => {
     setLoading(true);
@@ -357,6 +393,7 @@ const WebsitePages = () => {
                 name="pageKey"
                 value={values.pageKey}
                 onChange={handleChange}
+                disabled={Boolean(lockedPageKey)}
               >
                 {PAGE_KEYS.map((p) => (
                   <option key={p.key} value={p.key}>
@@ -564,7 +601,9 @@ const WebsitePages = () => {
     </CardBody>
   );
 
-  document.title = `Website Pages | ${adminData?.companyName || "Admin"}`;
+  document.title = lockedPageKey
+    ? `${pageLabel(lockedPageKey)} | ${adminData?.companyName || "Admin"}`
+    : `Website Pages | ${adminData?.companyName || "Admin"}`;
 
   return (
     <React.Fragment>
@@ -572,10 +611,11 @@ const WebsitePages = () => {
         <Container fluid>
           <BreadCrumb
             maintitle="Website"
-            title="Website Pages"
-            pageTitle="Website Pages"
+            title={lockedPageKey ? pageLabel(lockedPageKey) : "Website Pages"}
+            pageTitle={lockedPageKey ? pageLabel(lockedPageKey) : "Website Pages"}
           />
 
+          {showModeTabs ? (
           <Nav pills className="nav-custom-light mb-3 flex-wrap gap-1">
             {MODES.map((m) => (
               <NavItem key={m.key}>
@@ -595,11 +635,15 @@ const WebsitePages = () => {
               </NavItem>
             ))}
           </Nav>
+          ) : null}
 
           <Row>
             <Col lg={12}>
               {mode === "items" ? (
-                <SiteItemsManager permissions={permissions} />
+                <SiteItemsManager
+                  permissions={permissions}
+                  lockedCollectionKey={lockedCollectionKey}
+                />
               ) : (
                 <Card>
                   <CardHeader className="d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
@@ -688,6 +732,7 @@ const WebsitePages = () => {
                     renderForm()
                   ) : (
                     <CardBody>
+                      {!lockedPageKey ? (
                       <Nav
                         pills
                         className="nav-custom-light mb-3 flex-wrap gap-1"
@@ -710,6 +755,7 @@ const WebsitePages = () => {
                           </NavItem>
                         ))}
                       </Nav>
+                      ) : null}
 
                       <SiteContentTable
                         rows={visibleSections}

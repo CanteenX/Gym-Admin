@@ -76,15 +76,15 @@ const remapFieldValues = (previous, defs) =>
  * The repeating lists of the marketing site: programme cards, pricing plans,
  * FAQs, trainers, the class timetable, testimonials and transformations.
  *
- * LIVES INSIDE /website-pages rather than on a route of its own. RBAC resolves
- * a screen's permissions by looking its URL up in MenuMaster
- * (Routes/PermissionProtected.jsx), so a sibling route with no menu row is
- * denied outright for every EMPLOYEE and reachable only by a super admin — and
- * seeding a new menu row was explicitly out of scope. Sharing the screen keeps
- * one permission row governing both halves, which is also what the server does:
- * every /site/items write is checkPermission("/website-pages", …).
+ * On `/website-pages` this lives beside the sections editor under one menu
+ * permission. On `/cms/*` routes `lockedCollectionKey` scopes to a single list
+ * so the React path matches MenuMaster (no query-string menus — see todo.md).
+ *
+ * @param {object} props
+ * @param {object} props.permissions
+ * @param {string|null} [props.lockedCollectionKey]
  */
-const SiteItemsManager = ({ permissions }) => {
+const SiteItemsManager = ({ permissions, lockedCollectionKey = null }) => {
   const [rows, setRows] = useState([]);
   const [collections, setCollections] = useState([]);
   const [fieldSpecs, setFieldSpecs] = useState({});
@@ -92,7 +92,7 @@ const SiteItemsManager = ({ permissions }) => {
   const [loading, setLoading] = useState(false);
 
   const [query, setQuery] = useState("");
-  const [activeKey, setActiveKey] = useState("");
+  const [activeKey, setActiveKey] = useState(lockedCollectionKey || "");
   const [view, setView] = useState("grid");
 
   const [showForm, setShowForm] = useState(false);
@@ -100,7 +100,10 @@ const SiteItemsManager = ({ permissions }) => {
   const [selectedId, setSelectedId] = useState("");
   const [editingFields, setEditingFields] = useState({});
 
-  const [values, setValues] = useState(initialValues);
+  const [values, setValues] = useState(() => ({
+    ...initialValues,
+    collectionKey: lockedCollectionKey || "",
+  }));
   const [fieldValues, setFieldValues] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
@@ -114,6 +117,10 @@ const SiteItemsManager = ({ permissions }) => {
   const [removeId, setRemoveId] = useState("");
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [modal_delete, setmodal_delete] = useState(false);
+
+  useEffect(() => {
+    if (lockedCollectionKey) setActiveKey(lockedCollectionKey);
+  }, [lockedCollectionKey]);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -176,18 +183,22 @@ const SiteItemsManager = ({ permissions }) => {
   }, []);
 
   useEffect(() => {
+    if (lockedCollectionKey) return;
     if (activeKey || !collections.length) return;
     setActiveKey(collections[0]);
-  }, [collections, activeKey]);
+  }, [collections, activeKey, lockedCollectionKey]);
 
   const chips = useMemo(
     () =>
-      collections.map((key) => ({
+      (lockedCollectionKey
+        ? collections.filter((key) => key === lockedCollectionKey)
+        : collections
+      ).map((key) => ({
         key,
         label: collectionLabel(key),
         count: rows.filter((r) => r.collectionKey === key).length,
       })),
-    [collections, rows],
+    [collections, rows, lockedCollectionKey],
   );
 
   const visibleRows = useMemo(
@@ -216,7 +227,10 @@ const SiteItemsManager = ({ permissions }) => {
     setUpdateForm(false);
     setSelectedId("");
     setEditingFields({});
-    setValues(initialValues);
+    setValues({
+      ...initialValues,
+      collectionKey: lockedCollectionKey || "",
+    });
     setFieldValues({});
     setFormErrors({});
     setFieldErrors({});
@@ -268,6 +282,9 @@ const SiteItemsManager = ({ permissions }) => {
   };
 
   const handleField = (name, value) => {
+    if (name === "collectionKey" && lockedCollectionKey) {
+      return;
+    }
     if (name !== "collectionKey") {
       setValues((prev) => ({ ...prev, [name]: value }));
       return;
@@ -608,6 +625,7 @@ const SiteItemsManager = ({ permissions }) => {
             </SiteItemForm>
           ) : (
             <>
+              {!lockedCollectionKey ? (
               <CollectionChips
                 chips={chips}
                 activeKey={activeKey}
@@ -616,6 +634,26 @@ const SiteItemsManager = ({ permissions }) => {
                 onSelect={setActiveKey}
                 onViewChange={setView}
               />
+              ) : gridAvailable ? (
+                <div className="mb-3 d-flex gap-2">
+                  <Button
+                    color={view === "grid" ? "primary" : "light"}
+                    size="sm"
+                    type="button"
+                    onClick={() => setView("grid")}
+                  >
+                    Timetable
+                  </Button>
+                  <Button
+                    color={view === "list" ? "primary" : "light"}
+                    size="sm"
+                    type="button"
+                    onClick={() => setView("list")}
+                  >
+                    List
+                  </Button>
+                </div>
+              ) : null}
 
               {gridAvailable && view === "grid" ? (
                 <ClassTimetable
@@ -658,6 +696,7 @@ const SiteItemsManager = ({ permissions }) => {
 
 SiteItemsManager.propTypes = {
   permissions: PropTypes.object.isRequired,
+  lockedCollectionKey: PropTypes.string,
 };
 
 export default SiteItemsManager;

@@ -1,0 +1,1 @@
+import{o as e,E as s}from"./index-DLbxhN5b.js";const r=async t=>e.post(s.DEPARTMENTS.BASE,t),E=async()=>e.get(s.DEPARTMENTS.BASE),D=async t=>e.get(s.DEPARTMENTS.BY_ID(t)),c=async(t,a)=>e.put(s.DEPARTMENTS.BY_ID(t),a),p=async t=>e.delete(s.DEPARTMENTS.BY_ID(t)),T=async t=>e.post(s.DEPARTMENTS.SEARCH,t);export{E as a,r as c,p as d,D as g,T as s,c as u};

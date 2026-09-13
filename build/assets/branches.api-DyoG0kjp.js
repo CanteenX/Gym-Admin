@@ -1,0 +1,1 @@
+import{o as a,E as r}from"./index-DLbxhN5b.js";const n=async s=>a.post(r.BRANCHES.BASE,s),c=async(s,t)=>a.put(r.BRANCHES.BY_ID(s),t),B=async s=>a.delete(r.BRANCHES.BY_ID(s)),o=async s=>a.post(r.BRANCHES.SEARCH,s),p=async(s=!1)=>a.get(r.BRANCHES.LIST_ALL,{params:s?{physicalOnly:!0}:{}});export{n as c,B as d,p as l,o as s,c as u};

@@ -1,0 +1,1 @@
+import{o as E,E as s}from"./index-DLbxhN5b.js";const n=async e=>E.post(s.EXPENSE_CATEGORIES.BASE,e),r=async(e,t)=>E.put(s.EXPENSE_CATEGORIES.BY_ID(e),t),o=async e=>E.delete(s.EXPENSE_CATEGORIES.BY_ID(e)),S=async e=>E.post(s.EXPENSE_CATEGORIES.SEARCH,e),c=async()=>E.get(s.EXPENSE_CATEGORIES.LIST_ALL);export{n as c,o as d,c as l,S as s,r as u};

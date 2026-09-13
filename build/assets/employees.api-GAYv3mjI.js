@@ -1,0 +1,1 @@
+import{o as E,E as s}from"./index-DLbxhN5b.js";const r=async e=>E.post(s.EMPLOYEES.BASE,e),a=async e=>E.get(s.EMPLOYEES.BY_ID(e)),n=async(e,t)=>E.put(s.EMPLOYEES.BY_ID(e),t),c=async e=>E.delete(s.EMPLOYEES.BY_ID(e)),p=async e=>E.post(s.EMPLOYEES.SEARCH,e),y=async(e,t)=>E.post(s.EMPLOYEES.RESET_PASSWORD(e),t);export{r as c,c as d,a as g,y as r,p as s,n as u};

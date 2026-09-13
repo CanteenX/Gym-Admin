@@ -1,0 +1,1 @@
+const n=a=>{const r=a?.data?.data;if(Array.isArray(r)){const t=r[0];return t&&Array.isArray(t.data)?{rows:t.data,count:Number(t.count)||0}:{rows:r,count:r.length}}return r&&Array.isArray(r.data)?{rows:r.data,count:Number(r.count)||0}:{rows:[],count:0}};export{n as u};
