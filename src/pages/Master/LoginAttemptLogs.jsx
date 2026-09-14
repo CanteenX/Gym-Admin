@@ -187,8 +187,16 @@ const LoginAttemptLogs = () => {
         { name: "Failed Attempts", selector: (row) => row.attemptCount, sortable: true, sortField: "attemptCount", width: "130px", cell: FailedAttemptsCell },
         { name: "Last Attempt", selector: (row) => row.lastLoginAttempt, sortable: true, sortField: "lastLoginAttempt", minWidth: "160px", cell: (row) => formatDate(row.lastLoginAttempt) },
         { name: "Last Login", selector: (row) => row.lastLoggedIn, sortable: true, sortField: "lastLoggedIn", minWidth: "160px", cell: (row) => formatDate(row.lastLoggedIn) },
-        { name: "IP Address", selector: (row) => row.ipAddress, minWidth: "130px", cell: IpAddressCell },
-        { name: "Location", selector: (row) => row.city, minWidth: "200px", cell: LocationCell },
+        /*
+          IP Address and Location columns removed. LoginAttempt stopped
+          recording ipAddress and locationCoordinates when the consent
+          checkboxes went — the client IP now serves rate limiting only — so
+          these columns showed a fossil value for the handful of rows written
+          before that change and a dash for every row since. A column that is
+          right for eleven old rows and blank for all the new ones is worse
+          than no column: it reads as missing data rather than as data we
+          deliberately no longer keep.
+        */
         { name: "Actions", minWidth: "180px", cell: (row) => <LoginAttemptActions row={row} currentUserId={currentUserId} handleUnlock={handleUnlock} handleReset={handleReset} handleUnblock={handleUnblock} handleBlock={handleBlock} /> },
     ], [pageNo, perPage, currentUserId]);
 
@@ -533,64 +541,9 @@ FailedAttemptsCell.propTypes = {
     row: PropTypes.object,
 };
 
-const IpAddressCell = (props) => {
-    const row = props.row || props;
-    return <code style={{ fontSize: "0.85em" }}>{row.ipAddress || "-"}</code>;
-};
-
-IpAddressCell.propTypes = {
-    row: PropTypes.object,
-};
-
-const formatLocationText = (city, country) => {
-    if (!city) return "";
-    const hasValidCountry = country && country !== "-" && country !== "null";
-    if (hasValidCountry) {
-        return `${city}, ${country}`;
-    }
-    return city;
-};
-
-const LocationCell = (props) => {
-    const row = props.row || props;
-    if (row.latitude && row.longitude) {
-        const googleMapsUrl = `https://www.google.com/maps?q=${row.latitude},${row.longitude}`;
-        const hasValidCity = row.city && row.city !== "-" && row.city !== "Client Provided" && row.city !== "null";
-        const displayText = hasValidCity
-            ? formatLocationText(row.city, row.country)
-            : `${row.latitude.toFixed(4)}, ${row.longitude.toFixed(4)}`;
-
-        return (
-            <a
-                href={googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={`View on Google Maps: ${row.latitude}, ${row.longitude}`}
-                style={{
-                    color: "#0d6efd",
-                    textDecoration: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                }}
-            >
-                📍 {displayText}
-            </a>
-        );
-    }
-
-    const hasValidCity = row.city && row.city !== "-" && row.city !== "Client Provided" && row.city !== "null";
-    if (hasValidCity) {
-        return <div>{formatLocationText(row.city, row.country)}</div>;
-    }
-
-    return <span className="text-muted">-</span>;
-};
-
-LocationCell.propTypes = {
-    row: PropTypes.object,
-};
-
+// IpAddressCell, LocationCell and formatLocationText were removed with the
+// columns they rendered: LoginAttempt no longer records ipAddress or
+// locationCoordinates, so they had nothing left to format.
 const LoginAttemptActions = ({
     row,
     currentUserId,
