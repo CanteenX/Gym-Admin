@@ -111,6 +111,19 @@ const CmsMedia = lazy(() =>
 const CmsSite = lazy(() =>
   import("../pages/Website/CmsScreens").then((m) => ({ default: m.CmsSite })),
 );
+// Announcements and banners. A DIFFERENT MODULE from CmsScreens because these
+// two are not thin WebsitePages wrappers — SiteNotice is its own collection
+// with its own endpoints and its own scheduling UI, so they are real screens.
+const CmsAnnouncements = lazy(() =>
+  import("../pages/Website/CmsNoticeScreens").then((m) => ({
+    default: m.CmsAnnouncements,
+  })),
+);
+const CmsBanners = lazy(() =>
+  import("../pages/Website/CmsNoticeScreens").then((m) => ({
+    default: m.CmsBanners,
+  })),
+);
 // Insights. These three menuUrls are seeded by Gym-Server/scripts/seedInsightsMenus.js
 // and must stay character-identical to the paths below: checkPermission (server)
 // and PermissionProtected (client) both join on menuUrl, so a mismatch 403s a
@@ -190,6 +203,13 @@ const authProtectedRoutes = [
     { path: "/cms/branches", component: <CmsBranches /> },
     { path: "/cms/media", component: <CmsMedia /> },
     { path: "/cms/site", component: <CmsSite /> },
+    // Site-wide notices. Byte-identical to CMS_NOTICE_MENUS in
+    // Gym-Server/config/cmsMenus.js — "/cms/announcements" and "/cms/banners".
+    // Two routes rather than one screen with a tab because the server grants
+    // them separately: whoever can post a closure should not thereby be able to
+    // publish a discount.
+    { path: "/cms/announcements", component: <CmsAnnouncements /> },
+    { path: "/cms/banners", component: <CmsBanners /> },
     // Insights — read-only staff screens. /reports additionally gates its CSV
     // export buttons on the `print` permission, which the export routes check
     // instead of `read`.

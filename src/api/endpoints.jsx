@@ -305,6 +305,29 @@ export const ENDPOINTS = {
         IMAGE: (id) => `${V1}/site/items/${id}/image`,
     },
 
+    // Announcements and banners — the gym talking to its members, and the gym
+    // promoting itself. NEITHER IS AN ADVERT: an advert is a paying third party
+    // and the site renders it under a "Sponsored" heading, which is why
+    // SITE_ADS below stays its own collection and its own screen.
+    //
+    // BASE IS JSON ON CREATE AND UPDATE, unlike SITE_ADS which is multipart on
+    // both, and the difference is a permission one rather than a taste one. The
+    // server decides whether a write belongs to /cms/announcements or
+    // /cms/banners by reading `kind` out of the body; on a multipart request the
+    // body is still unparsed at that point, because the uploader deliberately
+    // runs after the permission check. A multipart create could therefore only
+    // ever be authorised against the all-pages grant. So the row is created from
+    // JSON and a banner's creative is attached afterwards through IMAGE, whose
+    // `:id` lets the server read the kind back off the stored row.
+    SITE_NOTICES: {
+        BASE: `${V1}/site/notices`,
+        BY_ID: (id) => `${V1}/site/notices/${id}`,
+        SEARCH: `${V1}/site/notices-by-params`,
+        // Multipart, field name `image`, BANNER only — the server 400s this on
+        // an announcement, which is a line of text with no image slot.
+        IMAGE: (id) => `${V1}/site/notices/${id}/image`,
+    },
+
     SITE_ADS: {
         BASE: `${V1}/site/ads`,
         BY_ID: (id) => `${V1}/site/ads/${id}`,

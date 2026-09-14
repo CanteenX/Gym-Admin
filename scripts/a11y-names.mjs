@@ -43,6 +43,20 @@ const AS_JSON = args.includes("--json");
  * passes cannot collide in the same files.
  */
 const IN_SCOPE = [join("src", "pages"), join("src", "Components")];
+/**
+ * Skipped by DEFAULT only, and `--all` overrides it — see the scope check.
+ *
+ * This began as a concurrency guard: another agent was editing
+ * src/pages/Website at the time and scanning it would have reported its
+ * half-written files. That is a reason to skip it for one afternoon, not
+ * forever, and the exclusion outlived the reason.
+ *
+ * It was worse than a stale setting. The check ran BEFORE the --all flag, so
+ * `--all` silently did not mean all: the audit reported "0 unnamed across 203
+ * files" while structurally unable to see an entire directory of CMS screens.
+ * An audit with an invisible blind spot is more dangerous than no audit,
+ * because it is quoted as proof.
+ */
 const OUT_OF_SCOPE = [join("src", "pages", "Website")];
 
 // Tags that put a real form control in the DOM. `Select` covers both
@@ -78,8 +92,9 @@ function walk(dir, out = []) {
 
 function inScope(file) {
   const rel = relative(ROOT, file);
-  if (OUT_OF_SCOPE.some((p) => rel.startsWith(p + sep))) return false;
+  // --all is checked FIRST, so it genuinely means all.
   if (SCAN_ALL) return true;
+  if (OUT_OF_SCOPE.some((p) => rel.startsWith(p + sep))) return false;
   return IN_SCOPE.some((p) => rel.startsWith(p + sep));
 }
 
@@ -292,7 +307,16 @@ if (AS_JSON) {
   const controls = all.filter((f) => f.kind === "control").length;
   const buttons = all.filter((f) => f.kind === "button").length;
   console.log(`\n${"-".repeat(60)}`);
-  console.log(`scope       : ${SCAN_ALL ? "ALL of src/" : IN_SCOPE.join(", ")} (minus ${OUT_OF_SCOPE.join(", ")})`);
+  // The label states what was ACTUALLY scanned. It used to print the exclusion
+  // unconditionally, so --all announced a limit it no longer applied - the
+  // report contradicted itself and the wrong half was the believable one.
+  console.log(
+    `scope       : ${
+      SCAN_ALL
+        ? "ALL of src/ (nothing excluded)"
+        : `${IN_SCOPE.join(", ")} (minus ${OUT_OF_SCOPE.join(", ")} — use --all to include)`
+    }`,
+  );
   console.log(`files       : ${files.length}`);
   console.log(`unnamed     : ${all.length}  (${controls} form controls, ${buttons} buttons)`);
   console.log(`affected    : ${byFile.size} files`);
