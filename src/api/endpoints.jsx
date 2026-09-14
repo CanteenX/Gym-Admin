@@ -261,6 +261,27 @@ export const ENDPOINTS = {
         BY_ID: (id) => `${V1}/class-bookings/${id}`,
     },
 
+    // ----------------------------------------------------- Holiday master
+    //
+    // Gym closure days. ONE menu row, "/holiday-master", covers the master
+    // screen AND the dashboard calendar widget — they are the same data viewed
+    // two ways, exactly as CLASS_SESSIONS above covers the diary and the
+    // roster. Every path here is permission-checked against that menuUrl on the
+    // server (read for the two reads, write / edit / delete for the three
+    // writes), so the route path in Routes/allRoutes.jsx must stay spelled
+    // "/holiday-master" or PermissionProtected and checkPermission disagree and
+    // the screen 403s for every non-super-admin.
+    //
+    // SEARCH is "/holidays-by-params" while BASE is "/holidays" and CALENDAR is
+    // nested under it — the same deliberately-mixed shapes members / branches
+    // use, not a typo.
+    HOLIDAYS: {
+        BASE: `${V1}/holidays`,
+        BY_ID: (id) => `${V1}/holidays/${id}`,
+        SEARCH: `${V1}/holidays-by-params`,
+        CALENDAR: `${V1}/holidays/calendar`,
+    },
+
     // Branch master endpoints
     BRANCHES: {
         // POST /branches creates; the GET list lives at /branches-list, matching

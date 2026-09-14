@@ -14,6 +14,7 @@ import BreadCrumb from "../../Components/Common/BreadCrumb";
 import TableSkeleton from "@/Components/Common/TableSkeleton";
 import { AuthContext } from "../../context/AuthContext";
 import { getMemberDashboardStats } from "../../api/members.api";
+import HolidayWidget from "./HolidayWidget";
 
 const currency = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
@@ -294,6 +295,15 @@ const Dashboard = () => {
             </Col>
           </Row>
         )}
+
+        {/* OUTSIDE the stats skeleton on purpose. The holiday widget is the
+            employee-facing half of the Holiday Master, and it is gated on its
+            own menu permission and fed by its own endpoints — tying it to the
+            member-statistics request would blank it for the whole of that load
+            and hide it entirely whenever that call fails, which is the one
+            thing an employee logs in to this screen for. It renders nothing at
+            all for anyone without read on /holiday-master. */}
+        <HolidayWidget />
 
         {loading && !stats ? (
           <DashboardSkeleton />

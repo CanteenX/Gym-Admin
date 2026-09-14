@@ -36,6 +36,7 @@ const ExpenseCategories = lazy(() => import("../pages/Accounts/ExpenseCategories
 const MembershipPlans = lazy(() => import("../pages/Master/MembershipPlans"));
 const BranchMaster = lazy(() => import("../pages/Master/BranchMaster"));
 const MemberExercisePlan = lazy(() => import("../pages/Master/MemberExercisePlan"));
+const HolidayMaster = lazy(() => import("../pages/Master/HolidayMaster"));
 const ClassSessions = lazy(() => import("../pages/Classes/ClassSessions"));
 const WebsitePages = lazy(() => import("../pages/Website/WebsitePages"));
 const WebsiteAdverts = lazy(() => import("../pages/Website/WebsiteAdverts"));
@@ -160,6 +161,13 @@ const authProtectedRoutes = [
     { path: "/membership-plans", component: <MembershipPlans /> },
     { path: "/branch-master", component: <BranchMaster /> },
     { path: "/member-exercise-plan", component: <MemberExercisePlan /> },
+    // Gym closure days. Same byte-identical rule as /class-sessions below: this
+    // path is the menuUrl checkPermission resolves on the server AND the key
+    // PermissionProtected matches against MenuContext, and it is what the
+    // dashboard widget looks up to decide whether to render at all. Renaming it
+    // here does not error — it silently 403s every non-super-admin and hides
+    // the widget from the employees it was built for.
+    { path: "/holiday-master", component: <HolidayMaster /> },
     // Bookable classes. The path must stay spelled "/class-sessions": it is the
     // menuUrl checkPermission resolves on the server AND the key
     // PermissionProtected matches against MenuContext, so the two only agree
