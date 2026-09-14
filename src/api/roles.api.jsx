@@ -23,6 +23,24 @@ export const getAllRoles = async () => {
 };
 
 /**
+ * Roles the signed-in user may actually ASSIGN to a member of staff.
+ *
+ * Not the same list as getAllRoles(), and the difference is the point.
+ * ENDPOINTS.ROLES.BASE is gated on the /role-master menu, which is reserved to
+ * the super admin — so for a branch admin it returns 403, the Role dropdown
+ * came back empty, and since a role is required no branch admin could save any
+ * employee at all.
+ *
+ * This endpoint is bounded by the caller's own permissions instead: it returns
+ * only roles they could legitimately hand out. The server enforces the same
+ * bound again on save (middlewares/roleCeiling.js), so this is a convenience
+ * over a real boundary, not the boundary itself.
+ */
+export const getAssignableRoles = async () => {
+    return api.get(ENDPOINTS.ROLES.ASSIGNABLE);
+};
+
+/**
  * Get all roles created by admin
  * @returns {Promise}
  */
@@ -78,6 +96,7 @@ export const searchRoles = async (params) => {
 export default {
     createRole,
     getAllRoles,
+    getAssignableRoles,
     getRoleById,
     updateRole,
     deleteRole,

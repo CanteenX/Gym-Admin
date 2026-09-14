@@ -42,7 +42,7 @@ import {
   getCompanyById,
 } from "../../api/companies.api";
 import { MenuContext } from "../../context/MenuContext";
-import { getAllRoles } from "../../api/roles.api";
+import { getAssignableRoles } from "../../api/roles.api";
 import { listBranches } from "../../api/branches.api";
 import config from "../../config";
 import { fileUrl } from "@/utils/fileUrl";
@@ -86,11 +86,23 @@ const Employee = () => {
   // are excluded — an employee is posted to a real gym, not to a cost bucket.
   const [branchList, setBranchList] = useState([]);
 
+  /**
+   * A branch admin sees ONLY their own branch here.
+   *
+   * The picker used to list every branch for everyone, but the server derives
+   * the branch from the session and refuses any other with
+   * "You may only create staff for the Vasna branch." Offering a choice that is
+   * always refused is worse than offering none: it reads as a permissions bug
+   * rather than as the rule it is. The server is still the authority — this
+   * only stops the form proposing something it knows will fail.
+   */
   const branchOptions = [
-    ...branchList.map((b) => ({
-      value: b.name,
-      label: b.displayName || b.name,
-    })),
+    ...branchList
+      .filter((b) => canGrantAllBranches || b.name === adminData?.branch)
+      .map((b) => ({
+        value: b.name,
+        label: b.displayName || b.name,
+      })),
     ...(canGrantAllBranches
       ? [{ value: "", label: "All Branches (Super Admin)" }]
       : []),
@@ -206,9 +218,21 @@ const Employee = () => {
     }
   }, []);
 
+  /**
+   * Roles this user may ASSIGN, not every role that exists.
+   *
+   * getAllRoles() reads the /role-master menu, which is reserved to the super
+   * admin, so for a branch admin it returned 403 — the dropdown was empty, and
+   * because a role is required, no branch admin could save any employee at all.
+   * The owner reported it as "branch admins cannot add staff".
+   *
+   * The assignable list is bounded by the caller's own permissions, so it never
+   * offers a role the save would then refuse. The server applies the same bound
+   * independently on write.
+   */
   const getRoleList = async () => {
     try {
-      const res = await getAllRoles();
+      const res = await getAssignableRoles();
       if (res.data.isOk) {
         setRoleList(res.data.data);
       }

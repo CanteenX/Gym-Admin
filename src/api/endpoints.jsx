@@ -88,6 +88,7 @@ export const ENDPOINTS = {
         BASE: `${V1}/roles`,
         BY_ID: (id) => `${V1}/roles/${id}`,
         SEARCH: `${V1}/roles/search`,
+        ASSIGNABLE: `${V1}/roles/assignable`,
         ADMIN_CREATED: `${V1}/roles/admin-created`,       // ← add
         EMPLOYEE_CREATED: `${V1}/roles/employee-created`,
     },
