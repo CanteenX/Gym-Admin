@@ -159,6 +159,28 @@ const HolidayWidget = () => {
     [monthHolidays],
   );
 
+  /**
+   * Is the gym shut TODAY — the one fact the header states outright.
+   *
+   * Read from `upcoming` rather than from `holidaysByDay`, deliberately.
+   * `holidaysByDay` only covers the month the user is LOOKING at, and the
+   * arrows move that: page to December and the header would cheerfully
+   * announce the gym was open today because today is not in the grid any more.
+   * `upcoming` is anchored to the real today regardless of the cursor.
+   *
+   * It also catches a multi-day closure that began before today and is still
+   * running, because the server includes those by overlap rather than by start
+   * date.
+   */
+  const closedToday = useMemo(() => {
+    const todayKey = toLocalKey(new Date());
+    return upcoming.some((h) => {
+      const from = toLocalKey(new Date(h.date));
+      const to = toLocalKey(new Date(h.endDate || h.date));
+      return todayKey >= from && todayKey <= to;
+    });
+  }, [upcoming]);
+
   // Nothing at all while the menu tree is still resolving: a card that appears
   // and then vanishes reads as a bug, and the dashboard renders before menus
   // land on a hard refresh.
@@ -168,8 +190,8 @@ const HolidayWidget = () => {
     <Row className="g-3 mb-2">
       <Col xs={12}>
         <Card className="mb-0">
-          <CardHeader className="d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div>
+          <CardHeader className="d-flex align-items-center justify-content-between flex-wrap gap-2 border-0 pb-0">
+            <div className="d-flex align-items-center gap-2">
               <h5 className="card-title mb-0">
                 <i
                   className="ri-calendar-close-line text-danger align-bottom me-1"
@@ -177,21 +199,36 @@ const HolidayWidget = () => {
                 ></i>
                 Gym Holidays
               </h5>
-              <small className="text-muted">
-                Days the gym is closed. Marked by an admin.
-              </small>
+              {/* The status the widget exists to answer, in the header rather
+                  than inferred from a coloured square. Whoever opens the
+                  dashboard is asking "are we open?", and a subtitle explaining
+                  what a holiday is does not answer it. */}
+              {closedToday ? (
+                <span className="badge bg-danger-subtle text-danger">
+                  Closed today
+                </span>
+              ) : (
+                <span className="badge bg-success-subtle text-success">
+                  Open today
+                </span>
+              )}
             </div>
             <Link
               to="/holiday-master"
-              className="btn btn-sm btn-soft-primary"
+              className="link-secondary fs-13 text-decoration-none"
             >
-              Open Holiday Master{" "}
+              Holiday Master{" "}
               <i className="ri-arrow-right-line align-bottom" aria-hidden="true"></i>
             </Link>
           </CardHeader>
           <CardBody className="pt-2">
-            <Row className="g-3">
-              <Col lg={5} xl={4}>
+            {/* Was 4/8 in favour of the LIST. On the common day there is
+                nothing to list, so two thirds of the card was a single grey
+                sentence while the calendar — the part with actual information
+                in it — was squeezed into a third. Evened up, and the list side
+                now fills its space whether or not anything is in it. */}
+            <Row className="g-4">
+              <Col lg="auto">
                 <HolidayCalendar
                   cursor={cursor}
                   holidaysByDay={holidaysByDay}
@@ -202,37 +239,74 @@ const HolidayWidget = () => {
                   compact
                 />
               </Col>
-              <Col lg={7} xl={8}>
-                <h6 className="text-muted text-uppercase fs-12 mb-2">
-                  Next closures
-                </h6>
-                {upcoming.length === 0 ? (
-                  <p className="text-muted small mb-0">
-                    No closures marked from today onwards.
-                  </p>
-                ) : (
-                  <Row className="g-2">
-                    {upcoming.map((h) => (
-                      <Col md={6} key={h._id}>
-                        <div className="d-flex align-items-start gap-2 border rounded p-2 h-100">
-                          <i
-                            className="ri-calendar-close-line text-danger mt-1"
+              <Col lg>
+                {/* Capped rather than stretched. This card is a full dashboard
+                    row, so an uncapped panel pulls a two-line message across
+                    1400px and reads as a stretched bar with the text lost in
+                    the middle of it. Held to a comfortable reading width, the
+                    space to the right is plainly deliberate rather than
+                    accidental. */}
+                <div style={{ maxWidth: 560 }}>
+                  <h6 className="text-uppercase fs-11 text-muted mb-3 ls-1">
+                    Next closures
+                  </h6>
+                  {upcoming.length === 0 ? (
+                    /* An empty list is the COMMON case, so it gets a considered
+                       state rather than a stranded sentence. It also answers
+                       positively: "nothing is closed" is the useful reading of
+                       no rows, not "no data". */
+                    <div className="d-flex align-items-center gap-3 border border-dashed rounded px-3 py-2 text-muted">
+                      <i
+                        className="ri-calendar-check-line fs-4 text-success opacity-75"
+                        aria-hidden="true"
+                      ></i>
+                      <div>
+                        <div className="fw-medium text-body">
+                          Open every day from here
+                        </div>
+                        <div className="fs-12">
+                          No closures are marked for the coming weeks.
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* One row per closure, not a two-column grid of cards.
+                       There are at most a handful, they are read in date order,
+                       and a list keeps that order obvious where a grid makes
+                       the eye jump between columns. */
+                    <div className="vstack gap-2">
+                      {upcoming.map((h) => (
+                        <div
+                          key={h._id}
+                          className="d-flex align-items-center gap-3 border rounded p-2"
+                        >
+                          <span
+                            className="badge bg-danger-subtle text-danger flex-shrink-0 px-2 py-1 fs-11 text-center"
                             aria-hidden="true"
-                          ></i>
-                          <div className="flex-grow-1">
-                            <div className="fw-semibold">{h.title}</div>
-                            <div className="text-muted small">
-                              {holidaySpanLabel(h)} · {branchLabel(h.branch)}
+                            /* Fixed width so the titles beside them line up.
+                               "18-20 Sept 2026" is half again as wide as
+                               "24 Sept 2026", and left to themselves the chips
+                               shunt each title to a different x — a ragged
+                               left edge down a list that is meant to be
+                               scanned. */
+                            style={{ minWidth: 118 }}
+                          >
+                            {holidaySpanLabel(h)}
+                          </span>
+                          <div className="flex-grow-1 min-w-0">
+                            <div className="fw-semibold text-truncate">
+                              {h.title}
                             </div>
-                            {h.note && (
-                              <div className="text-muted small">{h.note}</div>
-                            )}
+                            <div className="text-muted fs-12 text-truncate">
+                              {branchLabel(h.branch)}
+                              {h.note ? ` · ${h.note}` : ""}
+                            </div>
                           </div>
                         </div>
-                      </Col>
-                    ))}
-                  </Row>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </Col>
             </Row>
           </CardBody>

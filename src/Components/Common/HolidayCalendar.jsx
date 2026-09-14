@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
+import "./HolidayCalendar.css";
 import {
   WEEKDAYS,
   branchLabel,
@@ -60,14 +61,18 @@ const HolidayCalendar = ({
   const grid = useMemo(() => buildMonthGrid(cursor), [cursor]);
   const title = monthTitle(cursor);
 
-  const cellHeight = compact ? 34 : 46;
+  // Cell size, hover states and the closure tint all live in
+  // HolidayCalendar.css, keyed off the --hc-cell custom property that
+  // `compact` switches. It used to be an inline height plus a pile of
+  // Bootstrap utility classes, which could not express a hover state and
+  // could not tint a colour against the card behind it.
 
   return (
-    <div className="holiday-calendar">
-      <div className="d-flex align-items-center justify-content-between gap-2 mb-2">
+    <div className={`holiday-calendar${compact ? " holiday-calendar--compact" : ""}`}>
+      <div className="hc-head">
         <button
           type="button"
-          className="btn btn-sm btn-light"
+          className="hc-nav"
           onClick={onPrevMonth}
           disabled={loading}
           aria-label="Show the previous month"
@@ -76,10 +81,7 @@ const HolidayCalendar = ({
         </button>
         {/* aria-live so a screen-reader user hears which month they landed on
             after pressing the arrows — the grid itself does not announce. */}
-        <div
-          className="fw-semibold text-center flex-grow-1"
-          aria-live="polite"
-        >
+        <div className="hc-head__title" aria-live="polite">
           {title}
           {loading && (
             <span
@@ -92,7 +94,7 @@ const HolidayCalendar = ({
         </div>
         <button
           type="button"
-          className="btn btn-sm btn-light"
+          className="hc-nav"
           onClick={onNextMonth}
           disabled={loading}
           aria-label="Show the next month"
@@ -119,7 +121,7 @@ const HolidayCalendar = ({
                 key={d.key}
                 scope="col"
                 abbr={d.full}
-                className="text-center text-muted fw-normal small py-1"
+                className="hc-th"
               >
                 <span aria-hidden="true">{compact ? d.short.charAt(0) : d.short}</span>
                 <span className="visually-hidden">{d.full}</span>
@@ -176,29 +178,27 @@ const HolidayCalendar = ({
                   month: "long",
                 })} — ${description}`;
 
-                const stateClass = closed
-                  ? "bg-danger-subtle text-danger fw-semibold"
-                  : "text-body";
-                const todayClass = isToday ? "border border-2 border-primary" : "";
+                const dayClass = [
+                  "hc-day",
+                  closed ? "hc-day--closed" : "",
+                  isToday ? "hc-day--today" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ");
 
                 const inner = (
                   <>
                     <span className="d-block lh-1">{cell.day}</span>
-                    {closed && !compact && (
-                      <span
-                        className="d-block text-truncate small fw-normal"
-                        aria-hidden="true"
-                        style={{ fontSize: "10px", maxWidth: "100%" }}
-                      >
-                        {dayHolidays[0].title}
-                      </span>
-                    )}
-                    {closed && compact && (
-                      <span
-                        className="d-block rounded-circle bg-danger mx-auto"
-                        aria-hidden="true"
-                        style={{ width: 4, height: 4 }}
-                      ></span>
+                    {/* A DOT, NOT THE TITLE — in both sizes.
+                        The roomy view used to print the holiday's name under
+                        the number, but a day cell is ~47px wide and a title is
+                        not, so every one of them rendered as "CLAU…" or
+                        "Ganes…". A truncated name is worse than no name: it
+                        occupies the space, draws the eye, and resolves to
+                        nothing. The full titles are listed beside the grid,
+                        which is where there is room to read them. */}
+                    {closed && (
+                      <span className="hc-dot" aria-hidden="true"></span>
                     )}
                   </>
                 );
@@ -212,8 +212,7 @@ const HolidayCalendar = ({
                         title={label}
                         aria-current={isToday ? "date" : undefined}
                         onClick={() => onSelectDay(cell, dayHolidays)}
-                        className={`btn btn-sm w-100 d-flex flex-column justify-content-center align-items-center p-1 rounded ${stateClass} ${todayClass}`}
-                        style={{ height: cellHeight, overflow: "hidden" }}
+                        className={dayClass}
                       >
                         {inner}
                       </button>
@@ -233,8 +232,7 @@ const HolidayCalendar = ({
                       <span
                         title={label}
                         aria-current={isToday ? "date" : undefined}
-                        className={`d-flex flex-column justify-content-center align-items-center p-1 rounded ${stateClass} ${todayClass}`}
-                        style={{ height: cellHeight, overflow: "hidden" }}
+                        className={dayClass}
                       >
                         {inner}
                         {closed && (
@@ -252,15 +250,19 @@ const HolidayCalendar = ({
         </tbody>
       </table>
 
-      <p className="text-muted small mb-0 mt-2">
-        <span
-          className="badge bg-danger-subtle text-danger me-1"
-          aria-hidden="true"
-        >
-          &nbsp;&nbsp;
+      {/* Two swatches that SHOW the two states, rather than a sentence
+          describing them. The old legend spent a line of prose explaining a
+          convention the reader can see in one glance at a coloured square. */}
+      <p className="hc-legend mb-0">
+        <span className="hc-legend__item">
+          <span className="hc-legend__swatch hc-legend__swatch--closed" aria-hidden="true"></span>
+          Closed
         </span>
-        Highlighted days are closures. Today is outlined.
-        {emptyHint ? ` ${emptyHint}` : ""}
+        <span className="hc-legend__item">
+          <span className="hc-legend__swatch hc-legend__swatch--today" aria-hidden="true"></span>
+          Today
+        </span>
+        {emptyHint ? <span className="hc-legend__item">{emptyHint}</span> : null}
       </p>
     </div>
   );

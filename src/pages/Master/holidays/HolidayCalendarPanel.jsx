@@ -31,7 +31,11 @@ const HolidayCalendarPanel = ({
   onSelectDay,
 }) => (
   <Row className="g-3">
-    <Col lg={7}>
+    {/* The grid is capped at a readable width in HolidayCalendar.css, so a
+        7/5 split left ~260px of dead air between the calendar and the list
+        beside it. `auto` takes only what the grid needs and hands the rest
+        to the closures, which are text and can use it. */}
+    <Col lg="auto">
       <HolidayCalendar
         cursor={cursor}
         holidaysByDay={holidaysByDay}
@@ -45,7 +49,7 @@ const HolidayCalendarPanel = ({
         }
       />
     </Col>
-    <Col lg={5}>
+    <Col lg>
       <h6 className="text-muted text-uppercase fs-12 mb-2">
         Closures this month
       </h6>

@@ -1,0 +1,250 @@
+/**
+ * Gym-closure calendar.
+ *
+ * A component-local stylesheet, following IconPicker.css — the existing
+ * precedent in this repo for styling that Bootstrap utilities cannot express.
+ * Everything here needs hover states, a cell size that two callers vary, and
+ * colour that has to survive the template's dark theme, none of which fit in a
+ * className string.
+ *
+ * COLOURS COME FROM VELZON'S OWN CSS VARIABLES (--vz-*), never from hex
+ * literals. The template ships a dark mode that swaps those variables; a
+ * hard-coded #f06548 would look right in light mode and then sit on a near
+ * black card unchanged. `color-mix` against --vz-body-bg is what keeps the
+ * closure tint readable in both, because it tints toward whatever the card
+ * actually is rather than toward an assumed white.
+ */
+
+.holiday-calendar {
+  /* The one knob the two callers turn. The Holiday Master screen gets roomy
+     cells; the dashboard widget passes `compact` and gets tighter ones. */
+  --hc-cell: 42px;
+  --hc-radius: 8px;
+  --hc-closed: var(--vz-danger);
+}
+
+.holiday-calendar--compact {
+  --hc-cell: 34px;
+  --hc-radius: 7px;
+}
+
+.holiday-calendar--compact .hc-dot {
+  width: 4px;
+  height: 4px;
+}
+
+/* ---------- month header ---------- */
+
+.hc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.hc-head__title {
+  flex: 1 1 auto;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+}
+
+/**
+ * The arrows were `btn btn-light`, which renders a filled grey block at each
+ * end of the title — two of the heaviest objects in a widget whose subject is
+ * a grid of numbers. Ghost buttons that only acquire a background on hover put
+ * the weight back on the month.
+ */
+.hc-nav {
+  border: 0;
+  background: transparent;
+  color: var(--vz-secondary-color);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.hc-nav:hover:not(:disabled) {
+  background: var(--vz-light);
+  color: var(--vz-body-color);
+}
+
+.hc-nav:disabled {
+  opacity: 0.4;
+}
+
+/* ---------- the grid ---------- */
+
+/**
+ * A month is 7 columns of NUMBERS, and numbers do not benefit from being
+ * spread across whatever width the card happens to have. Stretched to a
+ * half-width dashboard column each cell became an 85px-wide, 34px-tall
+ * rectangle with a single digit adrift in the middle of it — technically a
+ * calendar, visually a spreadsheet.
+ *
+ * Capping the grid keeps the cells near-square, which is the shape a date
+ * wants to be, and leaves the freed space to the column beside it rather than
+ * padding it out here.
+ */
+.holiday-calendar-grid {
+  table-layout: fixed;
+  width: 100%;
+  max-width: 330px;
+}
+
+.holiday-calendar--compact .holiday-calendar-grid {
+  max-width: 300px;
+}
+
+/* The header and legend align to the grid, not to the column. */
+.hc-head,
+.hc-legend {
+  max-width: 330px;
+}
+
+.holiday-calendar--compact .hc-head,
+.holiday-calendar--compact .hc-legend {
+  max-width: 300px;
+}
+
+/**
+ * The weekday row used to be `text-muted small` inside a default <thead>,
+ * which the template gives a filled background — a solid grey band across the
+ * top of the card, visually louder than the days themselves. These are labels,
+ * not data.
+ */
+.holiday-calendar-grid thead th {
+  background: transparent;
+  border: 0;
+  padding: 0 0 0.4rem;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vz-secondary-color);
+  text-align: center;
+}
+
+.holiday-calendar-grid td {
+  padding: 2px !important;
+  border: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ---------- one day ---------- */
+
+.hc-day {
+  height: var(--hc-cell);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: var(--hc-radius);
+  background: transparent;
+  color: var(--vz-body-color);
+  /* Tabular figures so the columns of numbers line up rather than wobbling
+     between a "1" and a "0" — the whole point of a calendar is the columns. */
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  line-height: 1;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+button.hc-day {
+  cursor: pointer;
+}
+
+button.hc-day:hover {
+  background: var(--vz-light);
+}
+
+button.hc-day:focus-visible {
+  outline: 2px solid var(--vz-primary);
+  outline-offset: 1px;
+}
+
+/**
+ * A closure. Tinted toward the card's own background rather than filled with
+ * flat red, so a month with several closures reads as a calendar with marks on
+ * it and not as a warning panel.
+ */
+.hc-day--closed {
+  background: color-mix(in srgb, var(--hc-closed) 14%, var(--vz-body-bg));
+  color: var(--hc-closed);
+  font-weight: 600;
+}
+
+button.hc-day--closed:hover {
+  background: color-mix(in srgb, var(--hc-closed) 24%, var(--vz-body-bg));
+}
+
+/**
+ * Today. A ring, never a fill — today and closed can land on the same square,
+ * and two backgrounds cannot both win. The ring sits outside the tint so the
+ * square reads as "today, and we are shut".
+ */
+.hc-day--today {
+  border-color: var(--vz-primary);
+  font-weight: 700;
+}
+
+.hc-day--today:not(.hc-day--closed) {
+  color: var(--vz-primary);
+}
+
+.hc-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+/* .hc-name is gone with the in-cell titles — see HolidayCalendar.jsx.
+   A dot marks the day; the names are listed beside the grid. */
+
+/* ---------- legend ---------- */
+
+.hc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  margin-top: 0.6rem;
+  font-size: 11px;
+  color: var(--vz-secondary-color);
+}
+
+.hc-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hc-legend__swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+
+.hc-legend__swatch--closed {
+  background: color-mix(in srgb, var(--hc-closed) 20%, var(--vz-body-bg));
+}
+
+.hc-legend__swatch--today {
+  border: 1.5px solid var(--vz-primary);
+}
