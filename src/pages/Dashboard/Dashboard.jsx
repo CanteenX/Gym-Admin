@@ -15,6 +15,7 @@ import TableSkeleton from "@/Components/Common/TableSkeleton";
 import { AuthContext } from "../../context/AuthContext";
 import { getMemberDashboardStats } from "../../api/members.api";
 import HolidayWidget from "./HolidayWidget";
+import LiveBranchScansWidget from "./LiveBranchScansWidget";
 
 const currency = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
@@ -349,6 +350,13 @@ const Dashboard = () => {
                   sub={`${counts.expired ?? 0} memberships expired`}
                   color="success"
                 />
+              </Col>
+            </Row>
+
+            {/* Live Branch Check-Ins / QR Scans Monitor */}
+            <Row className="g-3 mb-3">
+              <Col xs={12}>
+                <LiveBranchScansWidget branch={adminData?.branch || ""} />
               </Col>
             </Row>
 

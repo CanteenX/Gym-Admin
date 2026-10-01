@@ -117,6 +117,7 @@ const InGymNowPanel = ({ data, loading }) => {
                           prevent. */}
                       <th scope="col">Who</th>
                       <th scope="col">Branch</th>
+                      <th scope="col">Membership Expiry</th>
                       <th scope="col">Checked in</th>
                       <th scope="col" className="text-end">
                         Elapsed
@@ -128,27 +129,76 @@ const InGymNowPanel = ({ data, loading }) => {
                       const isTrainer =
                         s.subjectType === "TRAINER" || Boolean(s.trainer);
                       const person = isTrainer ? s.trainer : s.member;
+                      const memberData = !isTrainer ? s.member : null;
+                      const isExpiringSoon = Boolean(memberData?.isExpiringSoon);
+                      const isExpired = Boolean(memberData?.isExpired);
+                      const daysLeft = memberData?.daysUntilExpiry;
+
+                      // Red highlight for expiring within 7 days or expired
+                      const rowClass = isExpired || isExpiringSoon
+                        ? "table-danger"
+                        : "";
+
                       return (
-                        <tr key={s._id}>
+                        <tr key={s._id} className={rowClass}>
                           <th scope="row" className="fw-medium">
-                            {person?.fullName ||
-                              (isTrainer ? "Unknown trainer" : "Unknown member")}
-                            <Badge
-                              color={isTrainer ? "info" : "light"}
-                              className={`ms-2 align-middle${
-                                isTrainer ? "" : " text-body"
-                              }`}
-                              pill
-                            >
-                              {isTrainer ? "Trainer" : "Member"}
-                            </Badge>
-                            {person?.mobileNumber ? (
-                              <div className="text-muted fw-normal small">
-                                {person.mobileNumber}
+                            <div className="d-flex align-items-center">
+                              {s.source === "QR" ? (
+                                <span title="Checked in via Branch QR scan">
+                                  <i className="ri-qr-code-line text-primary me-1 fs-5 align-middle" />
+                                </span>
+                              ) : null}
+                              <div>
+                                {person?.fullName ||
+                                  (isTrainer ? "Unknown trainer" : "Unknown member")}
+                                <Badge
+                                  color={isTrainer ? "info" : "light"}
+                                  className={`ms-2 align-middle${
+                                    isTrainer ? "" : " text-body"
+                                  }`}
+                                  pill
+                                >
+                                  {isTrainer ? "Trainer" : "Member"}
+                                </Badge>
+                                {person?.mobileNumber ? (
+                                  <div className="text-muted fw-normal small">
+                                    <a href={`tel:${person.mobileNumber}`} className="text-reset">
+                                      {person.mobileNumber}
+                                    </a>
+                                  </div>
+                                ) : null}
                               </div>
-                            ) : null}
+                            </div>
                           </th>
                           <td>{s.branch}</td>
+                          <td>
+                            {isTrainer ? (
+                              <span className="text-muted small">Staff shift</span>
+                            ) : daysLeft !== null && daysLeft !== undefined ? (
+                              isExpired ? (
+                                <Badge color="danger" className="text-uppercase fw-bold">
+                                  <i className="ri-alarm-warning-line me-1" />
+                                  Expired ({Math.abs(daysLeft)}d ago)
+                                </Badge>
+                              ) : daysLeft === 0 ? (
+                                <Badge color="danger" className="text-uppercase fw-bold">
+                                  <i className="ri-error-warning-line me-1" />
+                                  Expires Today
+                                </Badge>
+                              ) : isExpiringSoon ? (
+                                <Badge color="danger" className="fw-bold">
+                                  <i className="ri-alarm-warning-line me-1" />
+                                  Expires in {daysLeft} {daysLeft === 1 ? "day" : "days"}
+                                </Badge>
+                              ) : (
+                                <Badge color="success" pill>
+                                  Active ({daysLeft}d left)
+                                </Badge>
+                              )
+                            ) : (
+                              <span className="text-muted small">—</span>
+                            )}
+                          </td>
                           <td>{formatTime(s.checkInAt)}</td>
                           <td className="text-end">
                             {minutesLabel(s.minutesSoFar)}
