@@ -132,9 +132,10 @@ const CmsBanners = lazy(() =>
 const AttendanceOverview = lazy(() => import("../pages/Insights/AttendanceOverview"));
 const Reports = lazy(() => import("../pages/Insights/Reports"));
 const AuditLog = lazy(() => import("../pages/Insights/AuditLog"));
-
+const NotificationCentre = lazy(() => import("../pages/Notifications/NotificationCentre"));
 
 const authProtectedRoutes = [
+    { path: "/notification-centre", component: <NotificationCentre /> },
     { path: "/profile", component: <UserProfile /> },
     { path: "/company-details", component: <CompanyDetails /> },
     { path: "/department", component: <Department /> },

@@ -464,6 +464,15 @@ export const ENDPOINTS = {
         FILTERS: `${V1}/audit-logs-filters`,
         BY_ID: (id) => `${V1}/audit-logs/${id}`,
     },
+
+    // Notification Centre (Staff broadcasts to PWA members)
+    NOTIFICATIONS: {
+        AUDIENCE_COUNTS: `${V1}/notifications/audience-counts`,
+        SEARCH_MEMBERS: `${V1}/notifications/search-members`,
+        SEND: `${V1}/notifications/send`,
+        HISTORY: `${V1}/notifications/history`,
+        VAPID_KEY: `${V1}/notifications/vapid-public-key`,
+    },
 };
 
 export default ENDPOINTS;

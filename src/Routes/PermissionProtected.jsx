@@ -15,7 +15,7 @@ import { MenuContext } from "../context/MenuContext";
  * do not flash a full-screen spinner (which looked like a page refresh).
  */
 
-const WHITELISTED_ROUTES = ["/dashboard", "/profile", "/"];
+const WHITELISTED_ROUTES = ["/dashboard", "/profile", "/notification-centre", "/"];
 
 const normalizeUrl = (url) => url.split("?")[0].replace(/\/+$/, "") || "/";
 

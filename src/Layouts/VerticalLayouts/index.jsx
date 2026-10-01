@@ -379,6 +379,35 @@ const VerticalLayout = (props) => {
                     }
                 });
             }
+
+            // Ensure Notification Centre is available as its own separate top-level menu
+            const hasNotificationCentre = clonedData.some(
+                (g) =>
+                    g.url === "/notification-centre" ||
+                    g.groupName === "Notification Centre" ||
+                    (g.menus && g.menus.some((m) => m.url === "/notification-centre"))
+            );
+            if (!hasNotificationCentre) {
+                const dashboardIndex = clonedData.findIndex(
+                    (g) =>
+                        g.url === "/dashboard" ||
+                        g.groupName?.toLowerCase() === "dashboard"
+                );
+                const notificationMenuItem = {
+                    groupId: "notification-centre-menu-id",
+                    groupName: "Notification Centre",
+                    url: "/notification-centre",
+                    icon: "ri-notification-3-line",
+                    isLink: true,
+                    menus: [],
+                };
+                if (dashboardIndex >= 0) {
+                    clonedData.splice(dashboardIndex + 1, 0, notificationMenuItem);
+                } else {
+                    clonedData.unshift(notificationMenuItem);
+                }
+            }
+
             return clonedData;
         };
 
