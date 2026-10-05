@@ -24,8 +24,7 @@ const ProfileDropdown = () => {
 
     const handleLogout = async () => {
         setAdminData(null);
-        await logout(); // This will call the server and clear localStorage
-        // Note: logout() already redirects to "/", so no need to navigate here
+        await logout(); // This will call the server, clear storage, and redirect to /admin
     };
 
     //Dropdown Toggle

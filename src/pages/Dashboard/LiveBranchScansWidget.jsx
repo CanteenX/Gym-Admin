@@ -10,6 +10,8 @@ import {
   Table,
 } from "reactstrap";
 import { getInGymNow } from "../../api/attendanceStaff.api";
+import { listBranches } from "../../api/branches.api";
+import config from "../../config";
 
 /** Format time into 12-hour AM/PM string. */
 const formatTime = (value) => {
@@ -135,11 +137,16 @@ const MembershipStatus = ({ memberData, isTrainer }) => {
  * Live Branch Check-In Scans Widget.
  *
  * Real-time monitor on the Admin Dashboard:
- * - Polls recent branch check-ins every 10 seconds.
+ * - Direct WebSocket connection for instant zero-latency scan updates.
+ * - Server-Sent Events (SSE) & polling fallback.
  * - Flashes new rows when a member scans the branch QR.
  * - Highlights memberships expiring within 7 days (or already expired).
  */
 const LiveBranchScansWidget = ({ branch = "" }) => {
+  const initialBranch =
+    branch === "All Branches" || !branch ? "" : branch;
+  const [selectedBranch, setSelectedBranch] = useState(initialBranch);
+  const [branchesList, setBranchesList] = useState([]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -147,10 +154,235 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
   const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
   const [tick, setTick] = useState(0);
   const [flashIds, setFlashIds] = useState(() => new Set());
+  const [wsConnected, setWsConnected] = useState(false);
+
   const inFlightRef = useRef(false);
   const knownIdsRef = useRef(new Set());
   const flashTimersRef = useRef(new Map());
   const hasSeededRef = useRef(false);
+  const wsRef = useRef(null);
+  const reconnectTimerRef = useRef(null);
+
+  // Sync prop changes if parent updates branch
+  useEffect(() => {
+    if (branch && branch !== "All Branches") {
+      setSelectedBranch(branch);
+    }
+  }, [branch]);
+
+  // Load available branches for selector
+  useEffect(() => {
+    let unmounted = false;
+    listBranches(true)
+      .then((res) => {
+        if (!unmounted && res.data?.isOk) {
+          setBranchesList(res.data.data || []);
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load branches for live widget:", err);
+      });
+    return () => {
+      unmounted = true;
+    };
+  }, []);
+
+  const triggerRowFlash = useCallback((id) => {
+    if (!id) return;
+    setFlashIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+
+    const existing = flashTimersRef.current.get(id);
+    if (existing) clearTimeout(existing);
+    const timer = setTimeout(() => {
+      setFlashIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      flashTimersRef.current.delete(id);
+    }, 3200);
+    flashTimersRef.current.set(id, timer);
+  }, []);
+
+  const handleIncomingLiveScan = useCallback(
+    (newSession, newDenial) => {
+      if (newSession) {
+        const branchMatches =
+          !selectedBranch ||
+          selectedBranch === "All Branches" ||
+          newSession.branch === selectedBranch;
+
+        if (branchMatches) {
+          setData((prev) => {
+            const currentSessions = prev?.sessions || [];
+            // Remove existing session if present so newest re-scan is placed at top
+            const remaining = currentSessions.filter(
+              (s) => s._id !== newSession._id,
+            );
+            const updated = [newSession, ...remaining];
+            return {
+              ...(prev || {}),
+              inGymNow: updated.length,
+              sessions: updated,
+            };
+          });
+
+          setLastUpdatedAt(Date.now());
+          triggerRowFlash(newSession._id);
+        }
+      }
+
+      if (newDenial) {
+        const branchMatches =
+          !selectedBranch ||
+          selectedBranch === "All Branches" ||
+          newDenial.branch === selectedBranch;
+
+        if (branchMatches) {
+          setData((prev) => {
+            const currentDenials = prev?.denials || [];
+            const remaining = currentDenials.filter(
+              (d) => d._id !== newDenial._id,
+            );
+            return {
+              ...(prev || {}),
+              denials: [newDenial, ...remaining],
+            };
+          });
+        }
+      }
+    },
+    [selectedBranch, triggerRowFlash],
+  );
+
+  // WebSocket Connection
+  useEffect(() => {
+    let isCancelled = false;
+
+    const connectWs = () => {
+      if (isCancelled) return;
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) return;
+
+      try {
+        const base = config.api.API_URL;
+        let wsUrl = "";
+        if (!base) {
+          const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+          wsUrl = `${proto}//${window.location.host}/ws/attendance-live`;
+        } else {
+          const wsProto = base.startsWith("https") ? "wss:" : "ws:";
+          const host = base.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+          wsUrl = `${wsProto}//${host}/ws/attendance-live`;
+        }
+
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+
+        ws.onopen = () => {
+          if (!isCancelled) {
+            setWsConnected(true);
+            if (selectedBranch) {
+              ws.send(
+                JSON.stringify({ type: "FILTER", branch: selectedBranch }),
+              );
+            }
+          }
+        };
+
+        ws.onmessage = (event) => {
+          if (isCancelled) return;
+          try {
+            const payload = JSON.parse(event.data);
+            if (payload.type === "CHECK_IN") {
+              handleIncomingLiveScan(payload.session, payload.denial);
+            }
+          } catch {
+            /* ignore malformed frames */
+          }
+        };
+
+        ws.onclose = () => {
+          if (!isCancelled) {
+            setWsConnected(false);
+            wsRef.current = null;
+            if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+            reconnectTimerRef.current = setTimeout(connectWs, 3500);
+          }
+        };
+
+        ws.onerror = () => {
+          if (!isCancelled) {
+            setWsConnected(false);
+            try {
+              ws.close();
+            } catch {
+              /* ignore */
+            }
+          }
+        };
+      } catch (err) {
+        console.warn("WebSocket init error:", err);
+        if (!isCancelled) {
+          setWsConnected(false);
+          if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+          reconnectTimerRef.current = setTimeout(connectWs, 5000);
+        }
+      }
+    };
+
+    connectWs();
+
+    return () => {
+      isCancelled = true;
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+      if (wsRef.current) {
+        try {
+          wsRef.current.close();
+        } catch {
+          /* ignore */
+        }
+        wsRef.current = null;
+      }
+    };
+  }, [selectedBranch, handleIncomingLiveScan]);
+
+  // Server-Sent Events (SSE) Fallback
+  useEffect(() => {
+    if (typeof EventSource === "undefined") return;
+    const base = config.api.API_URL || "";
+    const sseUrl = `${base}/api/v1/attendance/live-stream`;
+    let sse;
+
+    try {
+      sse = new EventSource(sseUrl);
+      sse.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === "CHECK_IN") {
+            handleIncomingLiveScan(payload.session, payload.denial);
+          }
+        } catch {
+          /* ignore */
+        }
+      };
+    } catch {
+      /* ignore */
+    }
+
+    return () => {
+      if (sse) {
+        try {
+          sse.close();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+  }, [handleIncomingLiveScan]);
 
   const fetchLiveScans = useCallback(
     async (showSpinner = false) => {
@@ -159,10 +391,16 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
       if (showSpinner) setIsRefreshing(true);
 
       try {
+        const branchParam =
+          selectedBranch && selectedBranch !== "All Branches"
+            ? selectedBranch
+            : undefined;
+
         const res = await getInGymNow({
-          branch: branch || undefined,
+          branch: branchParam,
           subjectType: "ALL",
         });
+
         if (res.data?.isOk) {
           const next = res.data.data;
           const sessions = next?.sessions || [];
@@ -178,25 +416,7 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
             });
 
             if (newcomers.length > 0) {
-              setFlashIds((prev) => {
-                const merged = new Set(prev);
-                newcomers.forEach((id) => merged.add(id));
-                return merged;
-              });
-
-              newcomers.forEach((id) => {
-                const existing = flashTimersRef.current.get(id);
-                if (existing) clearTimeout(existing);
-                const timer = setTimeout(() => {
-                  setFlashIds((prev) => {
-                    const nextSet = new Set(prev);
-                    nextSet.delete(id);
-                    return nextSet;
-                  });
-                  flashTimersRef.current.delete(id);
-                }, 2800);
-                flashTimersRef.current.set(id, timer);
-              });
+              newcomers.forEach((id) => triggerRowFlash(id));
             }
 
             knownIdsRef.current = nextIds;
@@ -217,12 +437,10 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
         inFlightRef.current = false;
       }
     },
-    [branch],
+    [selectedBranch, triggerRowFlash],
   );
 
   useEffect(() => {
-    // Re-seed flash tracking whenever the branch filter changes so the first
-    // response for the new scope is not treated as a burst of "New" rows.
     hasSeededRef.current = false;
     knownIdsRef.current = new Set();
     flashTimersRef.current.forEach((t) => clearTimeout(t));
@@ -232,13 +450,13 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
     fetchLiveScans(true);
     const timer = setInterval(() => {
       fetchLiveScans(false);
-    }, 10000);
+    }, 12000);
     return () => clearInterval(timer);
   }, [fetchLiveScans]);
 
-  // Keep the "Updated Xs ago" label fresh without refetching.
+  // Keep the "Updated Xs ago" label fresh
   useEffect(() => {
-    const timer = setInterval(() => setTick((n) => n + 1), 5000);
+    const timer = setInterval(() => setTick((n) => n + 1), 4000);
     return () => clearInterval(timer);
   }, []);
 
@@ -257,19 +475,16 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
     (s) => s.member && (s.member.isExpiringSoon || s.member.isExpired),
   ).length;
 
-  // tick is only used to re-render the relative time label
-  void tick;
-
   return (
-    <Card className="card-height-100 live-scans-card">
+    <Card className="h-100 mb-0 shadow-sm border-0">
       <style>{`
         @keyframes liveScanPulse {
-          0% { box-shadow: 0 0 0 0 rgba(10, 179, 156, 0.45); }
+          0% { box-shadow: 0 0 0 0 rgba(10, 179, 156, 0.5); }
           70% { box-shadow: 0 0 0 8px rgba(10, 179, 156, 0); }
           100% { box-shadow: 0 0 0 0 rgba(10, 179, 156, 0); }
         }
         @keyframes liveScanRowFlash {
-          0% { background-color: rgba(10, 179, 156, 0.22); }
+          0% { background-color: rgba(10, 179, 156, 0.28); }
           100% { background-color: transparent; }
         }
         .live-scans-dot {
@@ -281,7 +496,7 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
           animation: liveScanPulse 2s ease-out infinite;
         }
         .live-scans-row-flash > td {
-          animation: liveScanRowFlash 2.6s ease-out;
+          animation: liveScanRowFlash 2.8s ease-out;
         }
         @media (prefers-reduced-motion: reduce) {
           .live-scans-dot,
@@ -299,6 +514,27 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
               <Badge color="success" pill className="fs-12">
                 {inGymCount} checked in
               </Badge>
+              <Badge
+                color={wsConnected ? "success-subtle" : "warning-subtle"}
+                className={`border fs-11 px-2 py-0.5 ${
+                  wsConnected
+                    ? "text-success border-success-subtle"
+                    : "text-warning border-warning-subtle"
+                }`}
+                pill
+                title={
+                  wsConnected
+                    ? "Realtime WebSocket active: scans appear immediately"
+                    : "Reconnecting to live WebSocket (polling active)"
+                }
+              >
+                <i
+                  className={`ri-${
+                    wsConnected ? "broadcast-line" : "time-line"
+                  } me-1 align-middle`}
+                />
+                {wsConnected ? "Realtime Live" : "Polling"}
+              </Badge>
             </div>
             <small className="text-muted">
               Branch QR scans update live
@@ -306,13 +542,33 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
             </small>
           </div>
         </div>
-        <div className="d-flex align-items-center gap-2">
+
+        <div className="d-flex align-items-center gap-2 flex-wrap">
+          {/* Branch filter switcher */}
+          {branchesList.length > 0 && (
+            <select
+              className="form-select form-select-sm"
+              style={{ width: "135px", fontSize: "12px", height: "30px" }}
+              value={selectedBranch}
+              onChange={(e) => setSelectedBranch(e.target.value)}
+              aria-label="Filter branch"
+            >
+              <option value="">All Branches</option>
+              {branchesList.map((b) => (
+                <option key={b._id} value={b.name}>
+                  {b.displayName || b.name}
+                </option>
+              ))}
+            </select>
+          )}
+
           {expiringCount > 0 ? (
             <Badge color="danger" pill className="px-2 py-1 fs-12">
               <i className="ri-error-warning-line me-1" />
               {expiringCount} need renewal
             </Badge>
           ) : null}
+
           <Link
             to="/attendance-overview"
             className="btn btn-sm btn-soft-secondary"
@@ -335,6 +591,7 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
           </Button>
         </div>
       </CardHeader>
+
       <CardBody className="pt-0">
         {error ? (
           <div className="alert alert-warning py-2 small mb-3" role="alert">
@@ -482,17 +739,15 @@ const LiveBranchScansWidget = ({ branch = "" }) => {
                                 </Badge>
                               ) : null}
                             </div>
-                            {person?.mobileNumber ? (
-                              <div className="text-muted small">
-                                {person.mobileNumber}
-                              </div>
-                            ) : null}
+                            <div className="text-muted small">
+                              {person?.mobileNumber || "-"}
+                            </div>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <span className="badge bg-light text-body border">
-                          {s.branch}
+                        <span className="badge bg-light text-dark border">
+                          {s.branch || "-"}
                         </span>
                       </td>
                       <td>

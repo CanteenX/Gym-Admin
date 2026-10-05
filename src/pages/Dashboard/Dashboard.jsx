@@ -356,7 +356,13 @@ const Dashboard = () => {
             {/* Live Branch Check-Ins / QR Scans Monitor */}
             <Row className="g-3 mb-3">
               <Col xs={12}>
-                <LiveBranchScansWidget branch={adminData?.branch || ""} />
+                <LiveBranchScansWidget
+                  branch={
+                    adminData?.isSuperAdmin || adminData?.branch === "All Branches"
+                      ? ""
+                      : adminData?.branch || ""
+                  }
+                />
               </Col>
             </Row>
 

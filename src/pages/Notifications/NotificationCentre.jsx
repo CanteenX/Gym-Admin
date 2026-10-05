@@ -49,11 +49,11 @@ export default function NotificationCentre() {
   });
   const [loadingCounts, setLoadingCounts] = useState(false);
 
-  // Specific user search state
+  // Specific user search & multi-select state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchingMembers, setSearchingMembers] = useState(false);
-  const [selectedMember, setSelectedMember] = useState(null);
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
   // Compose form fields
   const [title, setTitle] = useState("");
@@ -115,33 +115,68 @@ export default function NotificationCentre() {
     loadHistory(1);
   }, [loadCounts, loadHistory]);
 
-  // Search members with debounce
-  useEffect(() => {
-    if (activeTab !== "SPECIFIC" || !searchQuery.trim()) {
+  // Fetch members list (all latest or filtered by search query)
+  const fetchMemberList = useCallback(async (q = "") => {
+    setSearchingMembers(true);
+    try {
+      const res = await searchMembersForNotification(q.trim());
+      const members = Array.isArray(res?.data?.data)
+        ? res.data.data
+        : Array.isArray(res?.data)
+        ? res.data
+        : [];
+      setSearchResults(members);
+    } catch (err) {
+      console.error("Member search error:", err);
       setSearchResults([]);
-      return;
+    } finally {
+      setSearchingMembers(false);
     }
+  }, []);
 
-    const timer = setTimeout(async () => {
-      setSearchingMembers(true);
-      try {
-        const res = await searchMembersForNotification(searchQuery.trim());
-        const members = Array.isArray(res?.data?.data)
-          ? res.data.data
-          : Array.isArray(res?.data)
-          ? res.data
-          : [];
-        setSearchResults(members);
-      } catch (err) {
-        console.error("Member search error:", err);
-        setSearchResults([]);
-      } finally {
-        setSearchingMembers(false);
-      }
-    }, 280);
+  // When activeTab switches to SPECIFIC, load member list immediately
+  useEffect(() => {
+    if (activeTab === "SPECIFIC") {
+      fetchMemberList(searchQuery);
+    }
+  }, [activeTab, fetchMemberList]);
 
+  // Debounced search when searchQuery changes
+  useEffect(() => {
+    if (activeTab !== "SPECIFIC") return;
+    const timer = setTimeout(() => {
+      fetchMemberList(searchQuery);
+    }, 250);
     return () => clearTimeout(timer);
-  }, [searchQuery, activeTab]);
+  }, [searchQuery, activeTab, fetchMemberList]);
+
+  // Member multi-select toggle helpers
+  const toggleMemberSelection = (member) => {
+    setSelectedMembers((prev) => {
+      const exists = prev.some((m) => m._id === member._id);
+      if (exists) {
+        return prev.filter((m) => m._id !== member._id);
+      } else {
+        return [...prev, member];
+      }
+    });
+  };
+
+  const removeMember = (memberId) => {
+    setSelectedMembers((prev) => prev.filter((m) => m._id !== memberId));
+  };
+
+  const selectAllVisible = () => {
+    setSelectedMembers((prev) => {
+      const prevIds = new Set(prev.map((m) => m._id));
+      const newlyAdded = searchResults.filter((m) => !prevIds.has(m._id));
+      return [...prev, ...newlyAdded];
+    });
+  };
+
+  const clearAllSelected = () => {
+    setSelectedMembers([]);
+  };
 
   // Handle submit
   const handleSend = async (e) => {
@@ -155,8 +190,8 @@ export default function NotificationCentre() {
       toast.error("Please enter the message body.");
       return;
     }
-    if (activeTab === "SPECIFIC" && !selectedMember) {
-      toast.error("Please search and select a specific member.");
+    if (activeTab === "SPECIFIC" && selectedMembers.length === 0) {
+      toast.error("Please search and select at least one member to notify.");
       return;
     }
 
@@ -166,7 +201,8 @@ export default function NotificationCentre() {
         title: title.trim(),
         body: body.trim(),
         targetType: activeTab,
-        targetMemberId: activeTab === "SPECIFIC" ? selectedMember._id : null,
+        targetMemberIds: activeTab === "SPECIFIC" ? selectedMembers.map((m) => m._id) : [],
+        targetMemberId: activeTab === "SPECIFIC" && selectedMembers.length === 1 ? selectedMembers[0]._id : null,
         category,
         linkUrl: linkUrl.trim() || "/dashboard",
       };
@@ -180,7 +216,7 @@ export default function NotificationCentre() {
         setTitle("");
         setBody("");
         if (activeTab === "SPECIFIC") {
-          setSelectedMember(null);
+          setSelectedMembers([]);
           setSearchQuery("");
         }
         // Refresh counts and history
@@ -355,95 +391,244 @@ export default function NotificationCentre() {
 
                 {activeTab === "SPECIFIC" && (
                   <div className="mb-4 p-3 bg-light rounded-3 border">
-                    <Label className="fw-semibold">Search Member by Name, Mobile or ID</Label>
-                    {!selectedMember ? (
-                      <div className="position-relative">
-                        <Input
-                          type="text"
-                          placeholder="Type member name, phone number, or ID..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="form-control"
-                        />
-                        {searchingMembers && (
-                          <div className="position-absolute end-0 top-50 translate-middle-y me-3">
-                            <Spinner size="sm" />
-                          </div>
-                        )}
-
-                        {Array.isArray(searchResults) && searchResults.length > 0 && (
-                          <div
-                            className="position-absolute w-100 bg-white shadow-lg rounded-3 border mt-1 z-3"
-                            style={{ maxHeight: "240px", overflowY: "auto" }}
+                    {/* Header with Title and Quick Actions */}
+                    <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                      <div>
+                        <div className="d-flex align-items-center gap-2">
+                          <h6 className="fw-bold mb-0 fs-14 text-dark">Search &amp; Select Specific Members</h6>
+                          <Badge color="light" className="text-muted border fs-11 fw-normal">
+                            Multi-select
+                          </Badge>
+                        </div>
+                        <p className="text-muted mb-0 fs-12 mt-1">
+                          Choose one or more members below to receive this direct notification.
+                        </p>
+                      </div>
+                      <div className="d-flex align-items-center gap-2">
+                        {searchResults.length > 0 && (
+                          <Button
+                            type="button"
+                            color="primary"
+                            outline
+                            size="sm"
+                            className="py-1.5 px-3 fs-12 fw-medium d-inline-flex align-items-center gap-1.5 rounded-2 shadow-sm"
+                            onClick={selectAllVisible}
                           >
-                            {searchResults.map((m) => (
-                              <div
-                                key={m._id}
-                                className="p-2.5 border-bottom d-flex align-items-center justify-content-between hover-bg"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  setSelectedMember(m);
-                                  setSearchResults([]);
-                                  setSearchQuery("");
-                                }}
-                              >
-                                <div>
-                                  <div className="fw-bold fs-13 text-dark">{m.fullName}</div>
-                                  <div className="text-muted fs-12">
-                                    {m.mobileNumber} · {m.planCode || "Standard"}
-                                  </div>
-                                </div>
-                                <div>
-                                  {m.hasPush ? (
-                                    <Badge color="success-subtle" className="text-success">
-                                      <i className="ri-smartphone-line me-1" /> PWA Active
-                                    </Badge>
-                                  ) : (
-                                    <Badge color="secondary-subtle" className="text-muted">
-                                      Portal Only
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                            <i className="ri-check-double-line fs-14" />
+                            Select All Visible ({searchResults.length})
+                          </Button>
+                        )}
+                        {selectedMembers.length > 0 && (
+                          <Button
+                            type="button"
+                            color="danger"
+                            outline
+                            size="sm"
+                            className="py-1.5 px-3 fs-12 fw-medium d-inline-flex align-items-center gap-1.5 rounded-2"
+                            onClick={clearAllSelected}
+                          >
+                            <i className="ri-close-circle-line fs-14" />
+                            Clear Selection ({selectedMembers.length})
+                          </Button>
                         )}
                       </div>
-                    ) : (
-                      <div className="d-flex align-items-center justify-content-between bg-white p-3 rounded border">
-                        <div className="d-flex align-items-center gap-3">
-                          <div className="avatar-xs">
-                            <span className="avatar-title rounded-circle bg-primary text-white fw-bold">
-                              {selectedMember.fullName?.charAt(0)}
-                            </span>
-                          </div>
-                          <div>
-                            <h6 className="mb-0 fw-bold">{selectedMember.fullName}</h6>
-                            <span className="text-muted fs-12">
-                              {selectedMember.mobileNumber} · Plan: {selectedMember.planCode}
-                            </span>
-                          </div>
+                    </div>
+
+                    {/* Search Input with Left Search Icon and Clear Button */}
+                    <div className="position-relative mb-3">
+                      <i
+                        className="ri-search-2-line position-absolute start-0 top-50 translate-middle-y ms-3 text-muted fs-16"
+                        style={{ pointerEvents: "none" }}
+                      />
+                      <Input
+                        type="text"
+                        placeholder="Search by member name, phone number, or ID..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="form-control bg-white shadow-sm border-light-subtle"
+                        style={{
+                          paddingLeft: "2.5rem",
+                          paddingRight: "2.5rem",
+                          height: "44px",
+                          fontSize: "0.875rem",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      {searchingMembers ? (
+                        <div className="position-absolute end-0 top-50 translate-middle-y me-3">
+                          <Spinner size="sm" color="primary" />
                         </div>
-                        <div className="d-flex align-items-center gap-2">
-                          {selectedMember.hasPush ? (
-                            <Badge color="success" className="me-2">
-                              Push Enabled
-                            </Badge>
-                          ) : (
-                            <Badge color="warning" className="me-2">
-                              No Push Device Yet
-                            </Badge>
-                          )}
-                          <Button
-                            color="light"
-                            size="sm"
-                            onClick={() => setSelectedMember(null)}
-                          >
-                            Change
-                          </Button>
+                      ) : searchQuery ? (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link text-muted position-absolute end-0 top-50 translate-middle-y me-2 p-1 text-decoration-none"
+                          onClick={() => setSearchQuery("")}
+                          title="Clear search"
+                        >
+                          <i className="ri-close-line fs-18" />
+                        </button>
+                      ) : null}
+                    </div>
+
+                    {/* Selected Members Chips Bar */}
+                    {selectedMembers.length > 0 && (
+                      <div className="mb-3 p-3 bg-white rounded-3 border shadow-sm">
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="badge bg-primary text-white rounded-pill px-2.5 py-1 fs-11 fw-semibold">
+                              {selectedMembers.length}
+                            </span>
+                            <span className="fs-12 fw-semibold text-dark">
+                              Selected {selectedMembers.length === 1 ? "Recipient" : "Recipients"}
+                            </span>
+                          </div>
+                          <span className="fs-11 text-muted">
+                            Click <span className="text-danger fw-bold">✕</span> to deselect
+                          </span>
+                        </div>
+                        <div
+                          className="d-flex flex-wrap gap-1.5"
+                          style={{ maxHeight: "96px", overflowY: "auto" }}
+                        >
+                          {selectedMembers.map((m) => (
+                            <span
+                              key={m._id}
+                              className="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 fw-medium"
+                            >
+                              <span>{m.fullName}</span>
+                              <span
+                                role="button"
+                                tabIndex={0}
+                                className="text-primary hover-text-danger d-inline-flex align-items-center"
+                                style={{ cursor: "pointer", fontSize: "14px", lineHeight: 1 }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeMember(m._id);
+                                }}
+                                title={`Remove ${m.fullName}`}
+                              >
+                                &times;
+                              </span>
+                            </span>
+                          ))}
                         </div>
                       </div>
                     )}
+
+                    {/* Visible Members List Box */}
+                    <div className="bg-white rounded-3 border shadow-sm overflow-hidden">
+                      {/* Subtle Header */}
+                      <div className="px-3 py-2 bg-light border-bottom d-flex align-items-center justify-content-between text-muted fs-11 fw-semibold text-uppercase">
+                        <span>Member Name &amp; Details</span>
+                        <span style={{ paddingRight: "16px" }}>App Channel</span>
+                      </div>
+
+                      {/* Scrollable Items Container */}
+                      <div
+                        style={{
+                          maxHeight: "280px",
+                          overflowY: "auto",
+                          scrollbarWidth: "thin",
+                        }}
+                      >
+                        {searchingMembers && (!searchResults || searchResults.length === 0) ? (
+                          <div className="text-center py-5 text-muted fs-13">
+                            <Spinner size="sm" color="primary" className="me-2" /> Loading members list...
+                          </div>
+                        ) : !Array.isArray(searchResults) || searchResults.length === 0 ? (
+                          <div className="text-center py-5 text-muted fs-13">
+                            <i className="ri-user-unfollow-line fs-24 d-block mb-1 text-secondary opacity-50" />
+                            No members found matching &quot;{searchQuery}&quot;.
+                          </div>
+                        ) : (
+                          searchResults.map((m) => {
+                            const isSelected = selectedMembers.some((sm) => sm._id === m._id);
+                            return (
+                              <div
+                                key={m._id}
+                                className={`px-3 py-2.5 border-bottom d-flex align-items-center justify-content-between ${
+                                  isSelected ? "bg-primary-subtle" : ""
+                                }`}
+                                style={{
+                                  cursor: "pointer",
+                                  transition: "background-color 0.15s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!isSelected) e.currentTarget.style.backgroundColor = "#f8f9fa";
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (!isSelected) e.currentTarget.style.backgroundColor = "transparent";
+                                }}
+                                onClick={() => toggleMemberSelection(m)}
+                              >
+                                {/* Left Side: Checkbox, Avatar, Name & Details */}
+                                <div className="d-flex align-items-center gap-3">
+                                  <input
+                                    type="checkbox"
+                                    className="form-check-input mt-0 flex-shrink-0"
+                                    checked={isSelected}
+                                    onChange={() => {}} // handled by row onClick
+                                    style={{
+                                      width: "18px",
+                                      height: "18px",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                  <div
+                                    className="avatar-xs flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle"
+                                    style={{
+                                      width: "36px",
+                                      height: "36px",
+                                      backgroundColor: isSelected
+                                        ? "var(--vz-primary, #405189)"
+                                        : "#e9ebec",
+                                      color: isSelected ? "#fff" : "#495057",
+                                      fontWeight: "600",
+                                      fontSize: "13px",
+                                    }}
+                                  >
+                                    {m.fullName?.charAt(0)?.toUpperCase() || "M"}
+                                  </div>
+                                  <div>
+                                    <div
+                                      className={`fw-semibold fs-13 ${
+                                        isSelected ? "text-primary" : "text-dark"
+                                      }`}
+                                    >
+                                      {m.fullName}
+                                    </div>
+                                    <div className="text-muted fs-11 d-flex flex-wrap align-items-center gap-1.5 mt-0.5">
+                                      <span>{m.mobileNumber}</span>
+                                      <span>•</span>
+                                      <span className="badge bg-light text-secondary border px-1.5 py-0.5 fs-10">
+                                        {m.planCode || "Standard"}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Right Side: Status Badges with Safe Spacing from Scrollbar */}
+                                <div className="d-flex align-items-center gap-1.5" style={{ paddingRight: "14px" }}>
+                                  {m.allowNotifications === false ? (
+                                    <span className="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-2.5 py-1.5 fs-11 fw-medium">
+                                      <i className="ri-notification-off-line me-1 align-bottom" /> Muted
+                                    </span>
+                                  ) : m.hasPush ? (
+                                    <span className="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 fs-11 fw-medium">
+                                      <i className="ri-smartphone-line me-1 align-bottom" /> PWA Active
+                                    </span>
+                                  ) : (
+                                    <span className="badge rounded-pill bg-light text-muted border px-2.5 py-1.5 fs-11 fw-medium">
+                                      <i className="ri-computer-line me-1 align-bottom" /> Portal Only
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -631,7 +816,7 @@ export default function NotificationCentre() {
                 <div>
                   <h5 className="card-title mb-0 fw-bold">Broadcast & Dispatch History</h5>
                   <p className="text-muted mb-0 fs-12">
-                    Log of custom notifications sent from this console.
+                    Log of custom notifications sent from this console (auto-retained for 30 days).
                   </p>
                 </div>
                 <Button color="light" size="sm" onClick={() => loadHistory(page)}>
@@ -684,8 +869,11 @@ export default function NotificationCentre() {
                                 <Badge color="success">Paid Users</Badge>
                               )}
                               {item.targetType === "SPECIFIC" && (
-                                <Badge color="info">
-                                  User: {item.targetMemberName || "Specific"}
+                                <Badge color="info" className="text-wrap text-start" style={{ maxWidth: "220px", display: "inline-block" }}>
+                                  {item.totalTargeted > 1
+                                    ? `Users (${item.totalTargeted}): `
+                                    : "User: "}
+                                  {item.targetMemberName || "Specific"}
                                 </Badge>
                               )}
                             </td>

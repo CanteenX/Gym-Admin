@@ -101,7 +101,15 @@ export const logout = async () => {
     } finally {
         // Always clear local storage regardless of API result
         localStorage.removeItem("role");
-        globalThis.location.href = "/";
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("authUser");
+
+        const base = import.meta.env.BASE_URL?.replace(/\/+$/, "");
+        const adminPath = (base && base !== "/") 
+            ? base 
+            : (globalThis.location?.pathname?.startsWith("/admin") ? "/admin" : "/admin");
+        const targetUrl = adminPath.startsWith("/") ? adminPath : `/${adminPath}`;
+        globalThis.location.href = targetUrl;
     }
 };
 
